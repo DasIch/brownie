@@ -18,7 +18,7 @@ view-doc: doc
 DIR ?= env
 dev-env:
 	@virtualenv $(DIR)
-	@. $(DIR)/bin/activate
+	@. $(DIR)/bin/activate && pip install sphinx attest
 
 clean:
 	@make -C docs/ clean
