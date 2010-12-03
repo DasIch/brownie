@@ -14,3 +14,10 @@ Mapping
 
 .. autoclass:: MultiDict
    :members:
+
+
+Sequences
+---------
+
+.. autoclass:: LazyList
+   :members:

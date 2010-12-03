@@ -12,7 +12,7 @@ import random
 
 from attest import Tests, TestBase, test, Assert
 
-from brownie.datastructures import missing, MultiDict
+from brownie.datastructures import missing, MultiDict, LazyList
 
 datastructures_tests = Tests()
 
@@ -206,3 +206,295 @@ class TestMultiDict(TestBase):
         d = MultiDict({'foo': ['bar', 'baz']})
         Assert(d.get('foo')) == 'bar'
         Assert(d.get('foo', 'spam')) == 'bar'
+
+
+@datastructures_tests.register
+class LazyListTest(TestBase):
+    def _genrange(self, *args):
+        """xrange() implementation which doesn't have like a sequence."""
+        if len(args) == 1:
+            start = 0
+            stop = args[0]
+            step = 1
+        elif len(args) == 2:
+            start, stop = args
+            step = 1
+        elif len(args) == 3:
+            start, stop, step = args
+        else:
+            raise ValueError()
+        i = start
+        while i < stop:
+            yield i
+            i += step
+
+    @test
+    def _test_genrange(self):
+        tests = [
+            (10, ),
+            (10, 20),
+            (10, 20, 2)
+        ]
+        for test in tests:
+            Assert(list(self._genrange(*test))) == range(*test)
+
+    @test
+    def factory(self):
+        foo = LazyList.factory(xrange)
+        Assert(foo(10).__class__).is_(LazyList)
+        Assert(foo(10)) == range(10)
+
+    @test
+    def exhausted(self):
+        l = LazyList(range(10))
+        Assert(l.exhausted) == True
+        l = LazyList(self._genrange(10))
+        Assert(l.exhausted) == False
+        l[-1]
+        Assert(l.exhausted) == True
+
+    @test
+    def iteration(self):
+        for l in [range(10), self._genrange(10)]:
+            l = LazyList(l)
+            result = []
+            for item in l:
+                result.append(item)
+            Assert(result) == range(10)
+
+    @test
+    def append(self):
+        data = self._genrange(10)
+        l = LazyList(data)
+        l.append(10)
+        Assert(l.exhausted) == False
+        Assert(l) == range(11)
+
+    @test
+    def extend(self):
+        data = self._genrange(10)
+        l = LazyList(data)
+        l.extend(range(10, 20))
+        Assert(l.exhausted) == False
+        Assert(l) == range(10) + range(10, 20)
+
+    @test
+    def insert(self):
+        data = self._genrange(10)
+        l = LazyList(data)
+        l.insert(5, 'foobar')
+        Assert(l[5]) == 'foobar'
+        Assert(l.exhausted) == False
+
+    @test
+    def pop(self):
+        data = xrange(10)
+        l = LazyList(data)
+        Assert(l.pop()) == 9
+        Assert(l.pop(0)) == 0
+
+    @test
+    def remove(self):
+        data = range(10)
+        l = LazyList(self._genrange(10))
+        data.remove(2)
+        l.remove(2)
+        Assert(l.exhausted) == False
+        Assert(l) == data
+
+    @test
+    def reverse(self):
+        data = range(10)
+        l = LazyList(reversed(data))
+        l.reverse()
+        Assert(l) == data
+
+    @test
+    def sort(self):
+        data = range(10)
+        random.choice(data)
+        l = LazyList(data)
+        l.sort()
+        data.sort()
+        Assert(l) == data
+
+    @test
+    def count(self):
+        l = LazyList(['a', 'b', 'c', 'a'])
+        tests = [('a', 2), ('b', 1), ('c', 1)]
+        for test, result in tests:
+            Assert(l.count(test)) == result
+
+    @test
+    def getitem(self):
+        data = range(10)
+        l = LazyList(data)
+        for a, b in zip(data, l):
+            Assert(a) == b
+        l = LazyList(self._genrange(10))
+        l[5]
+        Assert(l.exhausted) == False
+
+    @test
+    def getslice(self):
+        data = range(10)
+        l = LazyList(self._genrange(10))
+        Assert(data[3:6]) == l[3:6]
+        Assert(l.exhausted) == False
+
+    @test
+    def setitem(self):
+        data = ['foo', 'bar', 'baz']
+        l = LazyList(iter(data))
+        l[0] = 'spam'
+        Assert(l.exhausted) == False
+        Assert(l[0]) == 'spam'
+        Assert(l) != data
+
+    @test
+    def setslice(self):
+        data = range(10)
+        replacement = ['foo', 'bar', 'baz']
+        l = LazyList(self._genrange(10))
+        l[3:6] = replacement
+        data[3:6] = replacement
+        Assert(l.exhausted) == False
+        Assert(l) == data
+
+    @test
+    def delitem(self):
+        data = range(10)
+        l = LazyList(data[:])
+        del data[0]
+        del l[0]
+        Assert(l) == data
+        l = LazyList(self._genrange(10))
+        del l[2]
+        Assert(l.exhausted) == False
+
+    @test
+    def delslice(self):
+        data = range(10)
+        l = LazyList(self._genrange(10))
+        del data[3:6]
+        del l[3:6]
+        Assert(l.exhausted) == False
+        Assert(l) == data
+
+    @test
+    def iteration(self):
+        l = LazyList(self._genrange(10))
+        Assert(list(l)) == range(10)
+
+    @test
+    def len(self):
+        Assert(len(LazyList(range(10)))) == 10
+
+        l = LazyList([])
+        Assert(len(l)) == 0
+
+        l.append(1)
+        Assert(len(l)) == 1
+
+        l.extend([2, 3])
+        Assert(len(l)) == 3
+
+        l.pop()
+        Assert(len(l)) == 2
+
+        del l[1]
+        Assert(len(l)) == 1
+
+    @test
+    def contains(self):
+        l = LazyList(self._genrange(10))
+        Assert(5).in_(l)
+        Assert('foo').not_in(l)
+
+    @test
+    def equals(self):
+        Assert(LazyList(range(10))) == range(10)
+        Assert(LazyList(range(10))) == LazyList(range(10))
+
+        Assert(LazyList(range(10)) != range(10)) == False
+        Assert(LazyList(range(10)) != range(10)) == False
+
+        Assert(LazyList(range(10)) == range(20)) == False
+        Assert(LazyList(range(10)) == LazyList(range(20))) == False
+
+        Assert(LazyList(range(10))) != range(20)
+        Assert(LazyList(range(10))) != range(20)
+
+        l = LazyList(self._genrange(10))
+        Assert(l == range(20)) == False
+
+    @test
+    def boolean(self):
+        Assert(bool(LazyList([]))) == False
+        Assert(bool(LazyList([1]))) == True
+
+    @test
+    def lower_greater_than(self):
+        Assert(LazyList([]) < LazyList([])) == False
+        Assert(LazyList([]) > LazyList([])) == False
+
+        tests = [
+            ([], [1]),
+            ([1], [2]),
+            ([1, 2], [2, 1]),
+            ([2, 1], [2, 2])
+        ]
+        for a, b in tests:
+            Assert(LazyList(a) < LazyList(b)) == True
+            Assert(LazyList(a) > LazyList(b)) == False
+
+            Assert(LazyList(b) < LazyList(a)) == False
+            Assert(LazyList(b) > LazyList(a)) == True
+
+        a = LazyList(iter([1, 2, 3]))
+        b = LazyList(iter([1, 3, 3]))
+
+        Assert(a) < b
+        Assert(b) > a
+
+        Assert(a.exhausted) == False
+        Assert(b.exhausted) == False
+
+    @test
+    def add(self):
+        Assert(LazyList([1, 2]) + [3, 4]) == LazyList([1, 2, 3, 4])
+        Assert(LazyList([1, 2]) + LazyList([3, 4])) == LazyList([1, 2, 3, 4])
+
+    @test
+    def inplace_add(self):
+        old = l = LazyList([1, 2])
+        l += [3, 4]
+        l += (5, 6)
+        Assert(l) == LazyList([1, 2, 3, 4, 5, 6])
+        Assert(l).is_(old)
+
+    @test
+    def multiply(self):
+        a = LazyList(self._genrange(10))
+        b = range(10)
+        Assert(a * 5) == b * 5
+
+    @test
+    def inplace_multiply(self):
+        old = a = LazyList(self._genrange(10))
+        b = range(10)
+        a *= 5
+        b *= 5
+        Assert(a) == b
+        Assert(a).is_(old)
+
+    @test
+    def repr(self):
+        Assert(repr(LazyList([]))) == '[]'
+        data = range(10)
+        l = Assert(LazyList(data))
+        repr(l) == '[...]'
+        l[1]
+        repr(l) == '[0, 1, ...]'
+        l[-1]
+        repr(l) == repr(data)

@@ -8,6 +8,9 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+from functools import wraps
+from itertools import count, chain, izip_longest
+from collections import Sequence
 
 
 class Missing(object):
@@ -253,3 +256,355 @@ class MultiDict(dict):
     def popitemlist(self):
         """Like :meth:`popitem` but returns all associated values."""
         return dict.popitem(self)
+
+
+class LazyList(object):
+    """
+    Implements a lazy list which computes items based on the given `iterable`.
+
+    This allows you to create :class:`list`\-like objects of unlimited size.
+    However although most operations don't exhaust the internal iterator
+    completely some of them do, so if the given iterable is of unlimited size
+    making such an operation will eventually cause a :exc:`MemoryError`.
+
+    Cost in terms of lazyness of supported operators, this does not include
+    supported operators without any cost:
+
+    +-----------------+-------------------------------------------------------+
+    | Operation       | Result                                                |
+    +=================+=======================================================+
+    | ``list[i]``     | This exhausts the `list` up until the given index.    |
+    +-----------------+                                                       |
+    | ``list[i] = x`` |                                                       |
+    +-----------------+                                                       |
+    | ``del list[i]`` |                                                       |
+    +-----------------+-------------------------------------------------------+
+    | ``len(list)``   | Exhausts the internal iterator.                       |
+    +-----------------+-------------------------------------------------------+
+    | ``x in list``   | Exhausts the `list` up until `x` or until the `list`  |
+    |                 | is exhausted.                                         |
+    +-----------------+-------------------------------------------------------+
+    | ``l1 == l2``    | Exhausts both lists.                                  |
+    +-----------------+-------------------------------------------------------+
+    | ``l1 != l2``    | Exhausts both lists.                                  |
+    +-----------------+-------------------------------------------------------+
+    | ``bool(list)``  | Exhausts the `list` up to the first item.             |
+    +-----------------+-------------------------------------------------------+
+    | ``l1 < l2``     | Exhausts the list up to the first item which shows    |
+    |                 | the result. In the worst case this exhausts both      |
+    +-----------------+ lists.                                                |
+    | ``l1 > l2``     |                                                       |
+    +-----------------+-------------------------------------------------------+
+    | ``l1 + l2``     | Creates a new :class:`LazyList` without exhausting    |
+    |                 | `l1` or `l2`.                                         |
+    +-----------------+-------------------------------------------------------+
+    | ``list * n``    | Exhausts the `list`.                                  |
+    +-----------------+                                                       |
+    | ``list *= n``   |                                                       |
+    +-----------------+-------------------------------------------------------+
+    """
+    @classmethod
+    def factory(cls, callable):
+        """
+        Returns a wrapper for a given callable which takes the return value
+        of the wrapped callable and converts it into a :class:`LazyList`.
+        """
+        @wraps(callable)
+        def wrap(*args, **kwargs):
+            return cls(callable(*args, **kwargs))
+        return wrap
+
+    def exhausting(func):
+        @wraps(func)
+        def wrap(self, *args, **kwargs):
+            self._exhaust()
+            return func(self, *args, **kwargs)
+        return wrap
+
+    def __init__(self, iterable):
+        if isinstance(iterable, Sequence):
+            #: ``True`` if the internal iterator is exhausted.
+            self.exhausted = True
+            self._collected_data = list(iterable)
+        else:
+            self._iterator = iter(iterable)
+            self.exhausted = False
+            self._collected_data = []
+        self._added_data = []
+
+    def _exhaust(self, i=None):
+        if self.exhausted:
+            return
+        elif i is None or i < 0:
+            index_range = count(self.known_length)
+        elif isinstance(i, slice):
+            start, stop = i.start, i.stop
+            if start < 0 or stop < 0:
+                index_range = count(self.known_length)
+            else:
+                index_range = xrange(self.known_length, stop)
+        else:
+            index_range = xrange(self.known_length, i + 1)
+        for i in index_range:
+            try:
+                self._collected_data.append(self._iterator.next())
+            except StopIteration:
+                self.exhausted = True
+                break
+
+    @property
+    def known_length(self):
+        """
+        The number of items which have been taken from the internal iterator.
+        """
+        return len(self._collected_data)
+
+    def append(self, object):
+        """
+        Appends the given `object` to the list.
+        """
+        self.extend([object])
+
+    def extend(self, objects):
+        """
+        Extends the list with the given `objects`.
+        """
+        if self.exhausted:
+            self._collected_data.extend(objects)
+        else:
+            self._iterator = chain(self._iterator, objects)
+
+    def insert(self, index, object):
+        """
+        Inserts the given `object` at the given `index`.
+
+        This method exhausts the internal iterator up until the given `index`.
+        """
+        if index >= self.known_length:
+            self._exhaust(index)
+        self._collected_data.insert(index, object)
+
+    def pop(self, index=None):
+        """
+        Removes and returns the item at the given `index`, if no `index` is
+        given the last item is used.
+
+        This method exhausts the internal iterator up until the given `index`.
+        """
+        self._exhaust(index)
+        if index is None:
+            return self._collected_data.pop()
+        return self._collected_data.pop(index)
+
+    def remove(self, object):
+        """
+        Looks for the given `object` in the list and removes the first
+        occurrence.
+
+        If the item is not found a :exc:`ValueError` is raised.
+
+        This method exhausts the internal iterator up until the first
+        occurence of the given `object` or entirely if it is not found.
+        """
+        while True:
+            try:
+                self._collected_data.remove(object)
+                return
+            except ValueError:
+                try:
+                    self._added_data.remove(object)
+                except ValueError:
+                    if self.exhausted:
+                        raise
+                    else:
+                        self._exhaust(self.known_length)
+
+    @exhausting
+    def reverse(self):
+        """
+        Reverses the list.
+
+        This method exhausts the internal iterator.
+        """
+        self._collected_data.reverse()
+
+    @exhausting
+    def sort(self, cmp=None, key=None, reverse=False):
+        """
+        Sorts the list using the given `cmp` or `key` function and reverses it
+        if `reverse` is ``True``.
+
+        This method exhausts the internal iterator.
+        """
+        self._collected_data.sort(cmp=cmp, key=key, reverse=reverse)
+
+    @exhausting
+    def count(self, object):
+        """
+        Counts the occurrences of the given `object` in the list.
+
+        This method exhausts the internal iterator.
+        """
+        return self._collected_data.count(object)
+
+    def __getitem__(self, i):
+        """
+        Returns the object or objects at the given index.
+
+        This method exhausts the internal iterator up until the given index.
+        """
+        self._exhaust(i)
+        return self._collected_data[i]
+
+    def __setitem__(self, i, obj):
+        """
+        Sets the given object or objects at the given index.
+
+        This method exhausts the internal iterator up until the given index.
+        """
+        self._exhaust(i)
+        self._collected_data[i] = obj
+
+    def __delitem__(self, i):
+        """
+        Removes the item or items at the given index.
+
+        This method exhausts the internal iterator up until the given index.
+        """
+        self._exhaust(i)
+        del self._collected_data[i]
+
+    @exhausting
+    def __len__(self):
+        """
+        Returns the length of the list.
+
+        This method exhausts the internal iterator.
+        """
+        return self.known_length + len(self._added_data)
+
+    def __contains__(self, other):
+        for obj in self:
+            if obj == other:
+                return True
+        return False
+
+    @exhausting
+    def __eq__(self, other):
+        """
+        Returns ``True`` if the list is equal to the given `other` list, which
+        may be another :class:`LazyList`, a :class:`list` or a subclass of
+        either.
+
+        This method exhausts the internal iterator.
+        """
+        if isinstance(other, (self.__class__, list)):
+            return self._collected_data == other
+        return False
+
+    def __ne__(self, other):
+        """
+        Returns ``True`` if the list is unequal to the given `other` list, which
+        may be another :class:`LazyList`, a :class:`list` or a subclass of
+        either.
+
+        This method exhausts the internal iterator.
+        """
+        return not self.__eq__(other)
+
+    __hash__ = None
+
+    def __nonzero__(self):
+        """
+        Returns ``True`` if the list is not empty.
+
+        This method takes one item from the internal iterator.
+        """
+        self._exhaust(0)
+        return bool(self._collected_data)
+
+    def __lt__(self, other):
+        """
+        This method returns ``True`` if this list is "lower than" the given
+        `other` list. This is the case if...
+
+        - this list is empty and the other is not.
+        - the first nth item in this list which is unequal to the
+          corresponding item in the other list, is lower than the corresponding
+          item.
+
+        If this and the other list is empty this method will return ``False``.
+        """
+        if not self and other:
+            return True
+        elif self and not other:
+            return False
+        elif not self and not other:
+            return False
+        missing = object()
+        for a, b in izip_longest(self, other, fillvalue=missing):
+            if a < b:
+                return True
+            elif a == b:
+                continue
+            elif a is missing and b is not missing:
+                return True
+            return False
+
+    def __gt__(self, other):
+        """
+        This method returns ``True`` if this list is "greater than" the given
+        `other` list. This is the case if...
+
+        - this list is not empty and the other is
+        - the first nth item in this list which is unequal to the
+          corresponding item in the other list, is greater than the
+          corresponding item.
+
+        If this and the other list is empty this method will return ``False``.
+        """
+
+        if not self and not other:
+            return False
+        return not self.__lt__(other)
+
+    def __add__(self, other):
+        if isinstance(other, (list, self.__class__)):
+            return self.__class__(chain(self, other))
+        raise TypeError("can't concatenate with non-list: {0}".format(other))
+
+    def __iadd__(self, other):
+        self.extend(other)
+        return self
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            self._exhaust()
+            return self.__class__(self._collected_data * other)
+        raise TypeError("can't multiply sequence by non-int: {0}".format(other))
+
+    def __imul__(self, other):
+        if isinstance(other, int):
+            self._exhaust()
+            self._collected_data *= other
+            return self
+        else:
+            raise TypeError(
+                "can't multiply sequence by non-int: {0}".format(other)
+            )
+
+    def __repr__(self):
+        """
+        Returns the representation string of the list, if the list exhausted
+        this looks like the representation of any other list, otherwise the
+        "lazy" part is represented by "...", like "[1, 2, 3, ...]".
+        """
+        if self.exhausted:
+            return repr(self._collected_data)
+        elif not self._collected_data:
+            return '[...]'
+        return '[{0}, ...]'.format(
+            ', '.join(repr(obj) for obj in self._collected_data)
+        )
+
+    del exhausting
