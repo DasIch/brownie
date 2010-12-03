@@ -213,10 +213,6 @@ class MultiDict(dict):
         """Like :meth:`listvalues` but returns an iterator."""
         return dict.itervalues(self)
 
-    def copy(self):
-        """Returns a shallow copy of this object."""
-        return self.__class__(self)
-
     def update(self, mapping):
         """
         Extends the :class:`MultiDict` with the data from the given
