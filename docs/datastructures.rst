@@ -7,8 +7,8 @@ This module provides various datastructures.
 
 .. autodata:: missing
 
-Mapping
--------
+Mappings
+--------
 
 .. autofunction:: iter_multi_items
 
