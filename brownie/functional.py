@@ -8,6 +8,7 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+from functools import wraps
 
 
 def compose(*functions):
@@ -25,3 +26,21 @@ def compose(*functions):
     elif len(functions) == 1:
         return functions[0]
     return reduce(lambda f, g: lambda *a, **kws: f(g(*a, **kws)), functions)
+
+
+def flip(function):
+    """
+    Returns a function which behaves like `function` but gets the given
+    positional arguments reversed; keyword arguments are passed through.
+
+    >>> from brownie.functional import flip
+    >>> def f(a, b): return a
+    >>> f(1, 2)
+    1
+    >>> flip(f)(1, 2)
+    2
+    """
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        return function(*reversed(args), **kwargs)
+    return wrap

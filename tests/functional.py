@@ -11,10 +11,11 @@
 from __future__ import with_statement
 from attest import Tests, Assert
 
-from brownie.functional import compose
+from brownie.functional import compose, flip
 
 
 functional_tests = Tests()
+
 
 @functional_tests.test
 def test_compose():
@@ -23,3 +24,12 @@ def test_compose():
     add_one = lambda x: x + 1
     mul_two = lambda x: x * 2
     Assert(compose(add_one, mul_two)(1)) == 3
+
+
+@functional_tests.test
+def test_flip():
+    f = lambda a, b, **kws: (a, kws)
+    Assert(f(1, 2)) == (1, {})
+    Assert(flip(f)(1, 2)) == (2, {})
+    kwargs = {'foo': 'bar'}
+    Assert(flip(f)(1, 2, **kwargs)) == (2, kwargs)
