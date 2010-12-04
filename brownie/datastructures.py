@@ -9,8 +9,10 @@
     :license: BSD, see LICENSE.rst for details
 """
 from functools import wraps
-from itertools import count, chain, izip, izip_longest, repeat
+from itertools import count, chain, izip, repeat
 from collections import Sequence
+
+from brownie.itools import izip_longest
 
 
 class Missing(object):
