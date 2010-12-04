@@ -94,6 +94,22 @@ def product(*iterables, **kwargs):
         yield tuple(prod)
 
 
+def starmap(function, iterable):
+    """
+    Make an iterator that computes the function using arguments obtained from
+    the iterable. Used instead of :func:`itertools.imap` when an argument
+    parameters are already grouped in tuples from a single iterable (the data
+    has been "pre-zipped"). The difference between :func:`itertools.imap` and
+    :func:`starmap` parallels the distinction between ``function(a, b)`` and
+    ``function(*c)``.
+
+    .. note:: Software and documentation for this function are taken from
+              CPython, :ref:`license details <psf-license>`.
+    """
+    for args in iterable:
+        yield function(*args)
+
+
 def combinations_with_replacement(iterable, r):
     """
     Return `r` length subsequences of elements from the `iterable` allowing
