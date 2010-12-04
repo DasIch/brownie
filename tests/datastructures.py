@@ -12,7 +12,7 @@ import random
 
 from attest import Tests, TestBase, test, Assert
 
-from brownie.datastructures import missing, MultiDict, LazyList
+from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList
 
 datastructures_tests = Tests()
 
@@ -206,6 +206,95 @@ class TestMultiDict(TestBase):
         d = MultiDict({'foo': ['bar', 'baz']})
         Assert(d.get('foo')) == 'bar'
         Assert(d.get('foo', 'spam')) == 'bar'
+
+
+@datastructures_tests.register
+class OrderedDictTest(TestBase):
+    @test
+    def fromkeys(self):
+        d = OrderedDict.fromkeys([1, 2])
+        Assert(d.__class__).is_(OrderedDict)
+        Assert(d.items()) == [(1, None), (2, None)]
+        d = OrderedDict.fromkeys([1, 2], 'foo')
+        Assert(d.items()) == [(1, 'foo'), (2, 'foo')]
+
+    @test
+    def init(self):
+        with Assert.raises(TypeError):
+            OrderedDict(('foo', 'bar'), ('spam', 'eggs'))
+        Assert(OrderedDict([(1, 2), (3, 4)]).items()) == [(1, 2), (3, 4)]
+
+    @test
+    def insertion(self):
+        d = OrderedDict()
+        d[1] = 2
+        d[3] = 4
+        Assert(d.items()) == [(1, 2), (3, 4)]
+
+    @test
+    def setdefault(self):
+        d = OrderedDict()
+        d.setdefault(1)
+        Assert(d[1]) == None
+        d.setdefault(3, 4)
+        Assert(d[3]) == 4
+        Assert(d.items()) == [(1, None), (3, 4)]
+
+    @test
+    def pop(self):
+        d = OrderedDict()
+        d[1] = 2
+        Assert(d.pop(1)) == 2
+        with Assert.raises(KeyError):
+            d.pop(1)
+        Assert(d.pop(1, 2)) == 2
+
+    @test
+    def popitem(self):
+        d = OrderedDict([(1, 2), (3, 4), (5, 6)])
+        Assert(d.popitem()) == (5, 6)
+        Assert(d.popitem(last=False)) == (1, 2)
+
+    @test
+    def update(self):
+        d = OrderedDict()
+        d.update([(1, 2), (3, 4)])
+        Assert(d.items()) == [(1, 2), (3, 4)]
+        d.update(foo='bar')
+        Assert(d['foo']) == 'bar'
+        Assert(d.items()) == [(1, 2), (3, 4), ('foo', 'bar')]
+
+        d = OrderedDict()
+        d.update([('foo', 'bar'), ('spam', 'eggs')], foo='baz')
+        Assert(d.items()) == [('foo', 'baz'), ('spam', 'eggs')]
+
+    @test
+    def clear(self):
+        d = OrderedDict([(1, 2), (3, 4)])
+        assert d
+        d.clear()
+        assert not d
+        d.update([(3, 4), (1, 2)])
+        Assert(d.items()) == [(3, 4), (1, 2)]
+
+    @test
+    def item_accessor_equality(self):
+        d = OrderedDict([(1, 2), (3, 4)])
+        Assert(list(d)) == d.keys()
+        Assert(list(reversed(d))) == list(reversed(d.keys()))
+        Assert(list(d.iterkeys())) == d.keys()
+        Assert(list(d.itervalues())) == d.values()
+        Assert(list(d.iteritems())) == d.items()
+        for key, value, item in zip(d.keys(), d.values(), d.items()):
+            Assert((key, value)) == item
+            Assert(d[key]) == value
+
+    @test
+    def repr(self):
+        d = OrderedDict()
+        Assert(repr(d)) == 'OrderedDict([])'
+        d = OrderedDict([(1, 2), (3, 4)])
+        Assert(repr(d)) == 'OrderedDict([(1, 2), (3, 4)])'
 
 
 @datastructures_tests.register

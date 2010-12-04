@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 from functools import wraps
-from itertools import count, chain, izip_longest
+from itertools import count, chain, izip, izip_longest, repeat
 from collections import Sequence
 
 
@@ -252,6 +252,178 @@ class MultiDict(dict):
     def popitemlist(self):
         """Like :meth:`popitem` but returns all associated values."""
         return dict.popitem(self)
+
+
+class _Link(object):
+    def __init__(self, key=None, prev=None, next=None):
+        self.key = key
+        self.prev = prev
+        self.next = next
+
+
+class OrderedDict(dict):
+    """
+    A :class:`dict` which remembers insertion order.
+
+    Big-O times for every operation are equal to the ones :class:`dict` has
+    however this comes at the cost of higher memory usage.
+
+    This dictionary is only equal to another dictionary of this type if the
+    items on both dictionaries were inserted in the same order.
+    """
+    @classmethod
+    def fromkeys(cls, iterable, value=None):
+        """
+        Returns a :class:`OrderedDict` with keys from the given `iterable`
+        and `value` as value for each item.
+        """
+        return cls(izip(iterable, repeat(value)))
+
+    def __init__(self, *args, **kwargs):
+        if len(args) > 1:
+            raise TypeError(
+                'expected at most 1 argument, got {0}'.format(len(args))
+            )
+        self._root = _Link()
+        self._root.prev = self._root.next = self._root
+        self._map = {}
+        self.update(*args, **kwargs)
+
+    def __setitem__(self, key, value):
+        """
+        Sets the item with the given `key` to the given `value`.
+        """
+        if key not in self:
+            last = self._root.prev
+            link = _Link(key, last, self._root)
+            last.next = self._root.prev = self._map[key] = link
+        dict.__setitem__(self, key, value)
+
+    def __delitem__(self, key):
+        """
+        Deletes the item with the given `key`.
+        """
+        dict.__delitem__(self, key)
+        link = self._map.pop(key)
+        prev, next = link.prev, link.next
+        prev.next, next.prev = link.next, link.prev
+
+    def setdefault(self, key, default=None):
+        """
+        Returns the value of the item with the given `key`, if not existant
+        sets creates an item with the `default` value.
+        """
+        if key not in self:
+            self[key] = default
+        return self[key]
+
+    def pop(self, key, default=missing):
+        """
+        Deletes the item with the given `key` and returns the value. If the
+        item does not exist a :exc:`KeyError` is raised unless `default` is
+        given.
+        """
+        if default is missing:
+            return dict.pop(self, key)
+        return dict.pop(self, key, default)
+
+    def popitem(self, last=True):
+        """
+        Pops the last or first item from the dict depending on `last`.
+        """
+        if not self:
+            raise KeyError('dict is empty')
+        key = (reversed(self) if last else iter(self)).next()
+        return key, self.pop(key)
+
+    def update(self, *args, **kwargs):
+        """
+        Updates the dictionary with a mapping and/or from keyword arguments.
+        """
+        if len(args) > 1:
+            raise TypeError(
+                'expected at most 1 argument, got {0}'.format(len(args))
+            )
+        mappings = [args[0]] if args else []
+        mappings.append(kwargs.iteritems())
+        for mapping in mappings:
+            for key, value in mapping:
+                self[key] = value
+
+    def clear(self):
+        """
+        Clears the contents of the dict.
+        """
+        self._root = _Link()
+        self._root.prev = self._root.next = self._root
+        self._map.clear()
+        dict.clear(self)
+
+    def __eq__(self, other):
+        """
+        Returns ``True`` if this dict is equal to the `other` one. If the
+        other one is a :class:`OrderedDict` as well they are only considered
+        equal if the insertion order is identical.
+        """
+        if isinstance(other, self.__class__):
+            return all(
+                i1 == i2 for i1, i2 in izip(self.iteritems(), other.iteritems())
+            )
+        return dict.__eq__(self, other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __iter__(self):
+        curr = self._root.next
+        while curr is not self._root:
+            yield curr.key
+            curr = curr.next
+
+    def __reversed__(self):
+        curr = self._root.prev
+        while curr is not self._root:
+            yield curr.key
+            curr = curr.prev
+
+    def iterkeys(self):
+        """
+        Returns an iterator over the keys of all items in insertion order.
+        """
+        return iter(self)
+
+    def itervalues(self):
+        """
+        Returns an iterator over the values of all items in insertion order.
+        """
+        return (self[k] for k in self)
+
+    def iteritems(self):
+        """
+        Returns an iterator over all the items in insertion order.
+        """
+        return izip(self.iterkeys(), self.itervalues())
+
+    def keys(self):
+        """
+        Returns a :class:`list` over the keys of all items in insertion order.
+        """
+        return list(self.iterkeys())
+
+    def values(self):
+        """
+        Returns a :class:`list` over the values of all items in insertion order.
+        """
+        return list(self.itervalues())
+
+    def items(self):
+        """
+        Returns a :class:`list` over the items in insertion order.
+        """
+        return zip(self.keys(), self.values())
+
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.__class__.__name__, self.items())
 
 
 class LazyList(object):

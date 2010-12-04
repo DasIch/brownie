@@ -15,6 +15,9 @@ Mappings
 .. autoclass:: MultiDict
    :members:
 
+.. autoclass:: OrderedDict
+   :members:
+
 
 Sequences
 ---------
