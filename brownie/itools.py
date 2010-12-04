@@ -38,6 +38,35 @@ def izip_longest(*iterables, **kwargs):
         pass
 
 
+def permutations(iterable, r=None):
+    """
+    Return successive `r` length permutations of elements in the `iterable`.
+
+    If `r` is not specified or is ``None``, then `r` defaults to the length of
+    the `iterable` and all possible full-length permutations are generated.
+
+    Permutations are emitted in lexicographic sort order. So, if the input
+    `iterable` is sorted, the permutation tuples will be produced in sorted
+    order.
+
+    Elements are treated as unique based on their position, not on their
+    value. So if the input elements are unique, there will be no repeating
+    value in each permutation.
+
+    The number of items returned is ``n! / (n - r)!`` when ``0 <= r <= n`` or
+    zero when `r > n`.
+
+    .. note:: Software and documentation for this function are taken from
+              CPython, :ref:`license details <psf-license>`.
+    """
+    pool = tuple(iterable)
+    n = len(pool)
+    r = n if r is None else r
+    for indices in product(range(n), repeat=r):
+        if len(set(indices)) == r:
+            yield tuple(pool[i] for i in indices)
+
+
 def product(*iterables, **kwargs):
     """
     Cartesian product of input iterables.

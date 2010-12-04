@@ -10,7 +10,7 @@
 """
 from attest import Tests, Assert
 
-from brownie.itools import izip_longest, product, compress, count, \
+from brownie.itools import izip_longest, product, compress, count, permutations, \
                            combinations_with_replacement
 
 
@@ -27,6 +27,19 @@ def test_izip_longest():
     for test, result in tests:
         args, kwargs = test
         Assert(list(izip_longest(*args, **kwargs))) == result
+
+
+@itools_tests.test
+def test_permutations():
+    tests = [
+        ((('abc', )), ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']),
+        ((('abc', 1)), ['a', 'b', 'c']),
+        ((('abc', 2)), ['ab', 'ac', 'ba', 'bc', 'ca', 'cb']),
+        ((('abc', 4)), [])
+    ]
+    for test, result in tests:
+        result = map(tuple, result)
+        Assert(list(permutations(*test))) == result
 
 
 @itools_tests.test

@@ -7,6 +7,8 @@ Implements :mod:`itertools` functions for earlier versions of Python.
 
 .. autofunction:: izip_longest
 
+.. autofunction:: permutations
+
 .. autofunction:: product
 
 .. autofunction:: combinations_with_replacement
