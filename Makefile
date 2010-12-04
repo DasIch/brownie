@@ -1,9 +1,9 @@
 help:
 	@echo "Possible targets:"
-	@echo "    test           - to run the testsuite"
-	@echo "    doc            - to build the html documentation"
-	@echo "    view-doc       - to view the documentation in your web browser"
-	@echo "    dev-env <DIR=> - to create a development environment"
+	@echo "    test           - runs the testsuite"
+	@echo "    doc            - builds the html documentation"
+	@echo "    view-doc       - opens the documentation in your web browser"
+	@echo "    dev-env <DIR=> - creates a development environment"
 	@echo "    clean          - cleans documentation build dir and deletes pyc files"
 
 test:
