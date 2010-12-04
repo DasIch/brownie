@@ -8,7 +8,7 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, PSF see LICENSE.rst for details
 """
-from itertools import product
+from itertools import product, izip
 
 
 def combinations_with_replacement(iterable, r):
@@ -27,7 +27,7 @@ def combinations_with_replacement(iterable, r):
     The number of items returned is ``(n + r - 1)! / r! / (n - 1)!`` when
     ``n > 0``.
 
-    .. note:: Software and documentation for this method is taken from
+    .. note:: Software and documentation for this function are taken from
               CPython, :ref:`license details <psf-license>`.
     """
     pool = tuple(iterable)
@@ -35,3 +35,35 @@ def combinations_with_replacement(iterable, r):
     for indices in product(xrange(n), repeat=r):
         if sorted(indices) == list(indices):
             yield tuple(pool[i] for i in indices)
+
+
+def compress(data, selectors):
+    """
+    Make an iterator that filters elements from the `data` returning only
+    those that have a corresponding element in `selectors` that evaluates to
+    ``True``. Stops when either the `data` or `selectors` iterables have been
+    exhausted.
+
+    .. note:: Software and documentation for this function are taken from
+              CPython, :ref:`license details <psf-license>`.
+    """
+    return (d for d, s in izip(data, selectors) if s)
+
+
+def count(start=0, step=1):
+    """
+    Make an iterator that returns evenly spaced values starting with `start`.
+    Often used as an argument to :func:`imap` to generate consecutive data
+    points. Also, used with :func:`izip` to add sequence numbers.
+
+    When counting with floating point numbers, better accuracy can sometimes
+    be achieved by substituting multiplicative code such as:
+    ``(start + step * i for i in count())``.
+
+    .. note:: Software and documentation for this function are taken from
+              CPython, :ref:`license details <psf-license>`.
+    """
+    n = start
+    while True:
+        yield n
+        n += step
