@@ -10,7 +10,6 @@
 """
 from functools import wraps
 from itertools import count, chain, izip, repeat
-from collections import Sequence
 
 from brownie.itools import izip_longest
 
@@ -492,7 +491,7 @@ class LazyList(object):
         return wrap
 
     def __init__(self, iterable):
-        if isinstance(iterable, Sequence):
+        if isinstance(iterable, (list, tuple, basestring)):
             #: ``True`` if the internal iterator is exhausted.
             self.exhausted = True
             self._collected_data = list(iterable)
