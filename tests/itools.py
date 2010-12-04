@@ -10,10 +10,25 @@
 """
 from attest import Tests, Assert
 
-from brownie.itools import combinations_with_replacement, compress, count
+from brownie.itools import product, combinations_with_replacement, compress, \
+                           count
 
 
 itools_tests = Tests()
+
+
+@itools_tests.test
+def test_product():
+    tests = [
+        ((('ABCD', 'xy'), {}), ['Ax', 'Ay', 'Bx', 'By', 'Cx', 'Cy', 'Dx', 'Dy']),
+        ((('01', ), {'repeat': 3}), [
+            '000', '001', '010', '011', '100', '101', '110', '111'
+        ])
+    ]
+    for test, result in tests:
+        args, kwargs = test
+        result = map(tuple, result)
+        Assert(list(product(*args, **kwargs))) == result
 
 
 @itools_tests.test

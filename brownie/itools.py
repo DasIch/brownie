@@ -8,7 +8,34 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, PSF see LICENSE.rst for details
 """
-from itertools import product, izip
+from itertools import izip
+
+
+def product(*iterables, **kwargs):
+    """
+    Cartesian product of input iterables.
+
+    Equivalent to nested for-loops in a generator expression. For example,
+    ``product(A, B)`` returns the same as ``((x, y) for x in A for y in B)``.
+
+    The nested loops cycle like an odometer with the rightmost element
+    advancing on every iteration. The pattern creates a lexicographic ordering
+    so that if the input's iterables are sorted, the product tuples are emitted
+    in sorted order.
+
+    To compute the product of an iterable with itself, specify the number of
+    repetitions with the optional `repeat` keyword argument. For example,
+    ``product(A, repeat=4)`` means the same as ``product(A, A, A, A)``.
+
+    .. note:: Software and documentation for this function are taken from
+              CPython, :ref:`license details <psf-license>`.
+    """
+    pools = map(tuple, iterables) * kwargs.get('repeat', 1)
+    result = [[]]
+    for pool in pools:
+        result = [x + [y] for x in result for y in pool]
+    for prod in result:
+        yield tuple(prod)
 
 
 def combinations_with_replacement(iterable, r):
