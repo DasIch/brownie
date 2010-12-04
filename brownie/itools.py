@@ -8,7 +8,34 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, PSF see LICENSE.rst for details
 """
-from itertools import izip
+from itertools import izip, repeat, chain
+
+
+def izip_longest(*iterables, **kwargs):
+    """
+    Make an iterator that aggregates elements from each of the iterables. If
+    the iterables are of uneven length, missing values are filled-in with
+    `fillvalue`. Iteration continues until the longest iterable is exhausted.
+
+    If one of the iterables is potentially infinite, then the
+    :func:`izip_longest` function should be wrapped with something that limits
+    the number of calls (for example :func:`itertools.islice` or
+    :func:`itertools.takewhile`.) If not specified, `fillvalue` defaults to
+    ``None``.
+
+    .. note:: Software and documentation for this function are taken from
+              CPython, :ref:`license details <psf-license>`.
+    """
+    fillvalue = kwargs.get('fillvalue')
+    def sentinel(counter=([fillvalue] * (len(iterables) - 1)).pop):
+        yield counter()
+    fillers = repeat(fillvalue)
+    iters = [chain(it, sentinel(), fillers) for it in iterables]
+    try:
+        for tup in izip(*iters):
+            yield tup
+    except IndexError:
+        pass
 
 
 def product(*iterables, **kwargs):

@@ -10,11 +10,23 @@
 """
 from attest import Tests, Assert
 
-from brownie.itools import product, combinations_with_replacement, compress, \
-                           count
+from brownie.itools import izip_longest, product, compress, count, \
+                           combinations_with_replacement
 
 
 itools_tests = Tests()
+
+
+@itools_tests.test
+def test_izip_longest():
+    tests = [
+        (((['a', 'b'], ['c', 'd']), {}), [('a', 'c'), ('b', 'd')]),
+        (((['a'], ['c', 'd']), {}), [('a', 'c'), (None, 'd')]),
+        (((['a'], ['c', 'd']), {'fillvalue': 1}), [('a', 'c'), (1, 'd')])
+    ]
+    for test, result in tests:
+        args, kwargs = test
+        Assert(list(izip_longest(*args, **kwargs))) == result
 
 
 @itools_tests.test
