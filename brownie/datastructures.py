@@ -283,7 +283,7 @@ class OrderedDict(dict):
     def __init__(self, *args, **kwargs):
         if len(args) > 1:
             raise TypeError(
-                'expected at most 1 argument, got {0}'.format(len(args))
+                'expected at most 1 argument, got %d' % len(args)
             )
         self._root = _Link()
         self._root.prev = self._root.next = self._root
@@ -343,7 +343,7 @@ class OrderedDict(dict):
         """
         if len(args) > 1:
             raise TypeError(
-                'expected at most 1 argument, got {0}'.format(len(args))
+                'expected at most 1 argument, got %d' % len(args)
             )
         mappings = [args[0]] if args else []
         mappings.append(kwargs.iteritems())
@@ -424,7 +424,7 @@ class OrderedDict(dict):
         return zip(self.keys(), self.values())
 
     def __repr__(self):
-        return '{0}({1!r})'.format(self.__class__.__name__, self.items())
+        return '%s(%r)' % (self.__class__.__name__, self.items())
 
 
 class LazyList(object):
@@ -772,8 +772,8 @@ class LazyList(object):
             return repr(self._collected_data)
         elif not self._collected_data:
             return '[...]'
-        return '[{0}, ...]'.format(
-            ', '.join(repr(obj) for obj in self._collected_data)
+        return '[%s, ...]' % ', '.join(
+            repr(obj) for obj in self._collected_data
         )
 
     del exhausting
