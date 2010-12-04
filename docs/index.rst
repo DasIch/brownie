@@ -8,6 +8,7 @@ Documentation
 
    caching
    datastructures
+   itools
 
 Additional Information
 ----------------------

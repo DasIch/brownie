@@ -8,8 +8,9 @@
 """
 from attest import Tests
 
+from tests.itools import itools_tests
 from tests.caching import caching_tests
 from tests.datastructures import datastructures_tests
 
 
-all_tests = Tests([caching_tests, datastructures_tests])
+all_tests = Tests([itools_tests, caching_tests, datastructures_tests])
