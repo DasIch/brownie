@@ -24,3 +24,4 @@ dev-env:
 clean:
 	@make -C docs/ clean
 	@find . -iname "*.pyc" -delete
+	@rm -rf .tox
