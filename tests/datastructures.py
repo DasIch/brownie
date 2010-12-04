@@ -264,6 +264,9 @@ class TestOrderedDict(TestBase):
         d.update([('foo', 'bar'), ('spam', 'eggs')], foo='baz')
         Assert(d.items()) == [('foo', 'baz'), ('spam', 'eggs')]
 
+        with Assert.raises(TypeError):
+            d.update(('foo', 'bar'), ('spam', 'eggs'))
+
     @test
     def clear(self):
         d = OrderedDict([(1, 2), (3, 4)])
