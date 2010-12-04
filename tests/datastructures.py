@@ -14,10 +14,7 @@ from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList
 
-datastructures_tests = Tests()
 
-
-@datastructures_tests.register
 class TestMissing(TestBase):
     @test
     def has_false_boolean_value(self):
@@ -28,7 +25,6 @@ class TestMissing(TestBase):
         Assert(repr(missing)) == 'missing'
 
 
-@datastructures_tests.register
 class TestMultiDict(TestBase):
     @test
     def init(self):
@@ -208,8 +204,7 @@ class TestMultiDict(TestBase):
         Assert(d.get('foo', 'spam')) == 'bar'
 
 
-@datastructures_tests.register
-class OrderedDictTest(TestBase):
+class TestOrderedDict(TestBase):
     @test
     def fromkeys(self):
         d = OrderedDict.fromkeys([1, 2])
@@ -297,8 +292,7 @@ class OrderedDictTest(TestBase):
         Assert(repr(d)) == 'OrderedDict([(1, 2), (3, 4)])'
 
 
-@datastructures_tests.register
-class LazyListTest(TestBase):
+class TestLazyList(TestBase):
     def _genrange(self, *args):
         """xrange() implementation which doesn't have like a sequence."""
         if len(args) == 1:
@@ -587,3 +581,8 @@ class LazyListTest(TestBase):
         repr(l) == '[0, 1, ...]'
         l[-1]
         repr(l) == repr(data)
+
+
+datastructures_tests = Tests([
+    TestMissing, TestMultiDict, TestOrderedDict, TestLazyList
+])
