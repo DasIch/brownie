@@ -18,3 +18,5 @@ Implements :mod:`itertools` functions for earlier versions of Python.
 .. autofunction:: compress
 
 .. autofunction:: count
+
+.. autofunction:: grouped

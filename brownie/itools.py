@@ -166,3 +166,12 @@ def count(start=0, step=1):
     while True:
         yield n
         n += step
+
+
+def grouped(n, iterable, fillvalue=None):
+    """
+    Groups the items in the given `iterable` to tuples of size `n`. In order
+    for groups to always be of the size `n` the `fillvalue` is used for
+    padding.
+    """
+    return izip_longest(fillvalue=fillvalue, *([iter(iterable)] * n))

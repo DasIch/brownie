@@ -11,7 +11,7 @@
 from attest import Tests, Assert
 
 from brownie.itools import izip_longest, product, compress, count, permutations, \
-                           combinations_with_replacement, starmap
+                           combinations_with_replacement, starmap, grouped
 
 
 itools_tests = Tests()
@@ -99,3 +99,14 @@ def test_count():
     for test, result in tests:
         c = count(*test)
         Assert([c.next() for _ in result]) == result
+
+
+@itools_tests.test
+def test_grouped():
+    tests = [
+        ((0, 'abc'), []),
+        ((2, 'abc'), [('a', 'b'), ('c', None)]),
+        ((2, 'abc', 1), [('a', 'b'), ('c', 1)])
+    ]
+    for test, result in tests:
+        Assert(list(grouped(*test))) == result
