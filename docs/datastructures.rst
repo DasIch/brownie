@@ -17,7 +17,7 @@ Mappings
              iterlists, iterlistvalues, poplist, popitemlist
 
 .. autoclass:: OrderedDict
-   :members:
+   :members: popitem
 
 
 Sequences
