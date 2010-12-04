@@ -7,7 +7,7 @@ help:
 	@echo "    clean          - cleans documentation build dir and deletes pyc files"
 
 test:
-	@python -c "import tests; tests.all_tests.run()"
+	@tox
 
 doc:
 	@make -C docs/ html
@@ -18,7 +18,7 @@ view-doc: doc
 DIR ?= env
 dev-env:
 	@virtualenv $(DIR)
-	@. $(DIR)/bin/activate && pip install sphinx attest
+	@. $(DIR)/bin/activate && pip install sphinx attest tox
 
 clean:
 	@make -C docs/ clean
