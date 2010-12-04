@@ -13,7 +13,8 @@ Mappings
 .. autofunction:: iter_multi_items
 
 .. autoclass:: MultiDict
-   :members:
+   :members: add, getlist, setlist, setlistdefault, lists, listvalues,
+             iterlists, iterlistvalues, poplist, popitemlist
 
 .. autoclass:: OrderedDict
    :members:
