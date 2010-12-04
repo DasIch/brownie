@@ -7,6 +7,7 @@ help:
 	@echo "    clean          - cleans documentation build dir and deletes pyc files"
 
 test:
+	@make -C docs/ doctest
 	@tox
 
 doc:
