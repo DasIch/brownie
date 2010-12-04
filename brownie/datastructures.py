@@ -228,7 +228,7 @@ class MultiDict(dict):
         """
         try:
             return dict.pop(self, key)[0]
-        except KeyError as err:
+        except KeyError:
             if default is not missing:
                 return default
             raise
