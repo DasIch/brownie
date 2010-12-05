@@ -3,6 +3,7 @@ help:
 	@echo "    test           - runs the testsuite"
 	@echo "    doc            - builds the html documentation"
 	@echo "    view-doc       - opens the documentation in your web browser"
+	@echo "    upload-doc     - uploads the documentation to PyPI"
 	@echo "    dev-env <DIR=> - creates a development environment"
 	@echo "    clean          - deletes every generated file"
 
@@ -15,6 +16,9 @@ doc:
 
 view-doc: doc
 	@python -c "import webbrowser; webbrowser.open('docs/_build/html/index.html')"
+
+upload-doc: doc
+	@python setup.py upload_docs --upload-dir=docs/_build/html
 
 DIR ?= env
 dev-env:
