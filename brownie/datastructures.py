@@ -320,16 +320,6 @@ class OrderedDict(dict):
             self[key] = default
         return self[key]
 
-    def pop(self, key, default=missing):
-        """
-        Deletes the item with the given `key` and returns the value. If the
-        item does not exist a :exc:`KeyError` is raised unless `default` is
-        given.
-        """
-        if default is missing:
-            return dict.pop(self, key)
-        return dict.pop(self, key, default)
-
     def popitem(self, last=True):
         """
         Pops the last or first item from the dict depending on `last`.
