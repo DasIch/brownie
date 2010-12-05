@@ -72,6 +72,11 @@ class TestLRUCache(TestBase):
         cache[1] = 2
         cache[3] = 4
         cache[5] = 6
-        # Assert(cache.items()) == [(3, 4), (5, 6)]
+        Assert(cache.items()) == [(3, 4), (5, 6)]
+
+    @test
+    def repr(self):
+        cache = LRUCache()
+        Assert(repr(cache)) == 'LRUCache({}, inf)'
 
 caching_tests.register(TestLRUCache)

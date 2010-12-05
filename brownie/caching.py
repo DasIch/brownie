@@ -82,6 +82,6 @@ class LRUCache(OrderedDict):
         OrderedDict.__setitem__(self, key, value)
 
     def __repr__(self):
-        return '%s(%r, %d)' % (
+        return '%s(%s, %f)' % (
             self.__class__.__name__, dict.__repr__(self), self.maxsize
         )
