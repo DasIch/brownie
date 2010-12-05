@@ -10,6 +10,8 @@ setup(
     author='Daniel Neuhäuser',
     author_email='dasdasich@gmail.com',
     description='Common utilities and datastructures or Python applications.',
+    # don't ever depend on refcounting to close files anywhere else
+    long_description=open('README.rst').read().decode('utf-8'),
     packages=['brownie'],
     zip_safe=False,
     platforms='any',
