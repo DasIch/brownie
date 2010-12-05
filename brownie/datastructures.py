@@ -326,9 +326,14 @@ class OrderedDict(dict):
         item does not exist a :exc:`KeyError` is raised unless `default` is
         given.
         """
-        if default is missing:
-            return dict.pop(self, key)
-        return dict.pop(self, key, default)
+        try:
+            value = dict.__getitem__(self, key)
+            del self[key]
+            return value
+        except KeyError:
+            if default is missing:
+                raise
+            return default
 
     def popitem(self, last=True):
         """

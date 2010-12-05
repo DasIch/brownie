@@ -245,6 +245,12 @@ class TestOrderedDict(TestBase):
             d.pop(1)
         Assert(d.pop(1, 2)) == 2
 
+        d = OrderedDict([(1, 2), (3, 4)])
+        d.pop(3)
+        d[5] = 6
+        d[3] = 4
+        Assert(d) == OrderedDict([(1, 2), (5, 6), (3, 4)])
+
     @test
     def popitem(self):
         d = OrderedDict([(1, 2), (3, 4), (5, 6)])
