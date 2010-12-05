@@ -1,7 +1,7 @@
 .. module:: brownie.itools
 
-itools
-======
+Iteration Tools
+===============
 
 Implements :mod:`itertools` functions for earlier versions of Python.
 
