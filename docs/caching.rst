@@ -7,5 +7,11 @@ This module provides various caching mechanisms and utilities.
 
 .. autoclass:: cached_property
 
-.. autoclass:: LRUCache
+.. autoclass:: CacheBase
    :members:
+
+.. autoclass:: LRUCache
+   :members: decorate
+
+.. autoclass:: LFUCache
+   :members: decorate

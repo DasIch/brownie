@@ -8,9 +8,11 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+from heapq import nsmallest
+from operator import itemgetter
 from functools import wraps
 
-from brownie.datastructures import OrderedDict
+from brownie.datastructures import OrderedDict, Counter, missing
 
 
 class cached_property(object):
@@ -33,19 +35,15 @@ class cached_property(object):
         return value
 
 
-class LRUCache(OrderedDict):
+class CacheBase(object):
     """
-    :class:`~brownie.datastructures.OrderedDict` which removes the least
-    recently used item once `maxsize` is reached.
-
-    .. note:: The order of the dict is changed each time you access the dict.
+    Base class for all caches, which is supposed to be used as a mixin.
     """
     @classmethod
     def decorate(cls, maxsize=float('inf')):
         """
         Returns a decorator which can be used to create functions whose
-        results are cached using the :class:`LRUCache` with the given
-        `maxsize`.
+        results are cached.
 
         In order to clear the cache of the decorated function call `.clear()`
         on it.
@@ -67,6 +65,14 @@ class LRUCache(OrderedDict):
             return wrapper
         return decorator
 
+
+class LRUCache(OrderedDict, CacheBase):
+    """
+    :class:`~brownie.datastructures.OrderedDict` which removes the least
+    recently used item once `maxsize` is reached.
+
+    .. note:: The order of the dict is changed each time you access the dict.
+    """
     def __init__(self, mapping=(), maxsize=float('inf')):
         OrderedDict.__init__(self, mapping)
         self.maxsize = maxsize
@@ -80,6 +86,61 @@ class LRUCache(OrderedDict):
         if len(self) >= self.maxsize:
             self.popitem(last=False)
         OrderedDict.__setitem__(self, key, value)
+
+    def __repr__(self):
+        return '%s(%s, %f)' % (
+            self.__class__.__name__, dict.__repr__(self), self.maxsize
+        )
+
+
+class LFUCache(dict, CacheBase):
+    """
+    :class:`dict` which removes the least frequently used item once `maxsize`
+    is reached.
+    """
+    def __init__(self, mapping=(), maxsize=float('inf')):
+        dict.__init__(self, mapping)
+        self.maxsize = maxsize
+        self.usage_counter = Counter()
+
+    def __getitem__(self, key):
+        value = dict.__getitem__(self, key)
+        self.usage_counter[key] += 1
+        return value
+
+    def __setitem__(self, key, value):
+        dict.__setitem__(self, key, value)
+        if len(self) > self.maxsize:
+            for key, _ in nsmallest(
+                    len(self) - self.maxsize,
+                    self.usage_counter.iteritems(),
+                    key=itemgetter(1)):
+                del self[key]
+                self.usage_counter.pop(key, None)
+
+    def __delitem__(self, key):
+        dict.__delitem__(self, key)
+        del self.usage_counter[key]
+
+    def pop(self, key, default=missing):
+        try:
+            value = self[key]
+            del self[key]
+            return value
+        except KeyError:
+            if default is missing:
+                raise
+            return default
+
+    def setdefault(self, key, default=None):
+        if key not in self:
+            self[key] = default
+        return self[key]
+
+    def popitem(self):
+        item = dict.__popitem__(self)
+        del self.usage_counter[item[0]]
+        return item
 
     def __repr__(self):
         return '%s(%s, %f)' % (
