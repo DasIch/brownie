@@ -4,7 +4,7 @@ help:
 	@echo "    doc            - builds the html documentation"
 	@echo "    view-doc       - opens the documentation in your web browser"
 	@echo "    dev-env <DIR=> - creates a development environment"
-	@echo "    clean          - cleans documentation build dir and deletes pyc files"
+	@echo "    clean          - deletes every generated file"
 
 test:
 	@make -C docs/ doctest
@@ -24,4 +24,4 @@ dev-env:
 clean:
 	@make -C docs/ clean
 	@find . -iname "*.pyc" -delete
-	@rm -rf .tox
+	@rm -rf .tox Brownie.egg-info
