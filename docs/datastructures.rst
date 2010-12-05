@@ -19,6 +19,8 @@ Mappings
 .. autoclass:: OrderedDict
    :members: popitem
 
+.. autoclass:: Counter
+   :members:
 
 Sequences
 ---------

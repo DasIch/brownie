@@ -8,10 +8,12 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+from heapq import nlargest
+from operator import itemgetter
 from functools import wraps
-from itertools import count, chain, izip, repeat
+from itertools import count, chain, izip, repeat, ifilter
 
-from brownie.itools import izip_longest
+from brownie.itools import izip_longest, starmap
 
 
 class Missing(object):
@@ -425,6 +427,142 @@ class OrderedDict(dict):
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.items())
+
+
+class Counter(dict):
+    """
+    :class:`dict` subclass for counting hashable objects. Elements are stored
+    as keys with the values being their respective counts.
+
+    :param countable: An iterable of elements to be counted or a
+                      :class:`dict`\-like object mapping elements to their
+                      respective counts.
+
+    This object supports several operations returning a new :class:`Counter`
+    object from the common elements of `c1` and `c2`, in any case the new
+    counter will not contain negative counts.
+
+    +-------------+-----------------------------------------------------+
+    | Operation   | Result contains...                                  |
+    +=============+=====================================================+
+    | ``c1 + c2`` | sums of common element counts.                      |
+    +-------------+-----------------------------------------------------+
+    | ``c1 - c2`` | difference of common element counts.                |
+    +-------------+-----------------------------------------------------+
+    | ``c1 | c2`` | maximum of common element counts.                   |
+    +-------------+-----------------------------------------------------+
+    | ``c1 & c2`` | minimum of common element counts.                   |
+    +-------------+-----------------------------------------------------+
+
+    Futhermore it is possible to multiply the counter with an :class:`int` as
+    scalar.
+
+    Accessing a non-existing element will always result in an element
+    count of 0, accordingly :meth:`get` uses 0 and :meth:`setdefault` uses 1 as
+    default value.
+    """
+    def __init__(self, countable=None, **kwargs):
+        self.update(countable, **kwargs)
+
+    def __missing__(self, key):
+        return 0
+
+    def get(self, key, default=0):
+        return dict.get(self, key, default)
+
+    def setdefault(self, key, default=1):
+        return dict.setdefault(self, key, default)
+
+    def most_common(self, n=None):
+        """
+        Returns a list of all items sorted from the most common to the least.
+
+        :param n: If given only the items of the `n`\-most common elements are
+                  returned.
+
+        >>> from brownie.datastructures import Counter
+        >>> Counter('Hello, World!').most_common(2)
+        [('l', 3), ('o', 2)]
+        """
+        if n is None:
+            return sorted(self.iteritems(), key=itemgetter(1), reverse=True)
+        return nlargest(n, self.iteritems(), key=itemgetter(1))
+
+    def elements(self):
+        """
+        Iterator over the elements in the counter, repeating as many times as
+        counted.
+
+        >>> from brownie.datastructures import Counter
+        >>> sorted(Counter('abcabc').elements())
+        ['a', 'a', 'b', 'b', 'c', 'c']
+        """
+        return chain(*starmap(repeat, self.iteritems()))
+
+    def update(self, countable=None, **kwargs):
+        """
+        Updates the counter from the given `countable` and `kwargs`.
+        """
+        countable = countable or []
+        if hasattr(countable, 'iteritems'):
+            mappings = [countable.iteritems()]
+        else:
+            mappings = [izip(countable, repeat(1))]
+        mappings.append(kwargs.iteritems())
+        for mapping in mappings:
+            for element, count in mapping:
+                self[element] = self.get(element) + count
+
+    def __add__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        result = Counter()
+        for element in set(self) | set(other):
+            newcount = self[element] + other[element]
+            if newcount > 0:
+                result[element] = newcount
+        return result
+
+    def __sub__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        result = Counter()
+        for element in set(self) | set(other):
+            newcount = self[element] - other[element]
+            if newcount > 0:
+                result[element] = newcount
+
+    def __mul__(self, other):
+        if not isinstance(other, int):
+            return NotImplemented
+        result = Counter()
+        for element in self:
+            newcount = self[element] * other
+            if newcount > 0:
+                result[element] = newcount
+        return result
+
+    def __or__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        result = Counter()
+        for element in set(self) | set(other):
+            newcount = max(self[element], other[element])
+            if newcount > 0:
+                result[element] = newcount
+        return result
+
+    def __and__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        result = Counter()
+        if len(self) < len(other):
+            self, other = other, self
+        for element in ifilter(self.__contains__, other):
+            newcount = min(self[element], other[element])
+            if newcount > 0:
+                result[element] = newcount
+        return result
 
 
 class LazyList(object):

@@ -13,7 +13,7 @@ import random
 
 from attest import Tests, TestBase, test, Assert
 
-from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList
+from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, Counter
 
 
 class TestMissing(TestBase):
@@ -294,6 +294,78 @@ class TestOrderedDict(TestBase):
         Assert(repr(d)) == 'OrderedDict([])'
         d = OrderedDict([(1, 2), (3, 4)])
         Assert(repr(d)) == 'OrderedDict([(1, 2), (3, 4)])'
+
+
+class TestCounter(TestBase):
+    @test
+    def missing(self):
+        c = Counter()
+        Assert(c['a']) == 0
+
+    @test
+    def get(self):
+        c = Counter('a')
+        Assert(c.get('a')) == 1
+        Assert(c.get('b')) == 0
+
+    @test
+    def setdefault(self):
+        c = Counter('a')
+        Assert(c.setdefault('a', 2)) == 1
+        Assert(c['a']) == 1
+        Assert(c.setdefault('b')) == 1
+        Assert(c['b']) == 1
+
+    @test
+    def most_common(self):
+        c = Counter('aababc')
+        result = [('a', 3), ('b', 2), ('c', 1)]
+        Assert(c.most_common()) == result
+        Assert(c.most_common(2)) == result[:-1]
+        Assert(c.most_common(1)) == result[:-2]
+        Assert(c.most_common(0)) == []
+
+    @test
+    def elements(self):
+        c = Counter('aababc')
+        for element in c:
+            Assert(list(c.elements()).count(element)) == c[element]
+
+    @test
+    def update(self):
+        c = Counter()
+        c.update('aababc')
+        Assert(c) == Counter('aababc')
+        c.update({'b': 1})
+        Assert(c['b']) == 3
+        c.update(c=2)
+        Assert(c['c']) == 3
+
+    @test
+    def add(self):
+        c = Counter('aababc')
+        new = c + c
+        Assert(new['a']) == 6
+        Assert(new['b']) == 4
+        Assert(new['c']) == 2
+
+    @test
+    def mul(self):
+        c = Counter('abc')
+        Assert(c * 2) == c + c
+
+    @test
+    def sub(self):
+        c = Counter('aababc')
+        assert not c - c
+
+    @test
+    def or_(self):
+        c1 = Counter('abc')
+        new = c1 | c1 * 2
+        Assert(new.values()) == [2] * 3
+        new = c1 & c1 * 2
+        Assert(new.values()) == [1] * 3
 
 
 class TestLazyList(TestBase):
@@ -588,5 +660,5 @@ class TestLazyList(TestBase):
 
 
 datastructures_tests = Tests([
-    TestMissing, TestMultiDict, TestOrderedDict, TestLazyList
+    TestMissing, TestMultiDict, TestOrderedDict, TestCounter, TestLazyList
 ])
