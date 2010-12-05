@@ -404,7 +404,7 @@ class OrderedDict(dict):
         """
         Returns an iterator over the values of all items in insertion order.
         """
-        return (self[k] for k in self)
+        return (dict.__getitem__(self, k) for k in self)
 
     def iteritems(self):
         """
