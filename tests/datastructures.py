@@ -13,7 +13,8 @@ import random
 
 from attest import Tests, TestBase, test, Assert
 
-from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, Counter
+from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
+                                   Counter
 
 
 class TestMissing(TestBase):
