@@ -345,66 +345,65 @@ class TestImmutableMultiDict(TestBase, ImmutableDictTestMixin,
     dict_class = ImmutableMultiDict
 
 
-class TestOrderedDict(TestBase, DictTestMixin):
-    dict_class = OrderedDict
+class OrderedDictTestMixin(object):
+    dict_class = None
 
     @test
     def fromkeys_is_ordered(self):
-        d = OrderedDict.fromkeys([1, 2])
+        d = self.dict_class.fromkeys([1, 2])
         Assert(d.items()) == [(1, None), (2, None)]
 
-        d = OrderedDict.fromkeys([1, 2], 'foo')
+        d = self.dict_class.fromkeys([1, 2], 'foo')
         Assert(d.items()) == [(1, 'foo'), (2, 'foo')]
 
     @test
     def init_keeps_ordering(self):
-        Assert(OrderedDict([(1, 2), (3, 4)]).items()) == [(1, 2), (3, 4)]
+        Assert(self.dict_class([(1, 2), (3, 4)]).items()) == [(1, 2), (3, 4)]
 
     @test
-    def insertion(self):
-        d = OrderedDict()
+    def setitem_order(self):
+        d = self.dict_class()
         d[1] = 2
         d[3] = 4
         Assert(d.items()) == [(1, 2), (3, 4)]
 
     @test
     def setdefault_order(self):
-        d = OrderedDict()
+        d = self.dict_class()
         d.setdefault(1)
         d.setdefault(3, 4)
         Assert(d.items()) == [(1, None), (3, 4)]
 
     @test
     def pop_does_not_keep_ordering(self):
-        d = OrderedDict([(1, 2), (3, 4)])
+        d = self.dict_class([(1, 2), (3, 4)])
         d.pop(3)
         d[5] = 6
         d[3] = 4
-        Assert(d) == OrderedDict([(1, 2), (5, 6), (3, 4)])
+        Assert(d) == self.dict_class([(1, 2), (5, 6), (3, 4)])
 
     @test
     def popitem(self):
-        d = OrderedDict([(1, 2), (3, 4), (5, 6)])
+        d = self.dict_class([(1, 2), (3, 4), (5, 6)])
         Assert(d.popitem()) == (5, 6)
         Assert(d.popitem(last=False)) == (1, 2)
 
-        d = OrderedDict([(1, 2), (3, 4)])
-        items = reversed(d.items())
-        while d:
-            Assert(d.popitem()) == items.next()
-
     @test
     def update_order(self):
-        d = OrderedDict()
+        d = self.dict_class()
         d.update([(1, 2), (3, 4)])
         Assert(d.items()) == [(1, 2), (3, 4)]
 
     @test
     def clear_does_not_keep_ordering(self):
-        d = OrderedDict([(1, 2), (3, 4)])
+        d = self.dict_class([(1, 2), (3, 4)])
         d.clear()
         d.update([(3, 4), (1, 2)])
         Assert(d.items()) == [(3, 4), (1, 2)]
+
+
+class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
+    dict_class = OrderedDict
 
     @test
     def repr(self):
