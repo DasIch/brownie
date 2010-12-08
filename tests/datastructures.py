@@ -205,7 +205,7 @@ class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
 
 
-class MultiDictTextMixin(object):
+class MultiDictTestMixin(object):
     dict_class = None
 
     @test
@@ -300,7 +300,7 @@ class MultiDictTextMixin(object):
             d.popitemlist()
 
 
-class TestMultiDict(TestBase, MultiDictTextMixin, DictTestMixin):
+class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
     dict_class = MultiDict
 
 
