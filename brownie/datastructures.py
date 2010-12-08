@@ -91,21 +91,7 @@ class ImmutableDict(ImmutableDictMixin, dict):
         return '%s(%s)' % (self.__class__.__name__, dict.__repr__(self))
 
 
-class MultiDict(dict):
-    """
-    A :class:`MultiDict` is a dictionary customized to deal with multiple
-    values for the same key.
-
-    Internally the values for each key are stored as a :class:`list`, but the
-    standard :class:`dict` methods will only return the first value of those
-    :class:`list`\s. If you want to gain access to every value associated with
-    a key, you have to use the :class:`list` methods, specific to a
-    :class:`MultiDict`.
-
-    :param mapping:
-        A :class:`MultiDict`, :class:`dict`, a :class:`list` of
-        ``(key, value)`` tuples or ``None``.
-    """
+class MultiDictMixin(object):
     def __init__(self, *args, **kwargs):
         if len(args) > 1:
             raise TypeError(
@@ -133,25 +119,20 @@ class MultiDict(dict):
             else:
                 value = [value]
             kws[key] = value
-        dict.__init__(self, arg, **kws)
-
-    def __iter__(self):
-        return self.iterkeys()
+        super(MultiDictMixin, self).__init__(arg, **kws)
 
     def __getitem__(self, key):
         """
         Returns the first value associated with the given `key`. If no value
         is found a :exc:`KeyError` is raised.
         """
-        if key in self:
-            return dict.__getitem__(self, key)[0]
-        raise KeyError(key)
+        return super(MultiDictMixin, self).__getitem__(key)[0]
 
     def __setitem__(self, key, value):
         """
-        Sets the values associated with the given `key` to the given `value`.
+        Sets the values associated with the given `key` to ``[value]``.
         """
-        dict.__setitem__(self, key, [value])
+        super(MultiDictMixin, self).__setitem__(key, [value])
 
     def get(self, key, default=None):
         """
@@ -167,7 +148,7 @@ class MultiDict(dict):
         """
         Adds the `value` for the given `key`.
         """
-        dict.setdefault(self, key, []).append(value)
+        super(MultiDictMixin, self).setdefault(key, []).append(value)
 
     def getlist(self, key):
         """
@@ -175,15 +156,15 @@ class MultiDict(dict):
         none an empty :class:`list` is returned.
         """
         try:
-            return dict.__getitem__(self, key)
+            return super(MultiDictMixin, self).__getitem__(key)
         except KeyError:
             return []
 
     def setlist(self, key, values):
         """
-        Sets the values associated with a given `key` to the given `values`.
+        Sets the values associated with the given `key` to the given `values`.
         """
-        dict.__setitem__(self, key, list(values))
+        super(MultiDictMixin, self).__setitem__(key, list(values))
 
     def setdefault(self, key, default=None):
         """
@@ -203,10 +184,19 @@ class MultiDict(dict):
         """
         if key not in self:
             default_list = list(default_list or (None, ))
-            dict.__setitem__(self, key, default_list)
+            super(MultiDictMixin, self).__setitem__(key, default_list)
         else:
-            default_list = dict.__getitem__(self, key)
+            default_list = super(MultiDictMixin, self).__getitem__(key)
         return default_list
+
+    def iteritems(self, multi=False):
+        """Like :meth:`items` but returns an iterator."""
+        for key, values in super(MultiDictMixin, self).iteritems():
+            if multi:
+                for value in values:
+                    yield key, value
+            else:
+                yield key, values[0]
 
     def items(self, multi=False):
         """
@@ -218,6 +208,22 @@ class MultiDict(dict):
         """
         return list(self.iteritems(multi))
 
+    def itervalues(self):
+        """Like :meth:`values` but returns an iterator."""
+        for values in super(MultiDictMixin, self).itervalues():
+            yield values[0]
+
+    def values(self):
+        """
+        Returns a :class:`list` with the first value of every key.
+        """
+        return list(self.itervalues())
+
+    def iterlists(self):
+        """Like :meth:`lists` but returns an iterator."""
+        for key, values in super(MultiDictMixin, self).iteritems():
+            yield key, list(values)
+
     def lists(self):
         """
         Returns a :class:`list` of ``(key, values)`` pairs, where `values` is
@@ -225,11 +231,9 @@ class MultiDict(dict):
         """
         return list(self.iterlists())
 
-    def values(self):
-        """
-        Returns a :class:`list` with the first value of every key.
-        """
-        return [self[key] for key in self.iterkeys()]
+    def iterlistvalues(self):
+        """Like :meth:`listvalues` but returns an iterator."""
+        return super(MultiDictMixin, self).itervalues()
 
     def listvalues(self):
         """
@@ -237,30 +241,36 @@ class MultiDict(dict):
         """
         return list(self.iterlistvalues())
 
-    def iteritems(self, multi=False):
-        """Like :meth:`items` but returns an iterator"""
-        for key, values in dict.iteritems(self):
-            if multi:
-                for value in values:
-                    yield key, value
-            else:
-                yield key, values[0]
-
-    def iterlists(self):
+    def pop(self, key, default=missing):
         """
-        Like :meth:`lists` but returns an iterator.
+        Returns the first value associated with the given `key` and removes
+        the item.
         """
-        for key, values in dict.iteritems(self):
-            yield key, list(values)
+        try:
+            return super(MultiDictMixin, self).pop(key)[0]
+        except KeyError:
+            if default is missing:
+                raise
+            return default
 
-    def itervalues(self):
-        """Like :meth:`values` but returns an iterator."""
-        for values in dict.itervalues(self):
-            yield values[0]
+    def popitem(self):
+        """
+        Returns a key and the first associated value. The item is removed.
+        """
+        key, values = super(MultiDictMixin, self).popitem()
+        return key, values[0]
 
-    def iterlistvalues(self):
-        """Like :meth:`listvalues` but returns an iterator."""
-        return dict.itervalues(self)
+    def poplist(self, key):
+        """
+        Returns the :class:`list` of values associated with the given `key`,
+        if the `key` does not exist in the :class:`MultiDict` an empty list is
+        returned.
+        """
+        return super(MultiDictMixin, self).pop(key, [])
+
+    def popitemlist(self):
+        """Like :meth:`popitem` but returns all associated values."""
+        return super(MultiDictMixin, self).popitem()
 
     def update(self, *args, **kwargs):
         """
@@ -275,40 +285,21 @@ class MultiDict(dict):
             for key, value in iter_multi_items(mapping):
                 self.add(key, value)
 
-    def pop(self, key, default=missing):
-        """
-        Returns the first value associated with the given `key` and removes
-        the `key` and the associated values.
-        """
-        try:
-            return dict.pop(self, key)[0]
-        except KeyError:
-            if default is not missing:
-                return default
-            raise
 
-    def popitem(self):
-        """
-        Returns a key and the first associated value. The `key` and the
-        associated values are removed.
-        """
-        key, values = dict.popitem(self)
-        return key, values[0]
+class MultiDict(MultiDictMixin, dict):
+    """
+    A :class:`MultiDict` is a dictionary customized to deal with multiple
+    values for the same key.
 
-    def poplist(self, key):
-        """
-        Returns the :class:`list` of values associated with the given `key`,
-        if the `key` does not exist in the :class:`MultiDict` an empty list is
-        returned.
-        """
-        return dict.pop(self, key, [])
-
-    def popitemlist(self):
-        """Like :meth:`popitem` but returns all associated values."""
-        return dict.popitem(self)
+    Internally the values for each key are stored as a :class:`list`, but the
+    standard :class:`dict` methods will only return the first value of those
+    :class:`list`\s. If you want to gain access to every value associated with
+    a key, you have to use the :class:`list` methods, specific to a
+    :class:`MultiDict`.
+    """
 
 
-class ImmutableMultiDictMixin(ImmutableDictMixin):
+class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
     def add(self, key, value):
         raise_immutable(self)
 
@@ -325,7 +316,7 @@ class ImmutableMultiDictMixin(ImmutableDictMixin):
         raise_immutable(self)
 
 
-class ImmutableMultiDict(ImmutableMultiDictMixin, MultiDict):
+class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     """An immutable :class:`MultiDict`."""
 
 
