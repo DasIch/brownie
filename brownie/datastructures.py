@@ -23,7 +23,9 @@ class Missing(object):
     def __repr__(self):
         return 'missing'
 
-#: Sentinel object which can be used instead of ``None``.
+#: Sentinel object which can be used instead of ``None``. This is useful if
+#: you have optional parameters to which a user can pass ``None`` e.g. in
+#: datastructures.
 missing = Missing()
 
 del Missing
