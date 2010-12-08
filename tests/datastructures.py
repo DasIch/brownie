@@ -205,18 +205,18 @@ class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
 
 
-class TestMultiDict(TestBase, DictTestMixin):
-    dict_class = MultiDict
+class MultiDictTextMixin(object):
+    dict_class = None
 
     @test
     def init_with_lists(self):
-        d = MultiDict({'foo': ['bar'], 'spam': ['eggs']})
+        d = self.dict_class({'foo': ['bar'], 'spam': ['eggs']})
         Assert(d['foo']) == 'bar'
         Assert(d['spam']) == 'eggs'
 
     @test
     def add(self):
-        d = MultiDict()
+        d = self.dict_class()
         d.add('foo', 'bar')
         d.add('foo', 'spam')
         Assert(d['foo']) == 'bar'
@@ -224,23 +224,23 @@ class TestMultiDict(TestBase, DictTestMixin):
 
     @test
     def getlist(self):
-        d = MultiDict()
+        d = self.dict_class()
         Assert(d.getlist('foo')) == []
-        d['foo'] = 'bar'
+        d = self.dict_class({'foo': 'bar'})
         Assert(d.getlist('foo')) == ['bar']
-        d.add('foo', 'spam')
+        d = self.dict_class({'foo': ['bar', 'spam']})
         Assert(d.getlist('foo')) == ['bar', 'spam']
 
     @test
     def test_setlist(self):
-        d = MultiDict()
+        d = self.dict_class()
         d.setlist('foo', ['bar', 'spam'])
         Assert(d['foo']) == 'bar'
         Assert(d.getlist('foo')) == ['bar', 'spam']
 
     @test
     def setlistdefault(self):
-        d = MultiDict()
+        d = self.dict_class()
         Assert(d.setlistdefault('foo')) == [None]
         Assert(d['foo']).is_(None)
         Assert(d.setlistdefault('foo', ['bar'])) == [None]
@@ -250,7 +250,7 @@ class TestMultiDict(TestBase, DictTestMixin):
 
     @test
     def multi_items(self):
-        d = MultiDict()
+        d = self.dict_class()
         d.setlist('foo', ['bar'])
         d.setlist('spam', ['eggs', 'monty'])
         Assert(len(d.items())) == 2
@@ -263,7 +263,7 @@ class TestMultiDict(TestBase, DictTestMixin):
 
     @test
     def lists(self):
-        d = MultiDict()
+        d = self.dict_class()
         d.setlist('foo', ['bar', 'baz'])
         d.setlist('spam', ['eggs', 'monty'])
         Assert(d.lists()) == list(d.iterlists())
@@ -272,7 +272,7 @@ class TestMultiDict(TestBase, DictTestMixin):
 
     @test
     def update(self):
-        d = MultiDict()
+        d = self.dict_class()
         with Assert.raises(TypeError):
             d.update((1, 2), (3, 4))
         d.update({'foo': 'bar'})
@@ -283,21 +283,25 @@ class TestMultiDict(TestBase, DictTestMixin):
 
     @test
     def poplist(self):
-        d = MultiDict({'foo': 'bar', 'spam': ['eggs', 'monty']})
+        d = self.dict_class({'foo': 'bar', 'spam': ['eggs', 'monty']})
         Assert(d.poplist('foo')) == ['bar']
         Assert(d.poplist('spam')) == ['eggs', 'monty']
         Assert(d.poplist('foo')) == []
 
     @test
     def popitemlist(self):
-        d = MultiDict({'foo': 'bar'})
+        d = self.dict_class({'foo': 'bar'})
         Assert(d.popitemlist()) == ('foo', ['bar'])
         with Assert.raises(KeyError):
             d.popitemlist()
-        d = MultiDict({'foo': ['bar', 'baz']})
+        d = self.dict_class({'foo': ['bar', 'baz']})
         Assert(d.popitemlist()) == ('foo', ['bar', 'baz'])
         with Assert.raises(KeyError):
             d.popitemlist()
+
+
+class TestMultiDict(TestBase, MultiDictTextMixin, DictTestMixin):
+    dict_class = MultiDict
 
 
 class TestOrderedDict(TestBase, DictTestMixin):
