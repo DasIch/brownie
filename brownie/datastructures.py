@@ -133,13 +133,6 @@ class MultiDict(dict):
             kws[key] = value
         dict.__init__(self, arg, **kws)
 
-    def __getstate__(self):
-        return dict(self.lists())
-
-    def __setstate__(self, value):
-        dict.clear(self)
-        dict.update(self, value)
-
     def __iter__(self):
         return self.iterkeys()
 
