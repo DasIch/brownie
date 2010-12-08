@@ -22,6 +22,12 @@ Mappings
 .. autoclass:: Counter
    :members:
 
+Immutable Mappings
+------------------
+
+.. autoclass:: ImmutableDict
+   :members:
+
 Sequences
 ---------
 

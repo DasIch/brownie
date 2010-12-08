@@ -14,7 +14,7 @@ import random
 from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
-                                   Counter
+                                   Counter, ImmutableDict
 
 
 class TestMissing(TestBase):
@@ -146,6 +146,63 @@ class DictTestMixin(object):
         d.update([('foo', 'bar'), ('spam', 'eggs')], foo='baz')
         Assert(d['foo']) == 'baz'
         Assert(d['spam']) == 'eggs'
+
+
+class ImmutableDictTestMixin(DictTestMixin):
+    @test
+    def setitem(self):
+        for d in (self.dict_class(), self.dict_class({1: 2})):
+            with Assert.raises(TypeError):
+                d[1] = 2
+
+    @test
+    def delitem(self):
+        for d in (self.dict_class(), self.dict_class({1: 2})):
+            with Assert.raises(TypeError):
+                del d[1]
+
+    @test
+    def setdefault(self):
+        for d in (self.dict_class(), self.dict_class({1: 2})):
+            with Assert.raises(TypeError):
+                d.setdefault(1)
+            with Assert.raises(TypeError):
+                d.setdefault(1, 3)
+
+    @test
+    def pop(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.pop(1)
+        with Assert.raises(TypeError):
+            d.pop(1, 2)
+        d = self.dict_class({1: 2})
+        with Assert.raises(TypeError):
+            d.pop(1)
+
+    @test
+    def popitem(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.popitem()
+
+    @test
+    def update(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.update([])
+        with Assert.raises(TypeError):
+            d.update(foo='bar')
+
+    @test
+    def clear(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.clear()
+
+
+class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
+    dict_class = ImmutableDict
 
 
 class TestMultiDict(TestBase, DictTestMixin):
@@ -676,5 +733,6 @@ class TestLazyList(TestBase):
 
 
 datastructures_tests = Tests([
-    TestMissing, TestMultiDict, TestOrderedDict, TestCounter, TestLazyList
+    TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
+    TestCounter, TestLazyList
 ])

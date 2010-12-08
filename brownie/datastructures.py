@@ -49,6 +49,46 @@ def iter_multi_items(mapping):
             yield item
 
 
+def raise_immutable(obj):
+    raise TypeError('%r objects are immutable' % obj.__class__.__name__)
+
+
+class ImmutableDictMixin(object):
+    @classmethod
+    def fromkeys(cls, keys, value=None):
+        instance = super(cls, cls).__new__(cls)
+        instance.__init__(zip(keys, repeat(value)))
+        return instance
+
+    def __setitem__(self, key, value):
+        raise_immutable(self)
+
+    def __delitem__(self, key):
+        raise_immutable(self)
+
+    def setdefault(self, key, default=None):
+        raise_immutable(self)
+
+    def update(self, *args, **kwargs):
+        raise_immutable(self)
+
+    def pop(self, key, default=None):
+        raise_immutable(self)
+
+    def popitem(self):
+        raise_immutable(self)
+
+    def clear(self):
+        raise_immutable(self)
+
+
+class ImmutableDict(ImmutableDictMixin, dict):
+    """An immutable :class:`dict`."""
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, dict.__repr__(self))
+
+
 class MultiDict(dict):
     """
     A :class:`MultiDict` is a dictionary customized to deal with multiple
