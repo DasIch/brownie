@@ -64,23 +64,34 @@ class MultiDict(dict):
         A :class:`MultiDict`, :class:`dict`, a :class:`list` of
         ``(key, value)`` tuples or ``None``.
     """
-    def __init__(self, mapping=None):
-        if isinstance(mapping, self.__class__):
-            dict.__init__(self, ((k, l[:]) for k, l in mapping.iterlists()))
-        elif isinstance(mapping, dict):
-            tmp = {}
-            for key, value in mapping.iteritems():
-                if isinstance(value, (tuple, list)):
-                    value = list(value)
-                else:
-                    value = [value]
-                tmp[key] = value
-            dict.__init__(self, tmp)
-        else:
-            tmp = {}
-            for key, value in mapping or ():
-                tmp.setdefault(key, []).append(value)
-            dict.__init__(self, tmp)
+    def __init__(self, *args, **kwargs):
+        if len(args) > 1:
+            raise TypeError(
+                'expected at most 1 argument, got %d' % len(args)
+            )
+        arg = {}
+        if args:
+            mapping = args[0]
+            if isinstance(mapping, self.__class__):
+                arg = ((k, l[:]) for k, l in mapping.iterlists())
+            elif hasattr(mapping, 'iteritems'):
+                for key, value in mapping.iteritems():
+                    if isinstance(value, (tuple, list)):
+                        value = list(value)
+                    else:
+                        value = [value]
+                    arg[key] = value
+            else:
+                for key, value in mapping or ():
+                    arg.setdefault(key, []).append(value)
+        kws = {}
+        for key, value in kwargs.iteritems():
+            if isinstance(value, (tuple, list)):
+                value = list(value)
+            else:
+                value = [value]
+            kws[key] = value
+        dict.__init__(self, arg, **kws)
 
     def __getstate__(self):
         return dict(self.lists())
@@ -216,13 +227,18 @@ class MultiDict(dict):
         """Like :meth:`listvalues` but returns an iterator."""
         return dict.itervalues(self)
 
-    def update(self, mapping):
+    def update(self, *args, **kwargs):
         """
-        Extends the :class:`MultiDict` with the data from the given
-        `mapping`.
+        Extends the dict using the given mapping and/or keyword arguments.
         """
-        for key, value in iter_multi_items(mapping):
-            self.add(key, value)
+        if len(args) > 1:
+            raise TypeError(
+                'expected at most 1 argument, got %d' % len(args)
+            )
+        mappings = [args[0] if args else [], kwargs.iteritems()]
+        for mapping in mappings:
+            for key, value in iter_multi_items(mapping):
+                self.add(key, value)
 
     def pop(self, key, default=missing):
         """
@@ -352,7 +368,12 @@ class OrderedDict(dict):
             raise TypeError(
                 'expected at most 1 argument, got %d' % len(args)
             )
-        mappings = [args[0]] if args else []
+        mappings = []
+        if args:
+            if hasattr(args[0], 'iteritems'):
+                mappings.append(args[0].iteritems())
+            else:
+                mappings.append(args[0])
         mappings.append(kwargs.iteritems())
         for mapping in mappings:
             for key, value in mapping:

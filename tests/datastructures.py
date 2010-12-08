@@ -27,30 +27,135 @@ class TestMissing(TestBase):
         Assert(repr(missing)) == 'missing'
 
 
-class TestMultiDict(TestBase):
+class DictTestMixin(object):
+    dict_class = None
+
+    @test
+    def fromkeys(self):
+        d = self.dict_class.fromkeys([1, 2])
+        Assert(d[1]) == None
+        Assert(d[2]) == None
+        d = self.dict_class.fromkeys([1, 2], 'foo')
+        Assert(d[1]) == 'foo'
+        Assert(d[2]) == 'foo'
+
+        Assert(d.__class__).is_(self.dict_class)
+
     @test
     def init(self):
-        Assert(not MultiDict()) == True
-
-        d = MultiDict({'foo': 'bar', 'spam': 'eggs'})
+        data = [(1, 2), (3, 4)]
+        with Assert.raises(TypeError):
+            self.dict_class(*data)
+        for mapping_type in [lambda x: x, self.dict_class]:
+            d = self.dict_class(mapping_type(data))
+            Assert(d[1]) == 2
+            Assert(d[3]) == 4
+        d = self.dict_class(foo='bar', spam='eggs')
         Assert(d['foo']) == 'bar'
         Assert(d['spam']) == 'eggs'
+        d = self.dict_class([('foo', 'bar'), ('spam', 'eggs')], foo='baz')
+        Assert(d['foo']) == 'baz'
+        Assert(d['spam']) == 'eggs'
 
+    @test
+    def copy(self):
+        d = self.dict_class()
+        Assert(d.copy()).is_not(d)
+
+    @test
+    def setitem(self):
+        d = self.dict_class()
+        d[1] = 2
+        Assert(d[1]) == 2
+        d[1] = 3
+        Assert(d[1]) == 3
+
+    @test
+    def delitem(self):
+        d = self.dict_class()
+        d[1] = 2
+        Assert(d[1]) == 2
+        del d[1]
+        with Assert.raises(KeyError):
+            del d[1]
+
+    @test
+    def get(self):
+        d = self.dict_class()
+        Assert(d.get(1)) == None
+        Assert(d.get(1, 2)) == 2
+        d = self.dict_class({1: 2})
+        Assert(d.get(1)) == 2
+        Assert(d.get(1, 3)) == 2
+
+    @test
+    def setdefault(self):
+        d = self.dict_class()
+        Assert(d.setdefault(1)) == None
+        Assert(d[1]) == None
+        Assert(d.setdefault(1, 2)) == None
+        Assert(d.setdefault(3, 4)) == 4
+        Assert(d[3]) == 4
+
+    @test
+    def pop(self):
+        d = self.dict_class()
+        d[1] = 2
+        Assert(d.pop(1)) == 2
+        with Assert.raises(KeyError):
+            d.pop(1)
+        Assert(d.pop(1, 2)) == 2
+
+    @test
+    def popitem(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        items = iter(d.items())
+        while d:
+            Assert(d.popitem()) == items.next()
+
+    @test
+    def clear(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        assert d
+        d.clear()
+        assert not d
+
+    @test
+    def item_accessor_equality(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        Assert(list(d)) == d.keys()
+        Assert(list(d.iterkeys())) == d.keys()
+        Assert(list(d.itervalues())) == d.values()
+        Assert(list(d.iteritems())) == d.items()
+        for key, value, item in zip(d.keys(), d.values(), d.items()):
+            Assert((key, value)) == item
+            Assert(d[key]) == value
+
+    @test
+    def update(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.update((1, 2), (3, 4))
+
+        for mapping in ([(1, 2), (3, 4)], self.dict_class([(1, 2), (3, 4)])):
+            d.update(mapping)
+            Assert(d[1]) == 2
+            Assert(d[3]) == 4
+
+        d = self.dict_class()
+        d.update([('foo', 'bar'), ('spam', 'eggs')], foo='baz')
+        Assert(d['foo']) == 'baz'
+        Assert(d['spam']) == 'eggs'
+
+
+class TestMultiDict(TestBase, DictTestMixin):
+    dict_class = MultiDict
+
+    @test
+    def init_with_lists(self):
         d = MultiDict({'foo': ['bar'], 'spam': ['eggs']})
         Assert(d['foo']) == 'bar'
         Assert(d['spam']) == 'eggs'
-
-        d = MultiDict([('foo', 'bar'), ('spam', 'eggs')])
-        Assert(d['foo']) == 'bar'
-        Assert(d['spam']) == 'eggs'
-
-    @test
-    def get_set_item(self):
-        d = MultiDict()
-        with Assert.raises(KeyError):
-            d['foo']
-        d['foo'] = 'bar'
-        Assert(d['foo']) == 'bar'
 
     @test
     def add(self):
@@ -77,16 +182,6 @@ class TestMultiDict(TestBase):
         Assert(d.getlist('foo')) == ['bar', 'spam']
 
     @test
-    def setdefault(self):
-        d = MultiDict()
-        Assert(d.setdefault('foo')) is None
-        Assert(d['foo']).is_(None)
-        Assert(d.setdefault('foo', 'bar')).is_(None)
-        Assert(d['foo']).is_(None)
-        Assert(d.setdefault('spam', 'eggs')) == 'eggs'
-        Assert(d['spam']) == 'eggs'
-
-    @test
     def setlistdefault(self):
         d = MultiDict()
         Assert(d.setlistdefault('foo')) == [None]
@@ -95,25 +190,6 @@ class TestMultiDict(TestBase):
         Assert(d['foo']).is_(None)
         Assert(d.setlistdefault('spam', ['eggs'])) == ['eggs']
         Assert(d['spam']) == 'eggs'
-
-    @test
-    def keys_values_items(self):
-        d = MultiDict()
-        Assert(d.keys()) == []
-        Assert(d.values()) == []
-        Assert(d.items()) == []
-
-        d['foo'] = 'bar'
-        d['spam'] = 'eggs'
-
-        iterators = (
-            zip(d.keys(), d.values(), d.items()),
-            zip(d.iterkeys(), d.itervalues(), d.iteritems())
-        )
-        for key, value, item in iterators[0]:
-            Assert(d[key]) == value
-            Assert((key, value)) == item
-        Assert(iterators[0]) == iterators[1]
 
     @test
     def multi_items(self):
@@ -138,42 +214,15 @@ class TestMultiDict(TestBase):
         ('spam', ['eggs', 'monty']) in Assert(d.lists())
 
     @test
-    def copy(self):
-        d = MultiDict({'foo': 'bar'})
-        Assert(d).is_not(d.copy())
-        Assert(d) == d.copy()
-
-    @test
     def update(self):
         d = MultiDict()
+        with Assert.raises(TypeError):
+            d.update((1, 2), (3, 4))
         d.update({'foo': 'bar'})
         Assert(d['foo']) == 'bar'
-        Assert(d.getlist('foo')) == ['bar']
         d.update([('foo', 'spam')])
         Assert(d['foo']) == 'bar'
         Assert(d.getlist('foo')) == ['bar', 'spam']
-        d.update(MultiDict([('foo', 'eggs')]))
-        Assert(d['foo']) == 'bar'
-        Assert(d.getlist('foo')) == ['bar', 'spam', 'eggs']
-
-    @test
-    def pop(self):
-        d = MultiDict({'foo': 'bar'})
-        Assert(d.pop('foo')) == 'bar'
-        with Assert.raises(KeyError):
-            d.pop('foo')
-        Assert(d.pop('foo', 'bar')) == 'bar'
-
-    @test
-    def popitem(self):
-        d = MultiDict({'foo': 'bar'})
-        Assert(d.popitem()) == ('foo', 'bar')
-        with Assert.raises(KeyError):
-            d.popitem()
-        d = MultiDict({'foo': ['bar', 'baz']})
-        Assert(d.popitem()) == ('foo', 'bar')
-        with Assert.raises(KeyError):
-            d.popitem()
 
     @test
     def poplist(self):
@@ -193,32 +242,20 @@ class TestMultiDict(TestBase):
         with Assert.raises(KeyError):
             d.popitemlist()
 
-    @test
-    def get(self):
-        d = MultiDict()
-        Assert(d.get('foo')).is_(None)
-        Assert(d.get('foo', 'bar')) == 'bar'
-        d = MultiDict({'foo': 'bar'})
-        Assert(d.get('foo')) == 'bar'
-        Assert(d.get('foo', 'spam')) == 'bar'
-        d = MultiDict({'foo': ['bar', 'baz']})
-        Assert(d.get('foo')) == 'bar'
-        Assert(d.get('foo', 'spam')) == 'bar'
 
+class TestOrderedDict(TestBase, DictTestMixin):
+    dict_class = OrderedDict
 
-class TestOrderedDict(TestBase):
     @test
-    def fromkeys(self):
+    def fromkeys_is_ordered(self):
         d = OrderedDict.fromkeys([1, 2])
-        Assert(d.__class__).is_(OrderedDict)
         Assert(d.items()) == [(1, None), (2, None)]
+
         d = OrderedDict.fromkeys([1, 2], 'foo')
         Assert(d.items()) == [(1, 'foo'), (2, 'foo')]
 
     @test
-    def init(self):
-        with Assert.raises(TypeError):
-            OrderedDict(('foo', 'bar'), ('spam', 'eggs'))
+    def init_keeps_ordering(self):
         Assert(OrderedDict([(1, 2), (3, 4)]).items()) == [(1, 2), (3, 4)]
 
     @test
@@ -229,23 +266,14 @@ class TestOrderedDict(TestBase):
         Assert(d.items()) == [(1, 2), (3, 4)]
 
     @test
-    def setdefault(self):
+    def setdefault_order(self):
         d = OrderedDict()
         d.setdefault(1)
-        Assert(d[1]) == None
         d.setdefault(3, 4)
-        Assert(d[3]) == 4
         Assert(d.items()) == [(1, None), (3, 4)]
 
     @test
-    def pop(self):
-        d = OrderedDict()
-        d[1] = 2
-        Assert(d.pop(1)) == 2
-        with Assert.raises(KeyError):
-            d.pop(1)
-        Assert(d.pop(1, 2)) == 2
-
+    def pop_does_not_keep_ordering(self):
         d = OrderedDict([(1, 2), (3, 4)])
         d.pop(3)
         d[5] = 6
@@ -258,42 +286,23 @@ class TestOrderedDict(TestBase):
         Assert(d.popitem()) == (5, 6)
         Assert(d.popitem(last=False)) == (1, 2)
 
+        d = OrderedDict([(1, 2), (3, 4)])
+        items = reversed(d.items())
+        while d:
+            Assert(d.popitem()) == items.next()
+
     @test
-    def update(self):
+    def update_order(self):
         d = OrderedDict()
         d.update([(1, 2), (3, 4)])
         Assert(d.items()) == [(1, 2), (3, 4)]
-        d.update(foo='bar')
-        Assert(d['foo']) == 'bar'
-        Assert(d.items()) == [(1, 2), (3, 4), ('foo', 'bar')]
-
-        d = OrderedDict()
-        d.update([('foo', 'bar'), ('spam', 'eggs')], foo='baz')
-        Assert(d.items()) == [('foo', 'baz'), ('spam', 'eggs')]
-
-        with Assert.raises(TypeError):
-            d.update(('foo', 'bar'), ('spam', 'eggs'))
 
     @test
-    def clear(self):
+    def clear_does_not_keep_ordering(self):
         d = OrderedDict([(1, 2), (3, 4)])
-        assert d
         d.clear()
-        assert not d
         d.update([(3, 4), (1, 2)])
         Assert(d.items()) == [(3, 4), (1, 2)]
-
-    @test
-    def item_accessor_equality(self):
-        d = OrderedDict([(1, 2), (3, 4)])
-        Assert(list(d)) == d.keys()
-        Assert(list(reversed(d))) == list(reversed(d.keys()))
-        Assert(list(d.iterkeys())) == d.keys()
-        Assert(list(d.itervalues())) == d.values()
-        Assert(list(d.iteritems())) == d.items()
-        for key, value, item in zip(d.keys(), d.values(), d.items()):
-            Assert((key, value)) == item
-            Assert(d[key]) == value
 
     @test
     def repr(self):
