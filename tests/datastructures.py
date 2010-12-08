@@ -14,7 +14,7 @@ import random
 from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
-                                   Counter, ImmutableDict
+                                   Counter, ImmutableDict, ImmutableMultiDict
 
 
 class TestMissing(TestBase):
@@ -232,7 +232,7 @@ class MultiDictTestMixin(object):
         Assert(d.getlist('foo')) == ['bar', 'spam']
 
     @test
-    def test_setlist(self):
+    def setlist(self):
         d = self.dict_class()
         d.setlist('foo', ['bar', 'spam'])
         Assert(d['foo']) == 'bar'
@@ -250,9 +250,10 @@ class MultiDictTestMixin(object):
 
     @test
     def multi_items(self):
-        d = self.dict_class()
-        d.setlist('foo', ['bar'])
-        d.setlist('spam', ['eggs', 'monty'])
+        d = self.dict_class({
+            'foo': ['bar'],
+            'spam': ['eggs', 'monty']
+        })
         Assert(len(d.items())) == 2
         Assert(len(d.items(multi=True))) == 3
         Assert(d.items(multi=True)) == list(d.iteritems(multi=True))
@@ -263,9 +264,10 @@ class MultiDictTestMixin(object):
 
     @test
     def lists(self):
-        d = self.dict_class()
-        d.setlist('foo', ['bar', 'baz'])
-        d.setlist('spam', ['eggs', 'monty'])
+        d = self.dict_class({
+            'foo': ['bar', 'baz'],
+            'spam': ['eggs', 'monty']
+        })
         Assert(d.lists()) == list(d.iterlists())
         ('foo', ['bar', 'baz']) in Assert(d.lists())
         ('spam', ['eggs', 'monty']) in Assert(d.lists())
@@ -302,6 +304,45 @@ class MultiDictTestMixin(object):
 
 class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
     dict_class = MultiDict
+
+
+class ImmutableMultiDictTestMixin(MultiDictTestMixin):
+    @test
+    def add(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.add(1, 2)
+
+    @test
+    def setlist(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.setlist(1, [2, 3])
+
+    @test
+    def setlistdefault(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.setlistdefault(1)
+        with Assert.raises(TypeError):
+            d.setlistdefault(1, [2, 3])
+
+    @test
+    def poplist(self):
+        for d in (self.dict_class(), self.dict_class({1: [2, 3]})):
+            with Assert.raises(TypeError):
+                d.poplist(1)
+
+    @test
+    def popitemlist(self):
+        for d in (self.dict_class(), self.dict_class({1: [2, 3]})):
+            with Assert.raises(TypeError):
+                d.popitemlist()
+
+
+class TestImmutableMultiDict(TestBase, ImmutableDictTestMixin,
+                             ImmutableMultiDictTestMixin):
+    dict_class = ImmutableMultiDict
 
 
 class TestOrderedDict(TestBase, DictTestMixin):
@@ -738,5 +779,5 @@ class TestLazyList(TestBase):
 
 datastructures_tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
-    TestCounter, TestLazyList
+    TestCounter, TestLazyList, TestImmutableMultiDict
 ])

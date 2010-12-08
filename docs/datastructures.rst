@@ -28,6 +28,9 @@ Immutable Mappings
 .. autoclass:: ImmutableDict
    :members:
 
+.. autoclass:: ImmutableMultiDict
+   :members:
+
 Sequences
 ---------
 

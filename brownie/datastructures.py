@@ -313,6 +313,27 @@ class MultiDict(dict):
         return dict.popitem(self)
 
 
+class ImmutableMultiDictMixin(ImmutableDictMixin):
+    def add(self, key, value):
+        raise_immutable(self)
+
+    def setlist(self, key, values):
+        raise_immutable(self)
+
+    def setlistdefault(self, key, default_list=None):
+        raise_immutable(self)
+
+    def poplist(self, key):
+        raise_immutable(self)
+
+    def popitemlist(self):
+        raise_immutable(self)
+
+
+class ImmutableMultiDict(ImmutableMultiDictMixin, MultiDict):
+    """An immutable :class:`MultiDict`."""
+
+
 class _Link(object):
     def __init__(self, key=None, prev=None, next=None):
         self.key = key
