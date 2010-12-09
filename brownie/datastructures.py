@@ -51,8 +51,9 @@ def iter_multi_items(mapping):
             yield item
 
 
-def raise_immutable(obj):
-    raise TypeError('%r objects are immutable' % obj.__class__.__name__)
+@classmethod
+def raise_immutable(cls, *args, **kwargs):
+    raise TypeError('%r objects are immutable' % cls.__name__)
 
 
 class ImmutableDictMixin(object):
@@ -61,27 +62,9 @@ class ImmutableDictMixin(object):
         instance = super(cls, cls).__new__(cls)
         instance.__init__(zip(keys, repeat(value)))
         return instance
-
-    def __setitem__(self, key, value):
-        raise_immutable(self)
-
-    def __delitem__(self, key):
-        raise_immutable(self)
-
-    def setdefault(self, key, default=None):
-        raise_immutable(self)
-
-    def update(self, *args, **kwargs):
-        raise_immutable(self)
-
-    def pop(self, key, default=None):
-        raise_immutable(self)
-
-    def popitem(self):
-        raise_immutable(self)
-
-    def clear(self):
-        raise_immutable(self)
+    
+    __setitem__ = __delitem__ = setdefault = update = pop = popitem = clear = \
+        raise_immutable
 
 
 class ImmutableDict(ImmutableDictMixin, dict):
