@@ -356,17 +356,18 @@ class ImmutableMultiDictTestMixin(MultiDictTestMixin):
             with Assert.raises(TypeError):
                 d.popitemlist()
 
-
-class TestImmutableMultiDict(TestBase, ImmutableDictTestMixin,
-                             ImmutableMultiDictTestMixin):
-    dict_class = ImmutableMultiDict
-
     @test
-    def repr(self):
-        d = ImmutableMultiDict()
-        Assert(repr(d)) == 'ImmutableMultiDict()'
-        d = ImmutableMultiDict({1: [2, 3]})
-        Assert(repr(d)) == 'ImmutableMultiDict({1: [2, 3]})'
+    def update(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.update({1: 2})
+        with Assert.raises(TypeError):
+            d.update(foo='bar')
+
+
+class TestImmutableMultiDict(TestBase, ImmutableMultiDictTestMixin,
+                             ImmutableDictTestMixin):
+    dict_class = ImmutableMultiDict
 
 
 class OrderedDictTestMixin(object):
