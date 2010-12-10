@@ -71,7 +71,8 @@ class ImmutableDict(ImmutableDictMixin, dict):
     """An immutable :class:`dict`."""
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, dict.__repr__(self))
+        content = dict.__repr__(self) if self else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class MultiDictMixin(object):

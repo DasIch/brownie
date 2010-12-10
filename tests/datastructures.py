@@ -205,6 +205,13 @@ class ImmutableDictTestMixin(DictTestMixin):
 class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
 
+    @test
+    def repr(self):
+        d = ImmutableDict()
+        Assert(repr(d)) == 'ImmutableDict()'
+        d = ImmutableDict({1: 2})
+        Assert(repr(d)) == 'ImmutableDict({1: 2})'
+
 
 class MultiDictTestMixin(object):
     dict_class = None
