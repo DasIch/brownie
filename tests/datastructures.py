@@ -313,6 +313,13 @@ class MultiDictTestMixin(object):
 class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
     dict_class = MultiDict
 
+    @test
+    def repr(self):
+        d = MultiDict()
+        Assert(repr(d)) == 'MultiDict()'
+        d = MultiDict({1: [2, 3]})
+        Assert(repr(d)) == 'MultiDict({1: [2, 3]})'
+
 
 class ImmutableMultiDictTestMixin(MultiDictTestMixin):
     @test

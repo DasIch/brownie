@@ -281,6 +281,9 @@ class MultiDict(MultiDictMixin, dict):
     a key, you have to use the :class:`list` methods, specific to a
     :class:`MultiDict`.
     """
+    def __repr__(self):
+        content = dict.__repr__(self) if self else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
