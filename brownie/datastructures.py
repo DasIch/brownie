@@ -62,7 +62,7 @@ class ImmutableDictMixin(object):
         instance = super(cls, cls).__new__(cls)
         instance.__init__(zip(keys, repeat(value)))
         return instance
-    
+
     __setitem__ = __delitem__ = setdefault = update = pop = popitem = clear = \
         raise_immutable
 
