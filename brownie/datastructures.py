@@ -489,7 +489,8 @@ class OrderedDict(dict):
         return zip(self.keys(), self.values())
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.items())
+        content = repr(self.items()) if self else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class Counter(dict):

@@ -423,16 +423,17 @@ class OrderedDictTestMixin(object):
         d.update([(3, 4), (1, 2)])
         Assert(d.items()) == [(3, 4), (1, 2)]
 
+    @test
+    def repr(self):
+        d = self.dict_class()
+        Assert(repr(d)) == '%s()' % d.__class__.__name__
+        original = [(1, 2), (3, 4)]
+        d = self.dict_class(original)
+        Assert(repr(d)) == '%s(%s)' % (d.__class__.__name__, repr(original))
+
 
 class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
     dict_class = OrderedDict
-
-    @test
-    def repr(self):
-        d = OrderedDict()
-        Assert(repr(d)) == 'OrderedDict([])'
-        d = OrderedDict([(1, 2), (3, 4)])
-        Assert(repr(d)) == 'OrderedDict([(1, 2), (3, 4)])'
 
 
 class TestCounter(TestBase):
