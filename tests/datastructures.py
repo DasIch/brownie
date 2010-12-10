@@ -148,6 +148,14 @@ class DictTestMixin(object):
         Assert(d['foo']) == 'baz'
         Assert(d['spam']) == 'eggs'
 
+    @test
+    def repr(self):
+        d = self.dict_class()
+        Assert(repr(d)) == '%s()' % d.__class__.__name__
+        original = {1: 2}
+        d = self.dict_class(original)
+        Assert(repr(d)) == '%s(%s)' % (d.__class__.__name__, repr(original))
+
 
 class ImmutableDictTestMixin(DictTestMixin):
     @test
@@ -204,13 +212,6 @@ class ImmutableDictTestMixin(DictTestMixin):
 
 class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
-
-    @test
-    def repr(self):
-        d = ImmutableDict()
-        Assert(repr(d)) == 'ImmutableDict()'
-        d = ImmutableDict({1: 2})
-        Assert(repr(d)) == 'ImmutableDict({1: 2})'
 
 
 class MultiDictTestMixin(object):
@@ -309,16 +310,17 @@ class MultiDictTestMixin(object):
         with Assert.raises(KeyError):
             d.popitemlist()
 
+    @test
+    def repr(self):
+        d = self.dict_class()
+        Assert(repr(d)) == '%s()' % d.__class__.__name__
+        original = {1: [2, 3]}
+        d = self.dict_class(original)
+        Assert(repr(d)) == '%s(%s)' % (d.__class__.__name__, repr(original))
+
 
 class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
     dict_class = MultiDict
-
-    @test
-    def repr(self):
-        d = MultiDict()
-        Assert(repr(d)) == 'MultiDict()'
-        d = MultiDict({1: [2, 3]})
-        Assert(repr(d)) == 'MultiDict({1: [2, 3]})'
 
 
 class ImmutableMultiDictTestMixin(MultiDictTestMixin):
