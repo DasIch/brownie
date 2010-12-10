@@ -305,6 +305,9 @@ class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
 
 class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     """An immutable :class:`MultiDict`."""
+    def __repr__(self):
+        content = dict.__repr__(self) if self else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class _Link(object):

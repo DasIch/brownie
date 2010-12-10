@@ -359,6 +359,13 @@ class TestImmutableMultiDict(TestBase, ImmutableDictTestMixin,
                              ImmutableMultiDictTestMixin):
     dict_class = ImmutableMultiDict
 
+    @test
+    def repr(self):
+        d = ImmutableMultiDict()
+        Assert(repr(d)) == 'ImmutableMultiDict()'
+        d = ImmutableMultiDict({1: [2, 3]})
+        Assert(repr(d)) == 'ImmutableMultiDict({1: [2, 3]})'
+
 
 class OrderedDictTestMixin(object):
     dict_class = None
