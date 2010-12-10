@@ -20,7 +20,8 @@ from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
 class TestMissing(TestBase):
     @test
     def has_false_boolean_value(self):
-        Assert(not missing) == True
+        if missing:
+            raise AssertionError()
 
     @test
     def repr(self):
