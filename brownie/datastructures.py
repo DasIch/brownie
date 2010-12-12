@@ -499,6 +499,10 @@ class OrderedMultiDict(MultiDictMixin, OrderedDict):
     """An ordered :class:`MultiDict`."""
 
 
+class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, OrderedDict):
+    """An immutable :class:`OrderedMultiDict`."""
+
+
 class Counter(dict):
     """
     :class:`dict` subclass for counting hashable objects. Elements are stored

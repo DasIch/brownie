@@ -15,7 +15,7 @@ from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
                                    Counter, ImmutableDict, ImmutableMultiDict, \
-                                   OrderedMultiDict
+                                   OrderedMultiDict, ImmutableOrderedMultiDict
 
 
 class TestMissing(TestBase):
@@ -454,6 +454,17 @@ class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
     dict_class = OrderedMultiDict
 
 
+class ImmutableOrderedDictTextMixin(OrderedDictTestMixin):
+    update_order = setitem_order = setdefault_order = popitem = \
+        pop_does_not_keep_ordering = clear_does_not_keep_ordering = None
+
+
+class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
+                                    ImmutableMultiDictTestMixin,
+                                    ImmutableDictTestMixin):
+    dict_class = ImmutableOrderedMultiDict
+
+
 class TestCounter(TestBase):
     @test
     def missing(self):
@@ -819,5 +830,6 @@ class TestLazyList(TestBase):
 
 datastructures_tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
-    TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict
+    TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
+    TestImmutableOrderedMultiDict
 ])
