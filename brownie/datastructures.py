@@ -13,7 +13,7 @@ from operator import itemgetter
 from functools import wraps
 from itertools import count, chain, izip, repeat, ifilter
 
-from brownie.itools import izip_longest, starmap
+from brownie.itools import izip_longest, starmap, unique
 
 
 class Missing(object):
@@ -79,7 +79,7 @@ class MultiDictMixin(object):
             raise TypeError(
                 'expected at most 1 argument, got %d' % len(args)
             )
-        arg = {}
+        arg = []
         if args:
             mapping = args[0]
             if isinstance(mapping, self.__class__):
@@ -90,10 +90,14 @@ class MultiDictMixin(object):
                         value = list(value)
                     else:
                         value = [value]
-                    arg[key] = value
+                    arg.append((key, value))
             else:
+                keys = []
+                tmp = {}
                 for key, value in mapping or ():
-                    arg.setdefault(key, []).append(value)
+                    tmp.setdefault(key, []).append(value)
+                    keys.append(key)
+                arg = ((key, tmp[key]) for key in unique(keys))
         kws = {}
         for key, value in kwargs.iteritems():
             if isinstance(value, (tuple, list)):
@@ -154,9 +158,9 @@ class MultiDictMixin(object):
         `default` and sets that value for the `key`.
         """
         if key not in self:
-            self[key] = default
+            MultiDictMixin.__setitem__(self, key, default)
         else:
-            default = self[key]
+            default = MultiDictMixin.__getitem__(self, key)
         return default
 
     def setlistdefault(self, key, default_list=None):
@@ -166,9 +170,9 @@ class MultiDictMixin(object):
         """
         if key not in self:
             default_list = list(default_list or (None, ))
-            super(MultiDictMixin, self).__setitem__(key, default_list)
+            MultiDictMixin.setlist(self, key, default_list)
         else:
-            default_list = super(MultiDictMixin, self).__getitem__(key)
+            default_list = MultiDictMixin.getlist(self, key)
         return default_list
 
     def iteritems(self, multi=False):
@@ -228,18 +232,18 @@ class MultiDictMixin(object):
         Returns the first value associated with the given `key` and removes
         the item.
         """
-        try:
-            return super(MultiDictMixin, self).pop(key)[0]
-        except KeyError:
-            if default is missing:
-                raise
+        value = super(MultiDictMixin, self).pop(key, default)
+        if value is missing:
+            raise KeyError(key)
+        elif value is default:
             return default
+        return value[0]
 
-    def popitem(self):
+    def popitem(self, *args, **kwargs):
         """
         Returns a key and the first associated value. The item is removed.
         """
-        key, values = super(MultiDictMixin, self).popitem()
+        key, values = super(MultiDictMixin, self).popitem(*args, **kwargs)
         return key, values[0]
 
     def poplist(self, key):
@@ -265,7 +269,7 @@ class MultiDictMixin(object):
         mappings = [args[0] if args else [], kwargs.iteritems()]
         for mapping in mappings:
             for key, value in iter_multi_items(mapping):
-                self.add(key, value)
+                MultiDictMixin.add(self, key, value)
 
 
 class MultiDict(MultiDictMixin, dict):
@@ -341,7 +345,7 @@ class OrderedDict(dict):
         self._root = _Link()
         self._root.prev = self._root.next = self._root
         self._map = {}
-        self.update(*args, **kwargs)
+        OrderedDict.update(self, *args, **kwargs)
 
     def __setitem__(self, key, value):
         """
@@ -368,8 +372,8 @@ class OrderedDict(dict):
         sets creates an item with the `default` value.
         """
         if key not in self:
-            self[key] = default
-        return self[key]
+            OrderedDict.__setitem__(self, key, default)
+        return OrderedDict.__getitem__(self, key)
 
     def pop(self, key, default=missing):
         """
@@ -393,7 +397,7 @@ class OrderedDict(dict):
         if not self:
             raise KeyError('dict is empty')
         key = (reversed(self) if last else iter(self)).next()
-        return key, self.pop(key)
+        return key, OrderedDict.pop(self, key)
 
     def update(self, *args, **kwargs):
         """
@@ -412,7 +416,7 @@ class OrderedDict(dict):
         mappings.append(kwargs.iteritems())
         for mapping in mappings:
             for key, value in mapping:
-                self[key] = value
+                OrderedDict.__setitem__(self, key, value)
 
     def clear(self):
         """
@@ -454,41 +458,45 @@ class OrderedDict(dict):
         """
         Returns an iterator over the keys of all items in insertion order.
         """
-        return iter(self)
+        return OrderedDict.__iter__(self)
 
     def itervalues(self):
         """
         Returns an iterator over the values of all items in insertion order.
         """
-        return (dict.__getitem__(self, k) for k in self)
+        return (dict.__getitem__(self, k) for k in OrderedDict.__iter__(self))
 
     def iteritems(self):
         """
         Returns an iterator over all the items in insertion order.
         """
-        return izip(self.iterkeys(), self.itervalues())
+        return izip(OrderedDict.iterkeys(self), OrderedDict.itervalues(self))
 
     def keys(self):
         """
         Returns a :class:`list` over the keys of all items in insertion order.
         """
-        return list(self.iterkeys())
+        return list(OrderedDict.iterkeys(self))
 
     def values(self):
         """
         Returns a :class:`list` over the values of all items in insertion order.
         """
-        return list(self.itervalues())
+        return list(OrderedDict.itervalues(self))
 
     def items(self):
         """
         Returns a :class:`list` over the items in insertion order.
         """
-        return zip(self.keys(), self.values())
+        return zip(OrderedDict.keys(self), OrderedDict.values(self))
 
     def __repr__(self):
         content = repr(self.items()) if self else ''
         return '%s(%s)' % (self.__class__.__name__, content)
+
+
+class OrderedMultiDict(MultiDictMixin, OrderedDict):
+    """An ordered :class:`MultiDict`."""
 
 
 class Counter(dict):

@@ -22,6 +22,9 @@ Mappings
 .. autoclass:: Counter
    :members:
 
+.. autoclass:: OrderedMultiDict
+   :members:
+
 Immutable Mappings
 ------------------
 

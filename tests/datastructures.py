@@ -14,7 +14,8 @@ import random
 from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
-                                   Counter, ImmutableDict, ImmutableMultiDict
+                                   Counter, ImmutableDict, ImmutableMultiDict, \
+                                   OrderedMultiDict
 
 
 class TestMissing(TestBase):
@@ -412,7 +413,8 @@ class OrderedDictTestMixin(object):
         d.pop(3)
         d[5] = 6
         d[3] = 4
-        Assert(d) == self.dict_class([(1, 2), (5, 6), (3, 4)])
+        modified = self.dict_class([(1, 2), (5, 6), (3, 4)])
+        Assert(d) == modified
 
     @test
     def popitem(self):
@@ -424,7 +426,8 @@ class OrderedDictTestMixin(object):
     def update_order(self):
         d = self.dict_class()
         d.update([(1, 2), (3, 4)])
-        Assert(d.items()) == [(1, 2), (3, 4)]
+        items = Assert(d.items())
+        items == [(1, 2), (3, 4)]
 
     @test
     def clear_does_not_keep_ordering(self):
@@ -444,6 +447,11 @@ class OrderedDictTestMixin(object):
 
 class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
     dict_class = OrderedDict
+
+
+class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
+                           DictTestMixin):
+    dict_class = OrderedMultiDict
 
 
 class TestCounter(TestBase):
@@ -811,5 +819,5 @@ class TestLazyList(TestBase):
 
 datastructures_tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
-    TestCounter, TestLazyList, TestImmutableMultiDict
+    TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict
 ])
