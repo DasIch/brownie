@@ -156,6 +156,13 @@ class DictTestMixin(object):
         d = self.dict_class(original)
         Assert(repr(d)) == '%s(%s)' % (d.__class__.__name__, repr(original))
 
+    @test
+    def test_custom_new(self):
+        class D(self.dict_class):
+            def __new__(cls, *args, **kwargs):
+                return 42
+        Assert(D.fromkeys([])) == 42
+
 
 class ImmutableDictTestMixin(DictTestMixin):
     @test

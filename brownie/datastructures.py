@@ -59,9 +59,7 @@ def raise_immutable(cls, *args, **kwargs):
 class ImmutableDictMixin(object):
     @classmethod
     def fromkeys(cls, keys, value=None):
-        instance = super(cls, cls).__new__(cls)
-        instance.__init__(zip(keys, repeat(value)))
-        return instance
+        return cls(zip(keys, repeat(value)))
 
     __setitem__ = __delitem__ = setdefault = update = pop = popitem = clear = \
         raise_immutable
