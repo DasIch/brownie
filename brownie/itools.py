@@ -175,3 +175,15 @@ def grouped(n, iterable, fillvalue=None):
     padding.
     """
     return izip_longest(fillvalue=fillvalue, *([iter(iterable)] * n))
+
+
+def unique(iterable):
+    """
+    Yields items from the given `iterable` of hashable items, once seen an
+    item is not yielded again.
+    """
+    seen = set()
+    for item in iterable:
+        if item not in seen:
+            seen.add(item)
+            yield item

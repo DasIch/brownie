@@ -20,3 +20,5 @@ Implements :mod:`itertools` functions for earlier versions of Python.
 .. autofunction:: count
 
 .. autofunction:: grouped
+
+.. autofunction:: unique

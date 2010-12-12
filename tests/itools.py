@@ -11,7 +11,8 @@
 from attest import Tests, Assert
 
 from brownie.itools import izip_longest, product, compress, count, permutations, \
-                           combinations_with_replacement, starmap, grouped
+                           combinations_with_replacement, starmap, grouped, \
+                           unique
 
 
 itools_tests = Tests()
@@ -110,3 +111,13 @@ def test_grouped():
     ]
     for test, result in tests:
         Assert(list(grouped(*test))) == result
+
+
+@itools_tests.test
+def test_unique():
+    tests = [
+        ('aabbcc', 'abc'),
+        ('aa', 'a')
+    ]
+    for test, result in tests:
+        Assert(list(unique(test))) == list(result)
