@@ -529,7 +529,7 @@ class TestCounter(TestBase):
         assert not c - c
 
     @test
-    def or_(self):
+    def or_and(self):
         c1 = Counter('abc')
         new = c1 | c1 * 2
         Assert(new.values()) == [2] * 3
