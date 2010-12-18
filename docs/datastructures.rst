@@ -41,5 +41,4 @@ Sequences
 ---------
 
 .. autoclass:: LazyList
-   :members: factory, exhausted, known_length, count, insert, pop, remove,
-             reverse, sort
+   :members: factory, count, insert, pop, remove, reverse, sort
