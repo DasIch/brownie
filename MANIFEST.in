@@ -1,3 +1,3 @@
 include Makefile LICENSE.rst README.rst
 recursive-include docs *
-prunce docs/_build
+prune docs/_build
