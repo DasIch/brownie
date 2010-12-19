@@ -21,6 +21,12 @@ except ImportError:
             except ValueError, KeyError:
                 # value could be anything or not existing
                 pass
+        if sys.platform in ('bsd', 'darwin'):
+            try:
+                return int(os.popen('sysctl -n hw.ncpu').read())
+            except ValueError:
+                # don't trust the outside world
+                pass
         try:
             cpu_count = os.sysconf('SC_NPROCESSORS_ONLN')
             if cpu_count >= 1:
