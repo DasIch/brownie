@@ -8,7 +8,6 @@ help:
 	@echo "    clean          - deletes every generated file"
 
 test:
-	@make -C docs/ linkcheck doctest
 	@tox
 
 doc:
