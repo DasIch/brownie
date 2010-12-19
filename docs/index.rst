@@ -10,6 +10,7 @@ Documentation
    datastructures
    functional
    itools
+   parallel
 
 Additional Information
 ----------------------

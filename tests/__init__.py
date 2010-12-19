@@ -10,10 +10,12 @@ from attest import Tests
 
 from tests.itools import itools_tests
 from tests.caching import caching_tests
+from tests.parallel import parallel_tests
 from tests.functional import functional_tests
 from tests.datastructures import datastructures_tests
 
 
 all_tests = Tests([
-    itools_tests, caching_tests, functional_tests, datastructures_tests
+    itools_tests, caching_tests, parallel_tests, functional_tests,
+    datastructures_tests
 ])
