@@ -9,17 +9,25 @@
     :license: BSD, see LICENSE.rst for details
 """
 import os
+import sys
 
 try:
     from multiprocessing import cpu_count as get_cpu_count
 except ImportError:
     def get_cpu_count(default=None):
+        if sys.platform == 'win32':
+            try:
+                return int(os.environ['NUMBER_OF_PROCESSORS'])
+            except ValueError, KeyError:
+                # value could be anything or not existing
+                pass
         try:
             cpu_count = os.sysconf('SC_NPROCESSORS_ONLN')
             if cpu_count >= 1:
                 return cpu_count
         except AttributeError, ValueError:
             # availability is restricted to unix
+            pass
         if default is not None:
             return default
         raise NotImplementedError()
