@@ -25,6 +25,6 @@ dev-env:
 	@. $(DIR)/bin/activate && pip install sphinx attest tox
 
 clean:
-	@make -C docs/ clean
+	@make -C docs/ clean > /dev/null
 	@find . -iname "*.pyc" -delete
 	@rm -rf .tox Brownie.egg-info
