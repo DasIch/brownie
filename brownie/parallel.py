@@ -14,9 +14,12 @@ try:
     from multiprocessing import cpu_count as get_cpu_count
 except ImportError:
     def get_cpu_count(default=None):
-        sysconf_name = 'SC_NPROCESSORS_ONLN'
-        if sysconf_name in os.sysconf_names:
-            return os.sysconf('SC_NPROCESSORS_ONLN')
+        try:
+            cpu_count = os.sysconf('SC_NPROCESSORS_ONLN')
+            if cpu_count >= 1:
+                return cpu_count
+        except AttributeError, ValueError:
+            # availability is restricted to unix
         if default is not None:
             return default
         raise NotImplementedError()
