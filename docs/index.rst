@@ -19,3 +19,4 @@ Additional Information
    :maxdepth: 2
 
    license
+   changelog
