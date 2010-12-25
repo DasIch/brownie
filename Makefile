@@ -6,6 +6,7 @@ help:
 	@echo "    upload-doc     - uploads the documentation to PyPI"
 	@echo "    dev-env <DIR=> - creates a development environment"
 	@echo "    clean          - deletes every generated file"
+	@echo "    release        - performs the release"
 
 test:
 	@tox
@@ -28,3 +29,6 @@ clean:
 	@make -C docs/ clean > /dev/null
 	@find . -iname "*.pyc" -delete
 	@rm -rf .tox Brownie.egg-info
+
+release: test upload-doc
+	python setup.py release sdist upload
