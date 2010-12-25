@@ -112,7 +112,7 @@ def starmap(function, iterable):
 
 def combinations_with_replacement(iterable, r):
     """
-    Return `r` length subsequences of elements from the `iterable` allowing
+    Return `r` length sub-sequences of elements from the `iterable` allowing
     individual elements to be replaced more than once.
 
     Combinations are emitted in lexicographic sort order. So, if the input
