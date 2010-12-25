@@ -528,7 +528,7 @@ class Counter(dict):
     | ``c1 & c2`` | minimum of common element counts.                   |
     +-------------+-----------------------------------------------------+
 
-    Futhermore it is possible to multiply the counter with an :class:`int` as
+    Furthermore it is possible to multiply the counter with an :class:`int` as
     scalar.
 
     Accessing a non-existing element will always result in an element
