@@ -785,7 +785,7 @@ class LazyList(object):
         If the item is not found a :exc:`ValueError` is raised.
 
         This method exhausts the internal iterator up until the first
-        occurence of the given `object` or entirely if it is not found.
+        occurrence of the given `object` or entirely if it is not found.
         """
         while True:
             try:
