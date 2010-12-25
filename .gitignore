@@ -4,3 +4,4 @@ env/
 .tox/
 Brownie.egg-info/
 build/
+dist/
