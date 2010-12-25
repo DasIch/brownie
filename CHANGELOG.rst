@@ -5,6 +5,5 @@ features.
 
 0.1 - Fairy Land
 ----------------
-*Currently in development*
 
 Initial Release.
