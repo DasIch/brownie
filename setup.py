@@ -9,7 +9,7 @@ setup(
     license='BSD',
     author='Daniel Neuhäuser',
     author_email='dasdasich@gmail.com',
-    description='Common utilities and datastructures or Python applications.',
+    description='Common utilities and datastructures for Python applications.',
     # don't ever depend on refcounting to close files anywhere else
     long_description=open('README.rst').read().decode('utf-8'),
     packages=['brownie'],
