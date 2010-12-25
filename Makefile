@@ -28,7 +28,7 @@ dev-env:
 clean:
 	@make -C docs/ clean > /dev/null
 	@find . -iname "*.pyc" -delete
-	@rm -rf .tox Brownie.egg-info
+	@rm -rf .tox Brownie.egg-info dist
 
 release: test upload-doc
 	python setup.py release sdist upload
