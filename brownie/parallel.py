@@ -97,7 +97,7 @@ class AsyncResult(object):
 
     def set(self, obj, success=True):
         """
-        Sets the given `obj` as result, set `sucess` to ``False`` if `obj`
+        Sets the given `obj` as result, set `success` to ``False`` if `obj`
         is an exception.
         """
         self.value = obj
