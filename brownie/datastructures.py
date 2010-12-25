@@ -648,7 +648,7 @@ class LazyList(object):
     completely some of them do, so if the given iterable is of unlimited size
     making such an operation will eventually cause a :exc:`MemoryError`.
 
-    Cost in terms of lazyness of supported operators, this does not include
+    Cost in terms of laziness of supported operators, this does not include
     supported operators without any cost:
 
     +-----------------+-------------------------------------------------------+
