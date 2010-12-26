@@ -222,6 +222,10 @@ class ImmutableDictTestMixin(DictTestMixin):
 class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
 
+    @test
+    def type_checking(self):
+        assert isinstance(self.dict_class(), dict)
+
 
 class MultiDictTestMixin(object):
     dict_class = None
@@ -331,6 +335,10 @@ class MultiDictTestMixin(object):
 class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
     dict_class = MultiDict
 
+    @test
+    def type_checking(self):
+        assert isinstance(self.dict_class(), dict)
+
 
 class ImmutableMultiDictTestMixin(MultiDictTestMixin):
     @test
@@ -377,6 +385,13 @@ class ImmutableMultiDictTestMixin(MultiDictTestMixin):
 class TestImmutableMultiDict(TestBase, ImmutableMultiDictTestMixin,
                              ImmutableDictTestMixin):
     dict_class = ImmutableMultiDict
+
+    @test
+    def type_checking(self):
+        d = self.dict_class()
+        types = [dict, ImmutableDict, MultiDict]
+        for type in types:
+            assert isinstance(d, type), type
 
 
 class OrderedDictTestMixin(object):
@@ -449,10 +464,22 @@ class OrderedDictTestMixin(object):
 class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
     dict_class = OrderedDict
 
+    @test
+    def type_checking(self):
+        d = self.dict_class()
+        assert isinstance(d, dict)
+
 
 class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
                            DictTestMixin):
     dict_class = OrderedMultiDict
+
+    @test
+    def type_checking(self):
+        d = self.dict_class()
+        types = [dict, MultiDict, OrderedDict]
+        for type in types:
+            assert isinstance(d, type), type
 
 
 class ImmutableOrderedDictTextMixin(OrderedDictTestMixin):
@@ -464,6 +491,14 @@ class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
                                     ImmutableMultiDictTestMixin,
                                     ImmutableDictTestMixin):
     dict_class = ImmutableOrderedMultiDict
+
+    @test
+    def type_checking(self):
+        d = self.dict_class()
+        types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict,
+                 OrderedDict]
+        for type in types:
+            assert isinstance(d, type), type
 
 
 class TestCounter(TestBase):
