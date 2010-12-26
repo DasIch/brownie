@@ -8,6 +8,7 @@ features.
 *Currently in development*
 
 - Added :class:`brownie.itools.chain`.
+- Added :class:`brownie.datastructures.OrderedSet`.
 
 
 0.1 - Fairy Land
