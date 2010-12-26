@@ -5,6 +5,9 @@ Iteration Tools
 
 Implements :mod:`itertools` functions for earlier versions of Python.
 
+.. autoclass:: chain
+   :members:
+
 .. autofunction:: izip_longest
 
 .. autofunction:: permutations

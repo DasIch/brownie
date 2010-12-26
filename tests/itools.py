@@ -12,10 +12,16 @@ from attest import Tests, Assert
 
 from brownie.itools import izip_longest, product, compress, count, permutations, \
                            combinations_with_replacement, starmap, grouped, \
-                           unique
+                           unique, chain
 
 
 itools_tests = Tests()
+
+
+@itools_tests.test
+def test_chain():
+    list(chain([1, 2], [3, 4])) == [1, 2, 3, 4]
+    list(chain.from_iterable([[1, 2], [3, 4]])) == [1, 2, 3, 4]
 
 
 @itools_tests.test

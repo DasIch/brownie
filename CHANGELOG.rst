@@ -7,6 +7,8 @@ features.
 -------------------------------
 *Currently in development*
 
+- Added :class:`brownie.itools.chain`.
+
 
 0.1 - Fairy Land
 ----------------

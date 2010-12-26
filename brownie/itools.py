@@ -8,7 +8,42 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, PSF see LICENSE.rst for details
 """
-from itertools import izip, repeat, chain
+from itertools import izip, repeat
+
+
+class chain(object):
+    """
+    An iterator which yields elements from the given `iterables` until each
+    iterable is exhausted.
+
+    .. versionadded:: 0.2
+    """
+    @classmethod
+    def from_iterable(cls, iterable):
+        """
+        Alternative constructor which takes an `iterable` yielding iterators,
+        this can be used to chain an infinite number of iterators.
+        """
+        rv = object.__new__(cls)
+        rv._init(iterable)
+        return rv
+
+    def __init__(self, *iterables):
+        self._init(iterables)
+
+    def _init(self, iterables):
+        self.iterables = iter(iterables)
+        self.current_iterable = iter([])
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        try:
+            return self.current_iterable.next()
+        except StopIteration:
+            self.current_iterable = iter(self.iterables.next())
+            return self.current_iterable.next()
 
 
 def izip_longest(*iterables, **kwargs):
