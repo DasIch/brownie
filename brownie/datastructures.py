@@ -33,8 +33,18 @@ del Missing
 
 def iter_multi_items(mapping):
     """
-    Iterates over the items of the given `mapping` yielding keys and values
-    without dropping any from more complex datastructures.
+    Iterates over the items of the given `mapping`.
+
+    If a key has multiple values a ``(key, value)`` item is yielded for each::
+
+        >>> for key, value in iter_multi_items({1: [2, 3]}):
+        ...     print key, value
+        1 2
+        1 3
+        >>> for key, value in iter_multi_items(MultiDict({1: [2, 3]})):
+        ...     print key, value
+        1 2
+        1 3
     """
     if isinstance(mapping, MultiDict):
         for item in mapping.iteritems(multi=False):
