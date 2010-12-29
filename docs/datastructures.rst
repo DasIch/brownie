@@ -7,10 +7,10 @@ This module provides various datastructures.
 
 .. autodata:: missing
 
+.. autofunction:: iter_multi_items
+
 Mappings
 --------
-
-.. autofunction:: iter_multi_items
 
 .. autoclass:: MultiDict
    :members: add, getlist, setlist, setlistdefault, lists, listvalues,
