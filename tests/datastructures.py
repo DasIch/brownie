@@ -13,10 +13,19 @@ import random
 
 from attest import Tests, TestBase, test, Assert
 
-from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
-                                   Counter, ImmutableDict, ImmutableMultiDict, \
-                                   OrderedMultiDict, ImmutableOrderedMultiDict, \
-                                   OrderedSet, CombinedDict
+from brownie.datastructures import (
+    missing,
+    LazyList,
+    OrderedSet,
+    MultiDict,
+    ImmutableDict,
+    ImmutableMultiDict,
+    OrderedDict,
+    OrderedMultiDict,
+    ImmutableOrderedMultiDict,
+    Counter,
+    CombinedDict
+)
 
 
 class TestMissing(TestBase):

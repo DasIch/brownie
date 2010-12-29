@@ -10,9 +10,18 @@
 """
 from attest import Tests, Assert
 
-from brownie.itools import izip_longest, product, compress, count, permutations, \
-                           combinations_with_replacement, starmap, grouped, \
-                           unique, chain
+from brownie.itools import (
+    izip_longest,
+    product,
+    compress,
+    count,
+    permutations,
+    combinations_with_replacement,
+    starmap,
+    grouped,
+    unique,
+    chain
+)
 
 
 itools_tests = Tests()
