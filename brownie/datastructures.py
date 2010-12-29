@@ -73,6 +73,73 @@ class ImmutableDict(ImmutableDictMixin, dict):
         return '%s(%s)' % (self.__class__.__name__, content)
 
 
+class CombinedDict(ImmutableDictMixin, dict):
+    """
+    An immutable :class:`dict` which combines the given `dicts` into one.
+
+    You can use this class to combine dicts of any type, however different
+    interfaces as provided by e.g. :class:`MultiDict` or :class:`Counter` are
+    not supported, the same goes for additional keyword arguments.
+
+    .. versionadded:: 0.2
+    """
+    @classmethod
+    def fromkeys(cls, keys, value=None):
+        raise TypeError('cannot create %r instances with .fromkeys()' %
+            cls.__class__.__name__
+        )
+
+    def __init__(self, dicts=None):
+        #: The list of combined dictionaries.
+        self.dicts = [] if dicts is None else list(dicts)
+
+    def __getitem__(self, key):
+        for d in self.dicts:
+            if key in d:
+                return d[key]
+        raise KeyError(key)
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __iter__(self):
+        return unique(chain.from_iterable(d.iterkeys() for d in self.dicts))
+
+    iterkeys = __iter__
+
+    def itervalues(self):
+        for key in self:
+            yield self[key]
+
+    def iteritems(self):
+        for key in self:
+            yield key, self[key]
+
+    def keys(self):
+        return list(self.iterkeys())
+
+    def values(self):
+        return list(self.itervalues())
+
+    def items(self):
+        return list(self.iteritems())
+
+    def __len__(self):
+        return len(self.keys())
+
+    def __contains__(self, key):
+        return any(key in d for d in self.dicts)
+
+    has_key = __contains__
+
+    def __repr__(self):
+        content = repr(self.dicts) if self.dicts else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
+
+
 class MultiDictMixin(object):
     def __init__(self, *args, **kwargs):
         if len(args) > 1:

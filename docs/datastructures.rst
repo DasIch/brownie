@@ -37,6 +37,12 @@ Immutable Mappings
 .. autoclass:: ImmutableOrderedMultiDict
    :members:
 
+Combining Mappings
+------------------
+
+.. autoclass:: CombinedDict
+   :members:
+
 Sequences
 ---------
 

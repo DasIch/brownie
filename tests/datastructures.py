@@ -16,7 +16,7 @@ from attest import Tests, TestBase, test, Assert
 from brownie.datastructures import missing, MultiDict, OrderedDict, LazyList, \
                                    Counter, ImmutableDict, ImmutableMultiDict, \
                                    OrderedMultiDict, ImmutableOrderedMultiDict, \
-                                   OrderedSet
+                                   OrderedSet, CombinedDict
 
 
 class TestMissing(TestBase):
@@ -72,6 +72,12 @@ class DictTestMixin(object):
         Assert(d[1]) == 2
         d[1] = 3
         Assert(d[1]) == 3
+
+    @test
+    def getitem(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        Assert(d[1]) == 2
+        Assert(d[3]) == 4
 
     @test
     def delitem(self):
@@ -221,6 +227,55 @@ class ImmutableDictTestMixin(DictTestMixin):
 
 class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
+
+
+class TestCombinedDict(TestBase, ImmutableDictTestMixin):
+    dict_class = CombinedDict
+
+    # .fromkeys() doesn't work here, so we don't need that test
+    test_custom_new = None
+
+    @test
+    def fromkeys(self):
+        with Assert.raises(TypeError):
+            CombinedDict.fromkeys(['foo', 'bar'])
+
+    @test
+    def init(self):
+        with Assert.raises(TypeError):
+            CombinedDict(foo='bar')
+
+    @test
+    def getitem(self):
+        d = CombinedDict([{1: 2, 3: 4}, {1: 4, 3: 2}])
+        Assert(d[1]) == 2
+        Assert(d[3]) == 4
+
+    @test
+    def get(self):
+        d = CombinedDict()
+        Assert(d.get(1)) == None
+        Assert(d.get(1, 2)) == 2
+
+        d = CombinedDict([{1: 2}, {1: 3}])
+        Assert(d.get(1)) == 2
+        Assert(d.get(1, 4)) == 2
+
+    @test
+    def item_accessor_equality(self):
+        d = CombinedDict([{1: 2}, {1: 3}, {2: 4}])
+        Assert(d.keys()) == [1, 2]
+        Assert(d.values()) == [2, 4]
+        Assert(d.items()) == [(1, 2), (2, 4)]
+        Assert(list(d)) == list(d.iterkeys()) == d.keys()
+        Assert(list(d.itervalues())) == d.values()
+        Assert(list(d.iteritems())) == d.items()
+
+    @test
+    def repr(self):
+        Assert(repr(CombinedDict())) == 'CombinedDict()'
+        d = CombinedDict([{}, {1: 2}])
+        Assert(repr(d)) == 'CombinedDict([{}, {1: 2}])'
 
 
 class MultiDictTestMixin(object):
@@ -1023,5 +1078,5 @@ class TestOrderedSet(TestBase):
 datastructures_tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
-    TestImmutableOrderedMultiDict, TestOrderedSet
+    TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict
 ])

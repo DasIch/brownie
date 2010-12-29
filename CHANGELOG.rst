@@ -10,6 +10,7 @@ features.
 - Added :class:`brownie.itools.chain`.
 - Added :class:`brownie.datastructures.OrderedSet`.
 - Added :mod:`brownie.importing`.
+- Added :class:`brownie.datastructures.CombinedDict`.
 
 
 0.1 - Fairy Land
