@@ -74,13 +74,13 @@ class ImmutableDictMixin(object):
     __setitem__ = __delitem__ = setdefault = update = pop = popitem = clear = \
         raise_immutable
 
-
-class ImmutableDict(ImmutableDictMixin, dict):
-    """An immutable :class:`dict`."""
-
     def __repr__(self):
         content = dict.__repr__(self) if self else ''
         return '%s(%s)' % (self.__class__.__name__, content)
+
+
+class ImmutableDict(ImmutableDictMixin, dict):
+    """An immutable :class:`dict`."""
 
 
 class CombinedDict(ImmutableDictMixin, dict):
@@ -384,9 +384,6 @@ class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
 
 class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     """An immutable :class:`MultiDict`."""
-    def __repr__(self):
-        content = dict.__repr__(self) if self else ''
-        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class _Link(object):
@@ -578,6 +575,10 @@ class OrderedMultiDict(MultiDictMixin, OrderedDict):
 
 class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, OrderedDict):
     """An immutable :class:`OrderedMultiDict`."""
+
+    def __repr__(self):
+        content = repr(self.items()) if self else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class Counter(dict):
