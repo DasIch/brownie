@@ -603,6 +603,16 @@ class OrderedDict(dict):
         return '%s(%s)' % (self.__class__.__name__, content)
 
 
+class ImmutableOrderedDict(ImmutableDictMixin, OrderedDict):
+    """
+    An immutable :class:`OrderedDict`.
+
+    .. versionadded:: 0.2
+    """
+
+    __repr__ = OrderedDict.__repr__
+
+
 class OrderedMultiDict(MultiDictMixin, OrderedDict):
     """An ordered :class:`MultiDict`."""
 

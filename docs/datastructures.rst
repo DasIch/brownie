@@ -34,6 +34,9 @@ Immutable Mappings
 .. autoclass:: ImmutableMultiDict
    :members:
 
+.. autoclass:: ImmutableOrderedDict
+   :members:
+
 .. autoclass:: ImmutableOrderedMultiDict
    :members:
 

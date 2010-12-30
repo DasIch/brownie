@@ -15,6 +15,7 @@ features.
 - Fixed a :exc:`KeyError` and a :exc:`ValueError` which could occur
   by calling :func:`brownie.parallel.get_cpu_count` on Windows or Linux
   respectively.
+- Added :class:`brownie.datastructures.ImmutableOrderedDict`.
 
 
 0.1 - Fairy Land

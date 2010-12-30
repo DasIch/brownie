@@ -21,6 +21,7 @@ from brownie.datastructures import (
     ImmutableDict,
     ImmutableMultiDict,
     OrderedDict,
+    ImmutableOrderedDict,
     OrderedMultiDict,
     ImmutableOrderedMultiDict,
     Counter,
@@ -572,6 +573,20 @@ class OrderedDictTestMixin(object):
 
 class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
     dict_class = OrderedDict
+
+
+class TestImmutableOrderedDict(TestBase, OrderedDictTestMixin,
+                               ImmutableDictTestMixin):
+    dict_class = ImmutableOrderedDict
+
+    clear_does_not_keep_ordering = pop_does_not_keep_ordering = None
+    setitem_order = setdefault_order = update_order = None
+
+    @test
+    def popitem(self):
+        d = self.dict_class()
+        with Assert.raises(TypeError):
+            d.popitem()
 
 
 class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
@@ -1148,5 +1163,5 @@ datastructures_tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
     TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,
-    TestCombinedMultiDict
+    TestCombinedMultiDict, TestImmutableOrderedDict
 ])
