@@ -295,6 +295,12 @@ class CombinedDictTestMixin(object):
 class TestCombinedDict(TestBase, CombinedDictTestMixin, ImmutableDictTestMixin):
     dict_class = CombinedDict
 
+    @test
+    def type_checking(self):
+        d = self.dict_class()
+        assert isinstance(d, ImmutableDict)
+        assert isinstance(d, dict)
+
 
 class MultiDictTestMixin(object):
     dict_class = None
