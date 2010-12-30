@@ -518,6 +518,13 @@ class TestCombinedMultiDict(TestBase, CombinedDictTestMixin,
         Assert(d.lists()) == [(key, d.getlist(key)) for key in d]
         Assert(d.items()) == [(k, vs[0]) for k, vs in d.lists()]
 
+    @test
+    def type_checking(self):
+        types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict]
+        d = self.dict_class()
+        for type in types:
+            assert isinstance(d, type)
+
 
 class OrderedDictTestMixin(object):
     dict_class = None
