@@ -608,6 +608,13 @@ class TestImmutableOrderedDict(TestBase, OrderedDictTestMixin,
         with Assert.raises(TypeError):
             d.popitem()
 
+    @test
+    def type_checking(self):
+        d = self.dict_class()
+        assert isinstance(d, OrderedDict)
+        assert isinstance(d, ImmutableDict)
+        assert isinstance(d, dict)
+
 
 class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
                            DictTestMixin):
