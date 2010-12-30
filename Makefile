@@ -23,7 +23,7 @@ upload-doc: doc
 DIR ?= env
 dev-env:
 	@virtualenv $(DIR)
-	@. $(DIR)/bin/activate && pip install sphinx attest tox
+	@. $(DIR)/bin/activate && pip install sphinx tox
 
 clean:
 	@make -C docs/ clean > /dev/null

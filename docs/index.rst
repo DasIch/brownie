@@ -9,6 +9,7 @@ Documentation
    caching
    datastructures
    functional
+   importing
    itools
    parallel
 
