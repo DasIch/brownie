@@ -12,6 +12,9 @@ features.
 - Added :mod:`brownie.importing`.
 - Added :class:`brownie.datastructures.CombinedDict`.
 - Added :class:`brownie.datastructures.CombinedMultiDict`.
+- Fixed a :exc:`KeyError` and a :exc:`ValueError` which could occur
+  by calling :func:`brownie.parallel.get_cpu_count` on Windows or Linux
+  respectively.
 
 
 0.1 - Fairy Land
