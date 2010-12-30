@@ -24,7 +24,8 @@ from brownie.datastructures import (
     OrderedMultiDict,
     ImmutableOrderedMultiDict,
     Counter,
-    CombinedDict
+    CombinedDict,
+    CombinedMultiDict
 )
 
 
@@ -238,41 +239,40 @@ class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
 
 
-class TestCombinedDict(TestBase, ImmutableDictTestMixin):
-    dict_class = CombinedDict
-
+class CombinedDictTestMixin(object):
     # .fromkeys() doesn't work here, so we don't need that test
     test_custom_new = None
 
     @test
     def fromkeys(self):
         with Assert.raises(TypeError):
-            CombinedDict.fromkeys(['foo', 'bar'])
+            self.dict_class.fromkeys(['foo', 'bar'])
 
     @test
     def init(self):
         with Assert.raises(TypeError):
-            CombinedDict(foo='bar')
+            self.dict_class(foo='bar')
+        self.dict_class([{}, {}])
 
     @test
     def getitem(self):
-        d = CombinedDict([{1: 2, 3: 4}, {1: 4, 3: 2}])
+        d = self.dict_class([{1: 2, 3: 4}, {1: 4, 3: 2}])
         Assert(d[1]) == 2
         Assert(d[3]) == 4
 
     @test
     def get(self):
-        d = CombinedDict()
+        d = self.dict_class()
         Assert(d.get(1)) == None
         Assert(d.get(1, 2)) == 2
 
-        d = CombinedDict([{1: 2}, {1: 3}])
+        d = self.dict_class([{1: 2}, {1: 3}])
         Assert(d.get(1)) == 2
         Assert(d.get(1, 4)) == 2
 
     @test
     def item_accessor_equality(self):
-        d = CombinedDict([{1: 2}, {1: 3}, {2: 4}])
+        d = self.dict_class([{1: 2}, {1: 3}, {2: 4}])
         Assert(d.keys()) == [1, 2]
         Assert(d.values()) == [2, 4]
         Assert(d.items()) == [(1, 2), (2, 4)]
@@ -282,9 +282,13 @@ class TestCombinedDict(TestBase, ImmutableDictTestMixin):
 
     @test
     def repr(self):
-        Assert(repr(CombinedDict())) == 'CombinedDict()'
-        d = CombinedDict([{}, {1: 2}])
-        Assert(repr(d)) == 'CombinedDict([{}, {1: 2}])'
+        Assert(repr(self.dict_class())) == '%s()' % self.dict_class.__name__
+        d = self.dict_class([{}, {1: 2}])
+        Assert(repr(d)) == '%s([{}, {1: 2}])' % self.dict_class.__name__
+
+
+class TestCombinedDict(TestBase, CombinedDictTestMixin, ImmutableDictTestMixin):
+    dict_class = CombinedDict
 
 
 class MultiDictTestMixin(object):
@@ -441,6 +445,62 @@ class ImmutableMultiDictTestMixin(MultiDictTestMixin):
 class TestImmutableMultiDict(TestBase, ImmutableMultiDictTestMixin,
                              ImmutableDictTestMixin):
     dict_class = ImmutableMultiDict
+
+
+class TestCombinedMultiDict(TestBase, CombinedDictTestMixin,
+                            ImmutableMultiDictTestMixin,
+                            ImmutableDictTestMixin):
+    dict_class = CombinedMultiDict
+
+    # we don't need this special kind of initalization
+    init_with_lists = None
+
+    @test
+    def getlist(self):
+        d = self.dict_class()
+        Assert(d.getlist(1)) == []
+        d = self.dict_class([MultiDict({1: 2}), MultiDict({1: 3})])
+        Assert(d.getlist(1)) == [2, 3]
+
+    @test
+    def lists(self):
+        d = self.dict_class([
+            MultiDict({'foo': ['bar', 'baz']}),
+            MultiDict({'foo': ['spam', 'eggs']})
+        ])
+        Assert(list(d.iterlists())) == d.lists()
+        Assert(d.lists()) == [('foo', ['bar', 'baz', 'spam', 'eggs'])]
+
+    @test
+    def listvalues(self):
+        d = self.dict_class([
+            MultiDict({'foo': ['bar', 'baz']}),
+            MultiDict({'foo': ['spam', 'eggs']})
+        ])
+        Assert(list(d.iterlistvalues())) == d.listvalues()
+        Assert(d.listvalues()) == [['bar', 'baz', 'spam', 'eggs']]
+
+    @test
+    def multi_items(self):
+        d = self.dict_class([
+            MultiDict({'foo': ['bar', 'baz']}),
+            MultiDict({'foo': ['spam', 'eggs']})
+        ])
+        Assert(list(d.iteritems(multi=True))) == d.items(multi=True)
+        Assert(d.items(multi=True)) == [
+            ('foo', ['bar', 'baz', 'spam', 'eggs'])
+        ]
+
+    @test
+    def item_accessor_equality(self):
+        CombinedDictTestMixin.item_accessor_equality(self)
+        d = self.dict_class([
+            MultiDict({'foo': ['bar', 'baz']}),
+            MultiDict({'foo': ['spam', 'eggs']})
+        ])
+        Assert(d.values()) == [d['foo']]
+        Assert(d.lists()) == [(key, d.getlist(key)) for key in d]
+        Assert(d.items()) == [(k, vs[0]) for k, vs in d.lists()]
 
 
 class OrderedDictTestMixin(object):
@@ -1087,5 +1147,6 @@ class TestOrderedSet(TestBase):
 datastructures_tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
-    TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict
+    TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,
+    TestCombinedMultiDict
 ])

@@ -83,16 +83,7 @@ class ImmutableDict(ImmutableDictMixin, dict):
     """An immutable :class:`dict`."""
 
 
-class CombinedDict(ImmutableDictMixin, dict):
-    """
-    An immutable :class:`dict` which combines the given `dicts` into one.
-
-    You can use this class to combine dicts of any type, however different
-    interfaces as provided by e.g. :class:`MultiDict` or :class:`Counter` are
-    not supported, the same goes for additional keyword arguments.
-
-    .. versionadded:: 0.2
-    """
+class CombinedDictMixin(object):
     @classmethod
     def fromkeys(cls, keys, value=None):
         raise TypeError('cannot create %r instances with .fromkeys()' %
@@ -148,6 +139,18 @@ class CombinedDict(ImmutableDictMixin, dict):
     def __repr__(self):
         content = repr(self.dicts) if self.dicts else ''
         return '%s(%s)' % (self.__class__.__name__, content)
+
+
+class CombinedDict(CombinedDictMixin, ImmutableDictMixin, dict):
+    """
+    An immutable :class:`dict` which combines the given `dicts` into one.
+
+    You can use this class to combine dicts of any type, however different
+    interfaces as provided by e.g. :class:`MultiDict` or :class:`Counter` are
+    not supported, the same goes for additional keyword arguments.
+
+    .. versionadded:: 0.2
+    """
 
 
 class MultiDictMixin(object):
@@ -384,6 +387,37 @@ class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
 
 class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     """An immutable :class:`MultiDict`."""
+
+
+class CombinedMultiDict(CombinedDictMixin, ImmutableMultiDictMixin, dict):
+    """
+    An :class:`ImmutableMultiDict` which combines the given `dicts` into one.
+
+    .. versionadded:: 0.2
+    """
+    def getlist(self, key):
+        return sum((d.getlist(key) for d in self.dicts), [])
+
+    def iterlists(self):
+        result = OrderedDict()
+        for d in self.dicts:
+            for key, values in d.iterlists():
+                result.setdefault(key, []).extend(values)
+        return result.iteritems()
+
+    def iterlistvalues(self):
+        for key in self:
+            yield self.getlist(key)
+
+    def iteritems(self, multi=False):
+        for key in self:
+            if multi:
+                yield key, self.getlist(key)
+            else:
+                yield key, self[key]
+
+    def items(self, multi=False):
+        return list(self.iteritems(multi))
 
 
 class _Link(object):

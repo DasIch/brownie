@@ -43,6 +43,9 @@ Combining Mappings
 .. autoclass:: CombinedDict
    :members:
 
+.. autoclass:: CombinedMultiDict
+   :members:
+
 Sequences
 ---------
 

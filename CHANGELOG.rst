@@ -11,6 +11,7 @@ features.
 - Added :class:`brownie.datastructures.OrderedSet`.
 - Added :mod:`brownie.importing`.
 - Added :class:`brownie.datastructures.CombinedDict`.
+- Added :class:`brownie.datastructures.CombinedMultiDict`.
 
 
 0.1 - Fairy Land
