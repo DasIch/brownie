@@ -10,8 +10,9 @@
 """
 from __future__ import with_statement
 import random
+import sys
 
-from attest import Tests, TestBase, test, Assert
+from attest import Tests, TestBase, test, Assert, test_if
 
 from brownie.datastructures import (
     missing,
@@ -28,6 +29,9 @@ from brownie.datastructures import (
     CombinedDict,
     CombinedMultiDict
 )
+
+
+GE_PYTHON_26 = sys.version_info >= (2, 6)
 
 
 class TestMissing(TestBase):
@@ -239,7 +243,7 @@ class ImmutableDictTestMixin(DictTestMixin):
 class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     dict_class = ImmutableDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         assert isinstance(self.dict_class(), dict)
 
@@ -295,7 +299,7 @@ class CombinedDictTestMixin(object):
 class TestCombinedDict(TestBase, CombinedDictTestMixin, ImmutableDictTestMixin):
     dict_class = CombinedDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
         assert isinstance(d, ImmutableDict)
@@ -410,7 +414,7 @@ class MultiDictTestMixin(object):
 class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
     dict_class = MultiDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         assert isinstance(self.dict_class(), dict)
 
@@ -461,7 +465,7 @@ class TestImmutableMultiDict(TestBase, ImmutableMultiDictTestMixin,
                              ImmutableDictTestMixin):
     dict_class = ImmutableMultiDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
         types = [dict, ImmutableDict, MultiDict]
@@ -524,7 +528,7 @@ class TestCombinedMultiDict(TestBase, CombinedDictTestMixin,
         Assert(d.lists()) == [(key, d.getlist(key)) for key in d]
         Assert(d.items()) == [(k, vs[0]) for k, vs in d.lists()]
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict]
         d = self.dict_class()
@@ -602,7 +606,7 @@ class OrderedDictTestMixin(object):
 class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
     dict_class = OrderedDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
         assert isinstance(d, dict)
@@ -621,7 +625,7 @@ class TestImmutableOrderedDict(TestBase, OrderedDictTestMixin,
         with Assert.raises(TypeError):
             d.popitem()
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
         assert isinstance(d, OrderedDict)
@@ -633,7 +637,7 @@ class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
                            DictTestMixin):
     dict_class = OrderedMultiDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
         types = [dict, MultiDict, OrderedDict]
@@ -651,7 +655,7 @@ class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
                                     ImmutableDictTestMixin):
     dict_class = ImmutableOrderedMultiDict
 
-    @test
+    @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
         types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict,
