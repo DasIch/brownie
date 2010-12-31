@@ -60,6 +60,10 @@ def test_virtual_subclass_meta():
     class MultiInheritance(Simple, SimpleMonty):
         pass
 
+    class MultiVirtualInheritance(object):
+        __metaclass__ = VirtualSubclassMeta
+        virtual_superclasses = [Simple, SimpleMonty]
+
     for virtual_super_cls in [Foo, Bar, Simple, Spam, Eggs, SimpleMonty]:
         assert issubclass(MultiInheritance, virtual_super_cls)
         assert isinstance(MultiInheritance(), virtual_super_cls)
