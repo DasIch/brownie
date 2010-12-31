@@ -32,6 +32,6 @@ class VirtualSubclassMeta(type):
             for cls in superclasses:
                 if isinstance(cls, ABCMeta):
                     cls.register(self)
-                else:
+                if hasattr(cls, 'virtual_superclasses'):
                     register_superclasses(cls.virtual_superclasses)
         register_superclasses(attributes.get('virtual_superclasses', ()))
