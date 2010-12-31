@@ -28,10 +28,11 @@ class VirtualSubclassMeta(type):
     """
     def __init__(self, name, bases, attributes):
         type.__init__(self, name, bases, attributes)
-        def register_superclasses(superclasses):
-            for cls in superclasses:
-                if isinstance(cls, ABCMeta):
-                    cls.register(self)
-                if hasattr(cls, 'virtual_superclasses'):
-                    register_superclasses(cls.virtual_superclasses)
-        register_superclasses(attributes.get('virtual_superclasses', ()))
+        self._register_superclasses(attributes.get('virtual_superclasses', ()))
+
+    def _register_superclasses(self, superclasses):
+        for cls in superclasses:
+            if isinstance(cls, ABCMeta):
+                cls.register(self)
+            if hasattr(cls, 'virtual_superclasses'):
+                self._register_superclasses(cls.virtual_superclasses)
