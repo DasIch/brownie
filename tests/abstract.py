@@ -10,10 +10,10 @@
 """
 import sys
 
-from attest import Tests
+from attest import Tests, TestBase, test_if, test
 
 from brownie.itools import product
-from brownie.abstract import VirtualSubclassMeta
+from brownie.abstract import VirtualSubclassMeta, ABCMeta
 
 
 GE_PYTHON_26 = sys.version_info >= (2, 6)
@@ -63,3 +63,31 @@ def test_virtual_subclass_meta():
     for virtual_super_cls in [Foo, Bar, Simple, Spam, Eggs, SimpleMonty]:
         assert issubclass(MultiInheritance, virtual_super_cls)
         assert isinstance(MultiInheritance(), virtual_super_cls)
+
+
+class TestABCMeta(TestBase):
+    @test_if(GE_PYTHON_26)
+    def type_checks_work(self):
+        class Foo(object):
+            __metaclass__ = ABCMeta
+
+        class Bar(object):
+            pass
+
+        Foo.register(Bar)
+
+        assert issubclass(Bar, Foo)
+        assert isinstance(Bar(), Foo)
+
+    @test
+    def api_works_cleanly(self):
+        class Foo(object):
+            __metaclass__ = ABCMeta
+
+        class Bar(object):
+            pass
+
+        Foo.register(Bar)
+
+
+abstract_tests.register(TestABCMeta)

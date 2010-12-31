@@ -10,6 +10,14 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+try:
+    from abc import ABCMeta
+except ImportError:
+    class ABCMeta(type):
+        """Dummy :class:`abc.ABCMeta` implementation which does nothing."""
+
+        def register(self, subclass):
+            pass
 
 
 class VirtualSubclassMeta(type):
