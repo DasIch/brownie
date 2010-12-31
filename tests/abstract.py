@@ -12,6 +12,7 @@ import sys
 
 from attest import Tests
 
+from brownie.itools import product
 from brownie.abstract import VirtualSubclassMeta
 
 
@@ -24,19 +25,41 @@ abstract_tests = Tests()
 def test_virtual_subclass_meta():
     from abc import ABCMeta
 
-    class A(object):
+    class Foo(object):
         __metaclass__ = ABCMeta
 
 
-    class B(object):
+    class Bar(object):
         __metaclass__ = ABCMeta
 
 
-    class C(object):
+    class Simple(object):
         __metaclass__ = VirtualSubclassMeta
-        virtual_superclasses = [A, B]
+        virtual_superclasses = [Foo, Bar]
 
-    assert issubclass(C, A)
-    assert issubclass(C, B)
-    assert isinstance(C(), A)
-    assert isinstance(C(), B)
+    class InheritingSimple(Simple):
+        pass
+
+    for a, b in product([Simple, InheritingSimple], [Foo, Bar]):
+        assert issubclass(a, b)
+        assert isinstance(a(), b)
+
+    assert issubclass(InheritingSimple, Simple)
+    assert isinstance(InheritingSimple(), Simple)
+
+    class Spam(object):
+        __metaclass__ = ABCMeta
+
+    class Eggs(object):
+        __metaclass__ = ABCMeta
+
+    class SimpleMonty(object):
+        __metaclass__ = VirtualSubclassMeta
+        virtual_superclasses = [Spam, Eggs]
+
+    class MultiInheritance(Simple, SimpleMonty):
+        pass
+
+    for virtual_super_cls in [Foo, Bar, Simple, Spam, Eggs, SimpleMonty]:
+        assert issubclass(MultiInheritance, virtual_super_cls)
+        assert isinstance(MultiInheritance(), virtual_super_cls)
