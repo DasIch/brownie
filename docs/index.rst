@@ -6,6 +6,7 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
+   abstract
    caching
    datastructures
    functional

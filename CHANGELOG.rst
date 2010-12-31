@@ -16,6 +16,7 @@ features.
   by calling :func:`brownie.parallel.get_cpu_count` on Windows or Linux
   respectively.
 - Added :class:`brownie.datastructures.ImmutableOrderedDict`.
+- Added :mod:`brownie.abstract`.
 
 
 0.1 - Fairy Land
