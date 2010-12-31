@@ -14,6 +14,7 @@ from functools import wraps
 from itertools import count, izip, repeat, ifilter
 
 from brownie.itools import izip_longest, starmap, unique, chain
+from brownie.abstract import VirtualSubclassMeta, ABCMeta
 
 
 class Missing(object):
@@ -81,6 +82,7 @@ class ImmutableDictMixin(object):
 
 class ImmutableDict(ImmutableDictMixin, dict):
     """An immutable :class:`dict`."""
+    __metaclass__ = ABCMeta
 
 
 class CombinedDictMixin(object):
@@ -151,6 +153,8 @@ class CombinedDict(CombinedDictMixin, ImmutableDictMixin, dict):
 
     .. versionadded:: 0.2
     """
+    __metaclass__ = VirtualSubclassMeta
+    virtual_superclasses = (ImmutableDict, )
 
 
 class MultiDictMixin(object):
@@ -363,6 +367,8 @@ class MultiDict(MultiDictMixin, dict):
     a key, you have to use the :class:`list` methods, specific to a
     :class:`MultiDict`.
     """
+    __metaclass__ = ABCMeta
+
     def __repr__(self):
         content = dict.__repr__(self) if self else ''
         return '%s(%s)' % (self.__class__.__name__, content)
@@ -387,6 +393,9 @@ class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
 
 class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     """An immutable :class:`MultiDict`."""
+    class __metaclass__(ABCMeta, VirtualSubclassMeta): pass
+
+    virtual_superclasses = (MultiDict, ImmutableDict)
 
 
 class CombinedMultiDict(CombinedDictMixin, ImmutableMultiDictMixin, dict):
@@ -395,6 +404,10 @@ class CombinedMultiDict(CombinedDictMixin, ImmutableMultiDictMixin, dict):
 
     .. versionadded:: 0.2
     """
+    __metaclass__ = VirtualSubclassMeta
+
+    virtual_superclasses = (ImmutableMultiDict, )
+
     def getlist(self, key):
         return sum((d.getlist(key) for d in self.dicts), [])
 
@@ -609,16 +622,25 @@ class ImmutableOrderedDict(ImmutableDictMixin, OrderedDict):
 
     .. versionadded:: 0.2
     """
+    __metaclass__ = VirtualSubclassMeta
+
+    virtual_superclasses = (ImmutableDict, )
 
     __repr__ = OrderedDict.__repr__
 
 
 class OrderedMultiDict(MultiDictMixin, OrderedDict):
     """An ordered :class:`MultiDict`."""
+    __metaclass__ = VirtualSubclassMeta
+
+    virtual_superclasses = (MultiDict, )
 
 
 class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, OrderedDict):
     """An immutable :class:`OrderedMultiDict`."""
+    __metaclass__ = VirtualSubclassMeta
+
+    virtual_superclasses = (ImmutableMultiDict, OrderedMultiDict)
 
     def __repr__(self):
         content = repr(self.items()) if self else ''

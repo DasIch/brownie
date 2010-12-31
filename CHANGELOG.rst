@@ -17,6 +17,8 @@ features.
   respectively.
 - Added :class:`brownie.datastructures.ImmutableOrderedDict`.
 - Added :mod:`brownie.abstract`.
+- Make type checks works for dictionaries based on interfaces and
+  behaviour.
 
 
 0.1 - Fairy Land

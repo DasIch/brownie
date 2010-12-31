@@ -533,7 +533,7 @@ class TestCombinedMultiDict(TestBase, CombinedDictTestMixin,
         types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict]
         d = self.dict_class()
         for type in types:
-            assert isinstance(d, type)
+            assert isinstance(d, type), type
 
 
 class OrderedDictTestMixin(object):
