@@ -1,0 +1,3 @@
+[submodule "docs/_themes/minimalism"]
+	path = docs/_themes/minimalism
+	url = git@github.com:DasIch/sphinx-theme-minimalism.git
