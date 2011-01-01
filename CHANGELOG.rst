@@ -7,6 +7,8 @@ features.
 -------------------------------
 *Currently in development*
 
+- Added :class:`brownie.datastructures.SetQueue`.
+
 0.2 - Boggart
 -------------
 
