@@ -30,12 +30,12 @@ class VirtualSubclassMeta(type):
         >>>
         >>> class VirtualBaseClass(object):
         ...     __metaclass__ = ABCMeta
-
+        >>>
         >>> class VirtualSubclass(object):
         ...     __metaclass__ = VirtualSubclassMeta
         ...
         ...     virtual_superclasses = (VirtualBaseClass, )
-
+        >>>
         >>> issubclass(VirtualSubclass, VirtualBaseClass)
         True
     """
