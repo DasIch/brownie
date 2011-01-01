@@ -101,7 +101,8 @@ html_theme = 'minimalism'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'github_fork': 'DasIch/Brownie'
+    'github_fork': 'DasIch/Brownie',
+    'is_a_pocoo_project': True
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
