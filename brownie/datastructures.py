@@ -1300,7 +1300,7 @@ class OrderedSet(object):
     del requires_set
 
 
-class OrderedSetQueue(queue.Queue):
+class SetQueue(queue.Queue):
     """Thread-safe implementation of an ordered set queue, which coalesces
     duplicate items into a single item if the older occurrence has not yet been
     read and maintains the order of items in the queue.

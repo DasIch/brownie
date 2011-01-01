@@ -64,7 +64,7 @@ Sets
 Queues
 ------
 
-.. autoclass:: OrderedSetQueue
+.. autoclass:: SetQueue
    :members:
    :inherited-members:
    :show-inheritance:
