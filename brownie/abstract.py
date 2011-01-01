@@ -36,3 +36,12 @@ class VirtualSubclassMeta(type):
                 cls.register(self)
             if hasattr(cls, 'virtual_superclasses'):
                 self._register_superclasses(cls.virtual_superclasses)
+
+
+class AbstractClassMeta(ABCMeta, VirtualSubclassMeta):
+    """
+    A metaclass for abstract base classes which are also virtual subclasses.
+
+    Simply set :meth:`virtual_subclasses` to an iterable of classes your class
+    is supposed to virtually inherit from.
+    """

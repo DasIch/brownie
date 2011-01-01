@@ -13,7 +13,7 @@ import sys
 from attest import Tests, TestBase, test_if, test
 
 from brownie.itools import product
-from brownie.abstract import VirtualSubclassMeta, ABCMeta
+from brownie.abstract import VirtualSubclassMeta, ABCMeta, AbstractClassMeta
 
 
 GE_PYTHON_26 = sys.version_info >= (2, 6)
@@ -93,5 +93,23 @@ class TestABCMeta(TestBase):
 
         Foo.register(Bar)
 
-
 abstract_tests.register(TestABCMeta)
+
+
+@abstract_tests.test_if(GE_PYTHON_26)
+def test_abstract_class_meta():
+    class Foo(object):
+        __metaclass__ = ABCMeta
+
+    class Bar(object):
+        __metaclass__ = AbstractClassMeta
+
+        virtual_superclasses = [Foo]
+
+    class Baz(object):
+        __metaclass__ = VirtualSubclassMeta
+
+        virtual_superclasses = [Bar]
+
+    assert issubclass(Baz, Foo)
+    assert issubclass(Baz, Bar)

@@ -14,7 +14,7 @@ from functools import wraps
 from itertools import count, izip, repeat, ifilter
 
 from brownie.itools import izip_longest, starmap, unique, chain
-from brownie.abstract import VirtualSubclassMeta, ABCMeta
+from brownie.abstract import AbstractClassMeta
 
 
 class Missing(object):
@@ -82,7 +82,7 @@ class ImmutableDictMixin(object):
 
 class ImmutableDict(ImmutableDictMixin, dict):
     """An immutable :class:`dict`."""
-    __metaclass__ = ABCMeta
+    __metaclass__ = AbstractClassMeta
 
 
 class CombinedDictMixin(object):
@@ -153,7 +153,7 @@ class CombinedDict(CombinedDictMixin, ImmutableDictMixin, dict):
 
     .. versionadded:: 0.2
     """
-    __metaclass__ = VirtualSubclassMeta
+    __metaclass__ = AbstractClassMeta
     virtual_superclasses = (ImmutableDict, )
 
 
@@ -367,7 +367,7 @@ class MultiDict(MultiDictMixin, dict):
     a key, you have to use the :class:`list` methods, specific to a
     :class:`MultiDict`.
     """
-    __metaclass__ = ABCMeta
+    __metaclass__ = AbstractClassMeta
 
     def __repr__(self):
         content = dict.__repr__(self) if self else ''
@@ -393,7 +393,7 @@ class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
 
 class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     """An immutable :class:`MultiDict`."""
-    class __metaclass__(ABCMeta, VirtualSubclassMeta): pass
+    __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (MultiDict, ImmutableDict)
 
@@ -404,7 +404,7 @@ class CombinedMultiDict(CombinedDictMixin, ImmutableMultiDictMixin, dict):
 
     .. versionadded:: 0.2
     """
-    __metaclass__ = VirtualSubclassMeta
+    __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (ImmutableMultiDict, )
 
@@ -622,7 +622,7 @@ class ImmutableOrderedDict(ImmutableDictMixin, OrderedDict):
 
     .. versionadded:: 0.2
     """
-    __metaclass__ = VirtualSubclassMeta
+    __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (ImmutableDict, )
 
@@ -631,14 +631,14 @@ class ImmutableOrderedDict(ImmutableDictMixin, OrderedDict):
 
 class OrderedMultiDict(MultiDictMixin, OrderedDict):
     """An ordered :class:`MultiDict`."""
-    __metaclass__ = VirtualSubclassMeta
+    __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (MultiDict, )
 
 
 class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, OrderedDict):
     """An immutable :class:`OrderedMultiDict`."""
-    __metaclass__ = VirtualSubclassMeta
+    __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (ImmutableMultiDict, OrderedMultiDict)
 
