@@ -3,6 +3,12 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.2.1
+-----
+*Currently in development*
+
+- Switched theme to minimalism.
+
 0.2 - Boggart
 -------------
 
