@@ -11,7 +11,6 @@ features.
 
 0.2.1
 -----
-*Currently in development*
 
 - Switched theme to minimalism.
 - Fixed wrong use of :rst:role:`meth` in the documentation of
