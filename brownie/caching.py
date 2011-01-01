@@ -116,7 +116,6 @@ class LFUCache(dict, CacheBase):
                     self.usage_counter.iteritems(),
                     key=itemgetter(1)):
                 del self[key]
-                self.usage_counter.pop(key, None)
 
     def __delitem__(self, key):
         dict.__delitem__(self, key)
