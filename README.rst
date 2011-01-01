@@ -21,4 +21,4 @@ for development or issue tracking or fetch the `latest development version`_.
 .. _standard library: http://docs.python.org/library
 .. _documentation: http://packages.python.org/Brownie
 .. _github: http://github.com/DasIch/Brownie
-.. _latest development version: https://github.com/DasIch/brownie/zipball/master
+.. _latest development version: https://github.com/DasIch/brownie/zipball/master#egg=Brownie-dev
