@@ -5,7 +5,6 @@ features.
 
 0.2 - Boggart
 -------------
-*Currently in development*
 
 - Added :class:`brownie.itools.chain`.
 - Added :class:`brownie.datastructures.OrderedSet`.
