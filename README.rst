@@ -15,4 +15,7 @@ Brownie wants to solve these problems by providing all these small things
 well documented, well tested and most importantly right now when you need
 it.
 
+Take a look at the documentation_ for further information.
+
 .. _standard library: http://docs.python.org/library
+.. _documentation: http://packages.python.org/Brownie
