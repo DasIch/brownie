@@ -21,4 +21,5 @@ Additional Information
    :maxdepth: 2
 
    license
+   authors
    changelog
