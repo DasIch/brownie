@@ -8,8 +8,9 @@ features.
 *Currently in development*
 
 - Switched theme to minimalism.
-- Fixed wrong use of :role:`meth` in the documentation of
+- Fixed wrong use of :rst:role:`meth` in the documentation of
   :class:`brownie.abstract.AbstractClassMeta`.
+- Added example to :class:`brownie.abstract.VirtualSubclassMeta`.
 
 0.2 - Boggart
 -------------

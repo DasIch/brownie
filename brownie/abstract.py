@@ -24,7 +24,18 @@ class VirtualSubclassMeta(type):
     """
     A metaclass which allows you to easily define abstract super classes,
     simply inherit from this metaclass and set the
-    :attr:`virtual_superclasses` attribute to an iterable.
+    :attr:`virtual_superclasses` attribute to an iterable:
+
+        >>> class VirtualBaseClass(object):
+        ...     __metaclass__ = ABCMeta
+
+        >>> class VirtualSubclass(object):
+        ...     __metaclass__ = VirtualSubclassMeta
+        ...
+        ...    virtual_superclasses = (VirtualBaseClass, )
+
+        >>> issubclass(VirtualSubclass, VirtualBaseClass)
+        True
     """
     def __init__(self, name, bases, attributes):
         type.__init__(self, name, bases, attributes)
