@@ -42,6 +42,6 @@ class AbstractClassMeta(ABCMeta, VirtualSubclassMeta):
     """
     A metaclass for abstract base classes which are also virtual subclasses.
 
-    Simply set :meth:`virtual_subclasses` to an iterable of classes your class
+    Simply set :attr:`virtual_subclasses` to an iterable of classes your class
     is supposed to virtually inherit from.
     """
