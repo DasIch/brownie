@@ -26,13 +26,15 @@ class VirtualSubclassMeta(type):
     simply inherit from this metaclass and set the
     :attr:`virtual_superclasses` attribute to an iterable:
 
+        >>> from brownie.abstract import ABCMeta, VirtualSubclassMeta
+        >>>
         >>> class VirtualBaseClass(object):
         ...     __metaclass__ = ABCMeta
 
         >>> class VirtualSubclass(object):
         ...     __metaclass__ = VirtualSubclassMeta
         ...
-        ...    virtual_superclasses = (VirtualBaseClass, )
+        ...     virtual_superclasses = (VirtualBaseClass, )
 
         >>> issubclass(VirtualSubclass, VirtualBaseClass)
         True
