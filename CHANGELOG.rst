@@ -11,6 +11,7 @@ features.
 - Fixed wrong use of :rst:role:`meth` in the documentation of
   :class:`brownie.abstract.AbstractClassMeta`.
 - Added example to :class:`brownie.abstract.VirtualSubclassMeta`.
+- Added example to :class:`brownie.abstract.AbstractClassMeta`.
 
 0.2 - Boggart
 -------------

@@ -56,5 +56,30 @@ class AbstractClassMeta(ABCMeta, VirtualSubclassMeta):
     A metaclass for abstract base classes which are also virtual subclasses.
 
     Simply set :attr:`virtual_subclasses` to an iterable of classes your class
-    is supposed to virtually inherit from.
+    is supposed to virtually inherit from:
+
+    >>> from brownie.abstract import ABCMeta, AbstractClassMeta, \\
+    ...                              VirtualSubclassMeta
+    >>> class Foo(object):
+    ...     __metaclass__ = ABCMeta
+    >>>
+    >>> class Bar(object):
+    ...     __metaclass__ = AbstractClassMeta
+    ...
+    ...     virtual_superclasses = (Foo, )
+    >>>
+    >>> class Baz(object):
+    ...     __metaclass__ = VirtualSubclassMeta
+    ...
+    ...     virtual_superclasses = (Bar, )
+    >>>
+    >>> issubclass(Baz, Foo)
+    True
+    >>> issubclass(Baz, Bar)
+    True
+
+    .. note::
+        All classes could use :class:`AbstractClassMeta` as `__metaclass__`
+        and the result would be the same, the usage here is just to demonstrate
+        the specific problem which is solved.
     """
