@@ -11,6 +11,7 @@
 """
 #: A string containing the full version number.
 __version__ = '0.2+'
+
 #: A tuple containing the full version number, which should be used for
 #: comparisons.
 __version_info__ = (0, 2)
