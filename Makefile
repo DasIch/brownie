@@ -30,5 +30,5 @@ clean:
 	@find . -iname "*.pyc" -delete
 	@rm -rf .tox Brownie.egg-info dist
 
-release: test upload-doc
+release: clean test upload-doc
 	python setup.py release sdist upload
