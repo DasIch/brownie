@@ -26,3 +26,23 @@ required to write a PEP`__, is reason enough not to pursue this
 .. _RHEL: http://www.redhat.com/rhel/
 .. _PEP 3333: http://www.python.org/dev/peps/pep-3333/
 .. __: http://www.python.org/dev/peps/pep-0001/
+
+Utilities should be individual to a Project
+-------------------------------------------
+This claim is usually made in combination with the assumption that Brownie
+either covers too much compared to what is needed for a specific Project
+or that Brownie cannot cover enough.
+
+Obviously it is a problem to choose the right balance between utilities
+which are quite common and those which are too rarely used to be included.
+In any case I doubt the criticism truly appreciates the effort required to
+implement, document, test and maintain those utilities.
+
+Even though this is not a particularly difficult task there is a lot of time
+involved which is better spent on developing the features, of your library or
+application, you want to provide.
+
+Brownie might not be able to prevent you from spending any time at all on
+internals but that is neither possible nor the goal. The goal is to make it
+easier for you and if that is done by providing just this one function you
+need, it has been achieved.
