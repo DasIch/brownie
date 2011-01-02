@@ -1349,6 +1349,8 @@ class SetQueue(queue.Queue):
         An internal set is used merely to check for the existence of an item in
         the queue.
 
+    .. versionadded:: 0.3
+
     :author: Gora Khargosh <gora.khargosh@gmail.com>
     :author: Lukáš Lalinský <lalinsky@gmail.com>
     """
