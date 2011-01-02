@@ -21,6 +21,7 @@ Additional Information
    :maxdepth: 2
 
    contributing
+   designdefence
    license
    authors
    changelog
