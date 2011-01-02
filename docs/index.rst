@@ -20,6 +20,7 @@ Additional Information
 .. toctree::
    :maxdepth: 2
 
+   contributing
    license
    authors
    changelog
