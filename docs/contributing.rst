@@ -31,4 +31,4 @@ rules which you should follow:
    As a general rule I should not have to read your code at all to know
    what it is about.
 
-.. _Github: http://github.com/
+.. _Github: https://github.com/

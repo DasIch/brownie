@@ -8,6 +8,7 @@ features.
 *Currently in development*
 
 - Added :class:`brownie.datastructures.SetQueue`.
+- Added :mod:`brownie.proxies`.
 
 0.2.1
 -----
