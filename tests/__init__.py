@@ -10,7 +10,6 @@ from attest import Tests
 
 from tests.itools import itools_tests
 from tests.caching import caching_tests
-from tests.proxies import proxies_tests
 from tests.abstract import abstract_tests
 from tests.parallel import parallel_tests
 from tests.importing import importing_tests
@@ -19,6 +18,6 @@ from tests.datastructures import datastructures_tests
 
 
 all_tests = Tests([
-    itools_tests, caching_tests, proxies_tests, abstract_tests, parallel_tests,
+    itools_tests, caching_tests, abstract_tests, parallel_tests,
     importing_tests, functional_tests, datastructures_tests
 ])

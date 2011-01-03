@@ -13,7 +13,6 @@ Documentation
    importing
    itools
    parallel
-   proxies
 
 Additional Information
 ----------------------
