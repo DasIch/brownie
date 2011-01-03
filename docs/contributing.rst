@@ -1,3 +1,5 @@
+.. _contributing:
+
 Contributing
 ============
 If you want to contribute to Brownie there are a couple of simple basic
