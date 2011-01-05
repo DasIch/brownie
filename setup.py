@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='Brownie',
-    version='0.2.1',
+    version='0.2.2',
     url='http://github.com/DasIch/brownie/',
     license='BSD',
     author='Daniel Neuhäuser',
