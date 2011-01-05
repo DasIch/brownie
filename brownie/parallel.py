@@ -14,7 +14,16 @@ import sys
 from threading import Condition, Lock
 
 try:
-    from multiprocessing import cpu_count as get_cpu_count
+    from multiprocessing import _get_cpu_count
+
+    def get_cpu_count(default=None):
+        try:
+            return _get_cpu_count()
+        except NotImplementedError:
+            if default is None:
+                raise
+            return default
+
 except ImportError:
     def get_cpu_count(default=None):
         if sys.platform == 'win32':

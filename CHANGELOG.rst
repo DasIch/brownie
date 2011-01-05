@@ -3,6 +3,16 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.2.2
+-----
+
+- Expose wrapper for :func:`multiprocessing.cpu_count` instead the
+  function itself which was sometimes exposed as
+  :func:`brownie.parallel.get_cpu_count` because the latter is supposed
+  to have a `default` parameter which :func:`multiprocessing.cpu_count`
+  does not.
+
+
 0.2.1
 -----
 
