@@ -16,5 +16,4 @@ except ImportError:
 try:
     from functools import reduce
 except ImportError:
-    # should be available as built-in
-    pass
+    reduce = reduce
