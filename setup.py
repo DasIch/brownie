@@ -1,5 +1,6 @@
 # coding: utf-8
 from setuptools import setup
+from codecs import open
 
 
 setup(
@@ -11,7 +12,7 @@ setup(
     author_email='dasdasich@gmail.com',
     description='Common utilities and datastructures for Python applications.',
     # don't ever depend on refcounting to close files anywhere else
-    long_description=open('README.rst').read().decode('utf-8'),
+    long_description=open('README.rst', encoding='utf-8').read(),
     packages=['brownie'],
     zip_safe=False,
     platforms='any',
