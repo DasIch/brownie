@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.itools
-    ~~~~~~~~~~~~
+    brownie.tests.itools
+    ~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.itools`.
 

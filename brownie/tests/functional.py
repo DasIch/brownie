@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.functional
-    ~~~~~~~~~~~~~~~~
+    brownie.tests.functional
+    ~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.functional`.
 

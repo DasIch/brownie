@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.abstract
-    ~~~~~~~~~~~~~~
+    brownie.tests.abstract
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for mod:`brownie.abstract`.
 

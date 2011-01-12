@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.parallel
-    ~~~~~~~~~~~~~~
+    brownie.tests.parallel
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.parallel`.
 

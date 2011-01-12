@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.datastructures
-    ~~~~~~~~~~~~~~~~~~~~
+    brownie.tests.datastructures
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.datastructures`.
 

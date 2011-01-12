@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.caching
-    ~~~~~~~~~~~~~
+    brownie.tests.caching
+    ~~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.caching`.
 

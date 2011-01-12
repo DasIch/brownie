@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    tests.importing
-    ~~~~~~~~~~~~~~~
+    brownie.tests.importing
+    ~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.importing`.
 
