@@ -24,16 +24,16 @@ from brownie.itools import (
 )
 
 
-itools_tests = Tests()
+tests = Tests()
 
 
-@itools_tests.test
+@tests.test
 def test_chain():
     list(chain([1, 2], [3, 4])) == [1, 2, 3, 4]
     list(chain.from_iterable([[1, 2], [3, 4]])) == [1, 2, 3, 4]
 
 
-@itools_tests.test
+@tests.test
 def test_izip_longest():
     tests = [
         (((['a', 'b'], ['c', 'd']), {}), [('a', 'c'), ('b', 'd')]),
@@ -45,7 +45,7 @@ def test_izip_longest():
         Assert(list(izip_longest(*args, **kwargs))) == result
 
 
-@itools_tests.test
+@tests.test
 def test_permutations():
     tests = [
         ((('abc', )), ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']),
@@ -58,7 +58,7 @@ def test_permutations():
         Assert(list(permutations(*test))) == result
 
 
-@itools_tests.test
+@tests.test
 def test_product():
     tests = [
         ((('ABCD', 'xy'), {}), ['Ax', 'Ay', 'Bx', 'By', 'Cx', 'Cy', 'Dx', 'Dy']),
@@ -72,13 +72,13 @@ def test_product():
         Assert(list(product(*args, **kwargs))) == result
 
 
-@itools_tests.test
+@tests.test
 def test_starmap():
     add = lambda a, b: a + b
     Assert(list(starmap(add, [(1, 2), (3, 4)]))) == [3, 7]
 
 
-@itools_tests.test
+@tests.test
 def test_combinations_with_replacement():
     tests = [
         (('ABC', 2), ['AA', 'AB', 'AC', 'BB', 'BC', 'CC']),
@@ -92,7 +92,7 @@ def test_combinations_with_replacement():
         Assert(list(combinations_with_replacement(*test))) == result
 
 
-@itools_tests.test
+@tests.test
 def test_compress():
     tests = [
         (('ABCDEF', []), []),
@@ -105,7 +105,7 @@ def test_compress():
         Assert(list(compress(*test))) == result
 
 
-@itools_tests.test
+@tests.test
 def test_count():
     tests = [
         ((), [0, 1, 2, 3, 4]),
@@ -117,7 +117,7 @@ def test_count():
         Assert([c.next() for _ in result]) == result
 
 
-@itools_tests.test
+@tests.test
 def test_grouped():
     tests = [
         ((0, 'abc'), []),
@@ -128,7 +128,7 @@ def test_grouped():
         Assert(list(grouped(*test))) == result
 
 
-@itools_tests.test
+@tests.test
 def test_unique():
     tests = [
         ('aabbcc', 'abc'),

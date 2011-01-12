@@ -59,4 +59,4 @@ class TestImportString(TestBase):
             import_string('foobar')
 
 
-importing_tests = Tests([TestImportString])
+tests = Tests([TestImportString])

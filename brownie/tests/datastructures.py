@@ -1287,7 +1287,7 @@ class TestSetQueue(TestBase):
         consumer.join()
 
 
-datastructures_tests = Tests([
+tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
     TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,

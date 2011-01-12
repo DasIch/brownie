@@ -15,10 +15,10 @@ from attest import Tests, Assert, TestBase, test
 from brownie.caching import cached_property, LRUCache, LFUCache
 
 
-caching_tests = Tests()
+tests = Tests()
 
 
-@caching_tests.test
+@tests.test
 def test_cached_property():
     class Foo(object):
         def __init__(self):
@@ -79,7 +79,7 @@ class TestLRUCache(TestBase):
         cache = LRUCache()
         Assert(repr(cache)) == 'LRUCache({}, inf)'
 
-caching_tests.register(TestLRUCache)
+tests.register(TestLRUCache)
 
 
 class TestLFUCache(TestBase):
@@ -97,4 +97,4 @@ class TestLFUCache(TestBase):
         cache = LFUCache()
         Assert(repr(cache)) == 'LFUCache({}, inf)'
 
-caching_tests.register(TestLFUCache)
+tests.register(TestLFUCache)

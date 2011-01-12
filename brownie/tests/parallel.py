@@ -17,10 +17,10 @@ from attest import Tests, Assert, TestBase, test
 from brownie.parallel import get_cpu_count, AsyncResult, TimeoutError
 
 
-parallel_tests = Tests()
+tests = Tests()
 
 
-@parallel_tests.test
+@tests.test
 def test_get_cpu_count():
     try:
         Assert(get_cpu_count()) > 0
@@ -93,4 +93,4 @@ class TestAsyncResult(TestBase):
         aresult = AsyncResult(callback=1, errback=2)
         Assert(repr(aresult)) == 'AsyncResult(callback=1, errback=2)'
 
-parallel_tests.register(TestAsyncResult)
+tests.register(TestAsyncResult)

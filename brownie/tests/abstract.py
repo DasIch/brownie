@@ -19,9 +19,9 @@ from brownie.abstract import VirtualSubclassMeta, ABCMeta, AbstractClassMeta
 GE_PYTHON_26 = sys.version_info >= (2, 6)
 
 
-abstract_tests = Tests()
+tests = Tests()
 
-@abstract_tests.test_if(GE_PYTHON_26)
+@tests.test_if(GE_PYTHON_26)
 def test_virtual_subclass_meta():
     from abc import ABCMeta
 
@@ -93,10 +93,10 @@ class TestABCMeta(TestBase):
 
         Foo.register(Bar)
 
-abstract_tests.register(TestABCMeta)
+tests.register(TestABCMeta)
 
 
-@abstract_tests.test_if(GE_PYTHON_26)
+@tests.test_if(GE_PYTHON_26)
 def test_abstract_class_meta():
     class Foo(object):
         __metaclass__ = ABCMeta

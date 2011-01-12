@@ -14,10 +14,10 @@ from attest import Tests, Assert
 from brownie.functional import compose, flip
 
 
-functional_tests = Tests()
+tests = Tests()
 
 
-@functional_tests.test
+@tests.test
 def test_compose():
     with Assert.raises(TypeError):
         compose()
@@ -26,7 +26,7 @@ def test_compose():
     Assert(compose(add_one, mul_two)(1)) == 3
 
 
-@functional_tests.test
+@tests.test
 def test_flip():
     f = lambda a, b, **kws: (a, kws)
     Assert(f(1, 2)) == (1, {})
