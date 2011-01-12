@@ -3,9 +3,8 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
-0.3 - [Codename to be selected]
--------------------------------
-*Currently in development*
+0.3 - Tomte
+-----------
 
 - Added :class:`brownie.datastructures.SetQueue`.
 
