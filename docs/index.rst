@@ -21,6 +21,7 @@ Additional Information
    :maxdepth: 2
 
    contributing
+   testing
    designdefence
    license
    authors
