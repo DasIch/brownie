@@ -26,5 +26,6 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Topic :: Software Development :: Libraries'
-    ]
+    ],
+    use_2to3=True
 )
