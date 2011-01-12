@@ -10,6 +10,8 @@
 """
 from functools import wraps
 
+from brownie.pycompat import reduce
+
 
 def compose(*functions):
     """

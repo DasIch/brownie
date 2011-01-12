@@ -13,3 +13,8 @@ try:
 except ImportError:
     izip = zip
     ifilter = filter
+try:
+    from functools import reduce
+except ImportError:
+    # should be available as built-in
+    pass
