@@ -27,5 +27,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Software Development :: Libraries'
     ],
-    use_2to3=True
+    use_2to3=True,
+    test_loader='attest:Loader',
+    test_suite='attest.tests.all'
 )
