@@ -3,6 +3,12 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.4 - [Codename to be selected]
+-------------------------------
+*Currently in development*
+
+- Added Python 3.x support.
+
 0.3 - Tomte
 -----------
 

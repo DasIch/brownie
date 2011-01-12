@@ -26,7 +26,7 @@ for development or issue tracking or fetch the `latest development version`_.
 Installation
 ------------
 
-Brownie runs on Python 2.5-2.7 (tested on CPython_ and PyPy_). In order to
+Brownie runs on Python 2.5-3.1 (tested on CPython_ and PyPy_). In order to
 install it simply run ``pip install brownie`` or ``easy_install brownie``,
 should you prefer the latter, to get the latest stable version.
 
