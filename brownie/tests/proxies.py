@@ -9,6 +9,7 @@
 from attest import Tests, TestBase, test, Assert
 
 from brownie.proxies import make_proxy_class
+from brownie.datastructures import missing
 
 
 class TestMakeProxyClass(TestBase):
@@ -55,7 +56,7 @@ class TestMakeProxyClass(TestBase):
         @proxy_cls.setattr
         def handle_setattr(self, proxied, name, obj):
             setattr_access.append((name, obj))
-            return setattr(proxied, name, obj)
+            return getattr(proxied, name, obj)
 
         class Foo(object):
             a = 1
@@ -80,7 +81,7 @@ class TestMakeProxyClass(TestBase):
         @proxy_cls.method
         def method_handler(self, proxied, name, *args, **kwargs):
             method_calls.append((name, args, kwargs))
-            return getattr(proxied, name)(*args, **kwargs)
+            return missing
 
         proxy = proxy_cls(1)
         Assert(proxy + 1) == 2
@@ -93,6 +94,7 @@ class TestMakeProxyClass(TestBase):
             ('__sub__', (1, ), {}),
             ('__mul__', (1, ), {}),
             ('__div__', (1, ), {}),
+            ('__lt__', (1, ), {})
         ]
 
 

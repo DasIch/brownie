@@ -31,14 +31,14 @@ CONVERSION_METHODS = frozenset([
 ])
 
 
-COMPARISON_METHODS = frozenset([
-    '__lt__',  # <
-    '__le__',  # <=
-    '__eq__',  # ==
-    '__ne__',  # !=
-    '__gt__',  # >
-    '__ge__',  # >=
-])
+COMPARISON_METHODS = {
+    '__lt__': '<',
+    '__le__': '<=',
+    '__eq__': '==',
+    '__ne__': '!=',
+    '__gt__': '>',
+    '__ge__': '>='
+}
 
 
 DESCRIPTOR_METHODS = frozenset([
@@ -158,16 +158,16 @@ UNGROUPABLE_METHODS = frozenset([
 
 
 #: All special methods with exception of :meth:`__new__` and :meth:`__init__`.
-SPECIAL_METHODS = (
-    CONVERSION_METHODS |
-    COMPARISON_METHODS |
-    DESCRIPTOR_METHODS |
-    BINARY_ARITHMETHIC_METHODS |
-    UNARY_ARITHMETHIC_METHODS |
-    CONTAINER_METHODS |
-    SLICING_METHODS |
-    TYPECHECK_METHODS |
-    CONTEXT_MANAGER_METHODS |
+SPECIAL_METHODS = frozenset().union(
+    CONVERSION_METHODS,
+    COMPARISON_METHODS,
+    DESCRIPTOR_METHODS,
+    BINARY_ARITHMETHIC_METHODS,
+    UNARY_ARITHMETHIC_METHODS,
+    CONTAINER_METHODS,
+    SLICING_METHODS,
+    TYPECHECK_METHODS,
+    CONTEXT_MANAGER_METHODS,
     UNGROUPABLE_METHODS
 )
 
@@ -218,6 +218,27 @@ class ProxyBase(object):
     def __repr__(self):
         return self.__repr_handler(self.__proxied)
 
+    # the special methods we implemented so far (for special cases)
+    implemented = set()
+
+    # we need to special case comparision methods due to the fact that
+    # if we implement __lt__ and call it on the proxied object it might fail
+    # because the proxied object implements __cmp__ instead.
+    method_template = textwrap.dedent("""
+        def %(name)s(self, other):
+            result = self._ProxyBase__method_handler(
+                self._ProxyBase__proxied, '%(name)s', other
+            )
+            if result is missing:
+                return self._ProxyBase__proxied %(operator)s other
+    """)
+
+    for method, operator in COMPARISON_METHODS.iteritems():
+        exec(method_template % dict(name=method, operator=operator))
+    implemented.update(COMPARISON_METHODS)
+    del operator
+
+
     method_template = textwrap.dedent("""
         def %(name)s(self, *args, **kwargs):
             result = self._ProxyBase__method_handler(
@@ -227,10 +248,10 @@ class ProxyBase(object):
                 return self._ProxyBase__proxied.%(name)s(*args, **kwargs)
             return result
     """)
-    for method in SPECIAL_METHODS:
+    for method in SPECIAL_METHODS - implemented:
         method = method_template % dict(name=method)
         exec(method)
-    del method_template, method
+    del method_template, method, implemented
 
 
 def make_proxy_class(name, doc=None):
@@ -274,8 +295,5 @@ def make_proxy_class(name, doc=None):
 
         - Especially with built-in objects this may yield otherwise unexpected
           results such as ``proxy(1) + proxy(1)`` not working.
-
-        - Operations like ``proxy(1) < proxy(1)`` do not work because
-          ``getattr(1, '__lt__')`` fails with an :exc:`AttributeError`.
     """
     return ProxyMeta(name, (ProxyBase, ), {'__doc__': doc})
