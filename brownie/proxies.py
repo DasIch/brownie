@@ -14,9 +14,7 @@ from brownie.itools import starmap
 from brownie.datastructures import missing
 
 
-#: All special methods with exception of :meth:`__new__` and :meth:`__init__`.
-SPECIAL_METHODS = frozenset([
-    # conversions
+CONVERSION_METHODS = frozenset([
     '__str__',     # str()
     '__unicode__', # unicode()
 
@@ -30,39 +28,27 @@ SPECIAL_METHODS = frozenset([
     '__nonzero__', # truth-testing, bool()
     '__index__',   # slicing, operator.index()
     '__coerce__',  # mixed-mode numeric arithmetic
+])
 
-    # comparisons
+
+COMPARISON_METHODS = frozenset([
     '__lt__',  # <
     '__le__',  # <=
     '__eq__',  # ==
     '__ne__',  # !=
     '__gt__',  # >
     '__ge__',  # >=
-    '__cmp__', # cmp()
+])
 
-    # hashability, required if ==/!= are implemented
-    '__hash__', # hash()
 
-    # descriptors
+DESCRIPTOR_METHODS = frozenset([
     '__get__',
     '__set__',
     '__delete__',
+])
 
-    # container
-    '__len__',      # len()
-    '__getitem__',  # ...[]
-    '__setitem__',  # ...[] = ...
-    '__delitem__',  # del ...[]
-    '__iter__',     # iter()
-    '__reversed__', # reversed()
-    '__contains__'  # ... in ...
 
-    # slicing (deprecated)
-    '__getslice__',
-    '__setslice__',
-    '__delslice__',
-
-    # numeric/arithmetic
+BINARY_ARITHMETHIC_METHODS = frozenset([
     # regular       reversed         augmented assignment
     '__add__',      '__radd__',      '__iadd__',
     '__sub__',      '__rsub__',      '__isub__',
@@ -78,23 +64,70 @@ SPECIAL_METHODS = frozenset([
     '__and__',      '__rand__',      '__iand__',
     '__xor__',      '__rxor__',      '__ixor__',
     '__or__',       '__ror__',       '__ior__',
+])
 
-    # unary arithmetic
+
+UNARY_ARITHMETHIC_METHODS = frozenset([
     '__neg__',   # -
     '__pos__',   # +
     '__abs__',   # abs()
     '__invert__' # ~
+])
 
-    # overriding type checks
+
+CONTAINER_METHODS = frozenset([
+    '__len__',      # len()
+    '__getitem__',  # ...[]
+    '__setitem__',  # ...[] = ...
+    '__delitem__',  # del ...[]
+    '__iter__',     # iter()
+    '__reversed__', # reversed()
+    '__contains__'  # ... in ...
+])
+
+
+SLICING_METHODS = frozenset([
+    '__getslice__',
+    '__setslice__',
+    '__delslice__',
+])
+
+
+TYPECHECK_METHODS = frozenset([
     '__instancecheck__', # isinstance()
     '__issubclass__',    # issubclass()
+])
 
-    '__call__', # ...()
 
-    # context manager
+CONTEXT_MANAGER_METHODS = frozenset([
     '__enter__',
     '__exit__'
 ])
+
+UNGROUPABLE_METHODS = frozenset([
+    # special comparison
+    '__cmp__', # cmp()
+
+    # hashability, required if ==/!= are implemented
+    '__hash__', # hash()
+
+    '__call__', # ...()
+])
+
+
+#: All special methods with exception of :meth:`__new__` and :meth:`__init__`.
+SPECIAL_METHODS = (
+    CONVERSION_METHODS |
+    COMPARISON_METHODS |
+    DESCRIPTOR_METHODS |
+    BINARY_ARITHMETHIC_METHODS |
+    UNARY_ARITHMETHIC_METHODS |
+    CONTAINER_METHODS |
+    SLICING_METHODS |
+    TYPECHECK_METHODS |
+    CONTEXT_MANAGER_METHODS |
+    UNGROUPABLE_METHODS
+)
 
 
 class ProxyMeta(type):
