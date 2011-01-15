@@ -48,23 +48,65 @@ DESCRIPTOR_METHODS = frozenset([
 ])
 
 
-BINARY_ARITHMETHIC_METHODS = frozenset([
-    # regular       reversed         augmented assignment
-    '__add__',      '__radd__',      '__iadd__',
-    '__sub__',      '__rsub__',      '__isub__',
-    '__mul__',      '__rmul__',      '__imul__',
-    '__div__',      '__rdiv__',      '__idiv__',
-    '__truediv__',  '__rtruediv__',  '__itruediv__'
-    '__floordiv__', '__rfloordiv__', '__ifloordiv__',
-    '__mod__',      '__rmod__',      '__imod__',
-    '__divmod__',   '__rdivmod__',   '__ipow__',
-    '__pow__',      '__rpow__',      '__ipow__',
-    '__lshift__',   '__rlshift__',   '__ilshift__',
-    '__rshift__',   '__rrshift__',   '__rlshift__',
-    '__and__',      '__rand__',      '__iand__',
-    '__xor__',      '__rxor__',      '__ixor__',
-    '__or__',       '__ror__',       '__ior__',
+REGULAR_BINARY_ARITHMETIC_METHODS = frozenset([
+    '__add__',
+    '__sub__',
+    '__mul__',
+    '__div__',
+    '__truediv__',
+    '__floordiv__',
+    '__mod__',
+    '__divmod__',
+    '__pow__',
+    '__lshift__',
+    '__rshift__',
+    '__and__',
+    '__xor__',
+    '__or__',
 ])
+
+
+REVERSED_ARITHMETIC_METHODS = frozenset([
+    '__radd__',
+    '__rsub__',
+    '__rmul__',
+    '__rdiv__',
+    '__rtruediv__',
+    '__rfloordiv__',
+    '__rmod__',
+    '__rdivmod__',
+    '__rpow__',
+    '__rlshift__',
+    '__rrshift__',
+    '__rand__',
+    '__rxor__',
+    '__ror__',
+])
+
+
+AUGMENTED_ASSIGNMENT_METHODS = frozenset([
+    '__iadd__',
+    '__isub__',
+    '__imul__',
+    '__idiv__',
+    '__itruediv__'
+    '__ifloordiv__',
+    '__imod__',
+    '__ipow__',
+    '__ipow__',
+    '__ilshift__',
+    '__rlshift__',
+    '__iand__',
+    '__ixor__',
+    '__ior__',
+])
+
+
+BINARY_ARITHMETHIC_METHODS = (
+    REGULAR_BINARY_ARITHMETIC_METHODS |
+    REVERSED_ARITHMETIC_METHODS |
+    AUGMENTED_ASSIGNMENT_METHODS
+)
 
 
 UNARY_ARITHMETHIC_METHODS = frozenset([
