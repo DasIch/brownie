@@ -146,6 +146,7 @@ CONTEXT_MANAGER_METHODS = frozenset([
     '__exit__'
 ])
 
+
 UNGROUPABLE_METHODS = frozenset([
     # special comparison
     '__cmp__', # cmp()
@@ -239,7 +240,6 @@ class ProxyBase(object):
     implemented.update(COMPARISON_METHODS)
     del operator
 
-
     method_template = textwrap.dedent("""
         def %(name)s(self, other, *args, **kwargs):
             result = self._ProxyBase__method_handler(
@@ -259,7 +259,6 @@ class ProxyBase(object):
     for method in REGULAR_BINARY_ARITHMETIC_METHODS:
         exec(method_template % dict(name=method))
     implemented.update(REGULAR_BINARY_ARITHMETIC_METHODS)
-
 
     method_template = textwrap.dedent("""
         def %(name)s(self, *args, **kwargs):
