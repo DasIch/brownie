@@ -915,11 +915,6 @@ class TestLazyList(TestBase):
         Assert(l) == data
 
     @test
-    def iteration(self):
-        l = LazyList(self._genrange(10))
-        Assert(list(l)) == range(10)
-
-    @test
     def len(self):
         Assert(len(LazyList(range(10)))) == 10
 
