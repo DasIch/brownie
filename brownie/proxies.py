@@ -342,7 +342,6 @@ def as_proxy(cls):
 
         foo = MyProxy(1)
     '''
-    name = cls.__name__
     attributes = {
         '__module__': cls.__module__,
         '__doc__': cls.__doc__
@@ -360,4 +359,4 @@ def as_proxy(cls):
         if handler is not None:
             attributes[internal_name] = handler.im_func
 
-    return ProxyMeta(name, (ProxyBase, ), attributes)
+    return ProxyMeta(cls.__name__, (ProxyBase, ), attributes)

@@ -105,5 +105,14 @@ class TestMakeProxyClass(TestBase):
                 ('__lt__', (1, ), {})
             ]
 
+    @test
+    def proper_wrapping(self):
+        class FooProxy(object):
+            """A little bit of documentation."""
+        proxy_cls = as_proxy(FooProxy)
+        Assert(proxy_cls.__name__) == FooProxy.__name__
+        Assert(proxy_cls.__module__) == FooProxy.__module__
+        Assert(proxy_cls.__doc__) == FooProxy.__doc__
+
 
 tests = Tests([TestMakeProxyClass])
