@@ -231,12 +231,34 @@ class ProxyBase(object):
             )
             if result is missing:
                 return self._ProxyBase__proxied %(operator)s other
+            return result
     """)
 
     for method, operator in COMPARISON_METHODS.iteritems():
         exec(method_template % dict(name=method, operator=operator))
     implemented.update(COMPARISON_METHODS)
     del operator
+
+
+    method_template = textwrap.dedent("""
+        def %(name)s(self, other, *args, **kwargs):
+            result = self._ProxyBase__method_handler(
+                self._ProxyBase__proxied,
+                '%(name)s',
+                *((other, ) + args),
+                **kwargs
+            )
+            if result is missing:
+                if ProxyBase in type(other).mro():
+                    other = other._ProxyBase__proxied
+                return self._ProxyBase__proxied.%(name)s(
+                    *((other, ) + args), **kwargs
+                )
+            return result
+    """)
+    for method in REGULAR_BINARY_ARITHMETIC_METHODS:
+        exec(method_template % dict(name=method))
+    implemented.update(REGULAR_BINARY_ARITHMETIC_METHODS)
 
 
     method_template = textwrap.dedent("""
@@ -292,8 +314,5 @@ def make_proxy_class(name, doc=None):
 
         - When checking the type of a :class:`ProxyClass` instance using
           :class:`type()` the :class:`ProxyClass` will be returned.
-
-        - Especially with built-in objects this may yield otherwise unexpected
-          results such as ``proxy(1) + proxy(1)`` not working.
     """
     return ProxyMeta(name, (ProxyBase, ), {'__doc__': doc})
