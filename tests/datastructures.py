@@ -814,6 +814,8 @@ class TestLazyList(TestBase):
         l.insert(5, 'foobar')
         Assert(l[5]) == 'foobar'
         Assert(l.exhausted) == False
+        l.insert(-3, 'spam')
+        Assert(l[-4]) == 'spam'
 
     @test
     def pop(self):

@@ -3,6 +3,13 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.3.1
+-----
+
+- Fixed an issue with :meth:`brownie.datastructures.LazyList.insert`,
+  which caused the internal stream not to be exhausted when used with
+  negative indexes.
+
 0.3 - Tomte
 -----------
 
