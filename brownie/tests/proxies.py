@@ -8,30 +8,29 @@
 """
 from attest import Tests, TestBase, test, Assert
 
-from brownie.proxies import make_proxy_class
+from brownie.proxies import as_proxy
 from brownie.datastructures import missing
 
 
 class TestMakeProxyClass(TestBase):
     @test
     def default_repr(self):
-        proxy_class = make_proxy_class('FooProxy')
-        Assert(repr(proxy_class(1))) == '1'
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        Assert(repr(proxy_cls(1))) == '1'
 
     @test
     def setting_repr(self):
-        proxy_cls = make_proxy_class('FooProxy')
+        class FooProxy(object):
+            def repr(self, proxied):
+                return 'FooProxy(%s)' % repr(proxied)
+        FooProxy = as_proxy(FooProxy)
 
-        @proxy_cls.repr
-        def __repr__(self, proxied):
-            return 'FooProxy(%s)' % repr(proxied)
-
-        p = proxy_cls(1)
+        p = FooProxy(1)
         Assert(repr(p)) == 'FooProxy(1)'
 
     @test
     def default_attribute_handling(self):
-        proxy_cls = make_proxy_class('FooProxy')
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
 
         class Foo(object):
             a = 1
@@ -43,25 +42,24 @@ class TestMakeProxyClass(TestBase):
 
     @test
     def attribute_handling(self):
-        proxy_cls = make_proxy_class('FooProxy')
-
         getattr_access = []
         setattr_access = []
 
-        @proxy_cls.getattr
-        def handle_getattr(self, proxied, name):
-            getattr_access.append(name)
-            return getattr(proxied, name)
+        class FooProxy(object):
+            def getattr(self, proxied, name):
+                getattr_access.append(name)
+                return getattr(proxied, name)
 
-        @proxy_cls.setattr
-        def handle_setattr(self, proxied, name, obj):
-            setattr_access.append((name, obj))
-            return getattr(proxied, name, obj)
+            def setattr(self, proxied, name, obj):
+                setattr_access.append((name, obj))
+                return setattr(proxied, name, obj)
+
+        FooProxy = as_proxy(FooProxy)
 
         class Foo(object):
             a = 1
 
-        proxy = proxy_cls(Foo())
+        proxy = FooProxy(Foo())
         Assert(proxy.a) == 1
         proxy.a = 2
         Assert(getattr_access) == ['a']
@@ -69,7 +67,7 @@ class TestMakeProxyClass(TestBase):
 
     @test
     def default_special_method_handling(self):
-        proxy_cls = make_proxy_class('FooProxy')
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
         proxy = proxy_cls(1)
         Assert(proxy + 1) == 2
 
@@ -88,11 +86,12 @@ class TestMakeProxyClass(TestBase):
             return get_result(proxied, *args, **kwargs)
 
         for handler in [simple_method_handler, advanced_method_handler]:
-            proxy_cls = make_proxy_class('FooProxy')
-            proxy_cls.method(handler)
+            class FooProxy(object):
+                method = handler
+            FooProxy = as_proxy(FooProxy)
             method_calls = []
 
-            proxy = proxy_cls(1)
+            proxy = FooProxy(1)
             Assert(proxy + 1) == 2
             Assert(proxy - 1) == 0
             Assert(proxy * 1) == 1

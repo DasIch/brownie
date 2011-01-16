@@ -285,59 +285,81 @@ class ProxyBase(object):
     del method_template, method, implemented
 
 
-def make_proxy_class(name, doc=None):
-    """
-    Creates a generic proxy class like :class:`ProxyClass` with the given `name`
-    and `doc` as it's docstring.
+def as_proxy(cls):
+    '''
+    Class decorator which returns a proxy based on the handlers defined in the
+    given class defined as methods::
 
-    .. class:: ProxyClass(proxied)
+        @as_proxy
+        class MyProxy(object):
+            """
+            This is an example proxy, every method defined is optional.
+            """
+            def method(self, proxied, name, get_result, *args, **kwargs):
+                """
+                Gets called when a special method is called on the proxy
 
-       .. classmethod:: method(handler)
+                :param proxied:
+                    The object wrapped by the proxy.
 
-          Decorator which takes a `handler` looking like this:
+                :param name:
+                    The name of the called method.
 
-          .. function:: handler(self, proxied, name, get_result, *args, **kwargs)
+                :param get_result:
+                    A function which takes `proxied`, `*args` and `**kwargs`
+                    as arguments and returns the appropriate result for the
+                    called method.
 
-             :param self:
-                The proxy object (`self`)
+                :param \*args:
+                    The positional arguments passed to the method.
 
-             :param proxied:
-                The wrapped object.
+                :param \*\*kwargs:
+                    The keyword arguments passed to the method.
+                """
+                return missing
 
-             :param name:
-                The name of the called special method.
+            def getattr(self, proxied, name):
+                """
+                Gets called when a 'regular' attribute is accessed.
 
-             :param proxied:
-                A function which takes `proxied`, the positional and keyword
-                arguments and returns the correct result for the operation,
-                *always* use this function if you want to work everything
-                normally.
+                :param name:
+                    The name of the attribute.
+                """
+                return getattr(proxied, name)
 
-             :param \*args:
-                The positional arguments passed to the method.
+            def setattr(self, proxied, name, obj):
+                """
+                Gets called when a 'regular' attribute is set.
 
-             :param \*\*kwargs:
-                The keyword arguments passed to the method.
+                :param obj:
+                    The object which is set as attribute.
+                """
+                setattr(proxied, name, obj)
 
-       .. classmethod:: getattr(handler)
+            def repr(self, proxied):
+                """
+                Gets called for the representation of the proxy.
+                """
+                return repr(proxied)
 
-          Decorator which takes a `handler` which gets called with the
-          `proxied` object and the name of the accessed attribute.
+        foo = MyProxy(1)
+    '''
+    name = cls.__name__
+    attributes = {
+        '__module__': cls.__module__,
+        '__doc__': cls.__doc__
+    }
 
-       .. classmethod:: setattr(handler)
+    handler_name_mapping = {
+        'method': '_ProxyBase__method_handler',
+        'getattr': '_ProxyBase__getattr_handler',
+        'setattr': '_ProxyBase__setattr_handler',
+        'repr': '_ProxyBase__repr_handler'
+    }
 
-          Decorator which takes a `handler` which gets called with the
-          `proxied` object, the name of the attribute which is set and the
-          object it is set with.
+    for name, internal_name in handler_name_mapping.iteritems():
+        handler = getattr(cls, name, None)
+        if handler is not None:
+            attributes[internal_name] = handler.im_func
 
-       .. classmethod:: repr(handler)
-
-          Decorator which takes a `handler` which gets called with the
-          `proxied` object and is supposed to return a representation of the
-          object per default ``repr(proxied)`` is returned.
-
-    .. warning::
-       When checking the type of a :class:`ProxyClass` instance using
-       :class:`type()` the :class:`ProxyClass` will be returned.
-    """
-    return ProxyMeta(name, (ProxyBase, ), {'__doc__': doc})
+    return ProxyMeta(name, (ProxyBase, ), attributes)
