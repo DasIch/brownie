@@ -910,7 +910,7 @@ class LazyList(object):
 
         This method exhausts the internal iterator up until the given `index`.
         """
-        if index >= self.known_length:
+        if index >= self.known_length or index < 0:
             self._exhaust(index)
         self._collected_data.insert(index, object)
 
