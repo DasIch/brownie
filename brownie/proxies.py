@@ -248,8 +248,6 @@ class ProxyBase(object):
                 other = args[0]
                 if ProxyBase in type(other).mro():
                     other = other._ProxyBase__proxied
-                else:
-                    other = args[0]
                 return proxied.%(name)s(
                     *((other, ) + args[1:]), **kwargs
                 )
