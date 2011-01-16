@@ -281,7 +281,7 @@ def make_proxy_class(name, doc=None):
     Creates a generic proxy class like :class:`ProxyClass` with the given `name`
     and `doc` as it's docstring.
 
-    .. class:: .ProxyClass(proxied)
+    .. class:: ProxyClass(proxied)
 
        .. classmethod:: method(handler)
 
@@ -309,10 +309,7 @@ def make_proxy_class(name, doc=None):
           object per default ``repr(proxied)`` is returned.
 
     .. warning::
-
-        At the moment there are several issues:
-
-        - When checking the type of a :class:`ProxyClass` instance using
-          :class:`type()` the :class:`ProxyClass` will be returned.
+       When checking the type of a :class:`ProxyClass` instance using
+       :class:`type()` the :class:`ProxyClass` will be returned.
     """
     return ProxyMeta(name, (ProxyBase, ), {'__doc__': doc})

@@ -8,6 +8,7 @@ features.
 *Currently in development*
 
 - Added Python 3.x support.
+- Added :mod:`brownie.proxies`.
 
 0.3.1
 -----
