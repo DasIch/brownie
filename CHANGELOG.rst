@@ -17,6 +17,10 @@ features.
   which caused the internal stream not to be exhausted when used with
   negative indexes.
 
+  Thanks to Trundle_ for the report and patch.
+
+.. _Trundle: https://github.com/Trundle
+
 0.3 - Tomte
 -----------
 
