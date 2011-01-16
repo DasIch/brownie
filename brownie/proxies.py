@@ -194,7 +194,7 @@ class ProxyBase(object):
     def __init__(self, proxied):
         self.__proxied = proxied
 
-    def __method_handler(self, proxied, name, *args, **kwargs):
+    def __method_handler(self, proxied, name, get_result, *args, **kwargs):
         return missing
 
     def __getattr_handler(self, proxied, name):
@@ -227,11 +227,13 @@ class ProxyBase(object):
     # because the proxied object implements __cmp__ instead.
     method_template = textwrap.dedent("""
         def %(name)s(self, other):
+            def get_result(proxied, other):
+                return proxied %(operator)s other
             result = self._ProxyBase__method_handler(
-                self._ProxyBase__proxied, '%(name)s', other
+                self._ProxyBase__proxied, '%(name)s', get_result, other
             )
             if result is missing:
-                return self._ProxyBase__proxied %(operator)s other
+                return get_result(self._ProxyBase__proxied, other)
             return result
     """)
 
@@ -241,19 +243,25 @@ class ProxyBase(object):
     del operator
 
     method_template = textwrap.dedent("""
-        def %(name)s(self, other, *args, **kwargs):
+        def %(name)s(self, *args, **kwargs):
+            def get_result(proxied, *args, **kwargs):
+                other = args[0]
+                if ProxyBase in type(other).mro():
+                    other = other._ProxyBase__proxied
+                else:
+                    other = args[0]
+                return proxied.%(name)s(
+                    *((other, ) + args[1:]), **kwargs
+                )
             result = self._ProxyBase__method_handler(
                 self._ProxyBase__proxied,
                 '%(name)s',
-                *((other, ) + args),
+                get_result,
+                *args,
                 **kwargs
             )
             if result is missing:
-                if ProxyBase in type(other).mro():
-                    other = other._ProxyBase__proxied
-                return self._ProxyBase__proxied.%(name)s(
-                    *((other, ) + args), **kwargs
-                )
+                return get_result(self._ProxyBase__proxied, *args, **kwargs)
             return result
     """)
     for method in REGULAR_BINARY_ARITHMETIC_METHODS:
@@ -262,11 +270,13 @@ class ProxyBase(object):
 
     method_template = textwrap.dedent("""
         def %(name)s(self, *args, **kwargs):
+            def get_result(proxied, *args, **kwargs):
+                return proxied.%(name)s(*args, **kwargs)
             result = self._ProxyBase__method_handler(
-                self._ProxyBase__proxied, '%(name)s', *args, **kwargs
+                self._ProxyBase__proxied, '%(name)s', get_result, *args, **kwargs
             )
             if result is missing:
-                return self._ProxyBase__proxied.%(name)s(*args, **kwargs)
+                return get_result(proxied, *args, **kwargs)
             return result
     """)
     for method in SPECIAL_METHODS - implemented:
@@ -284,11 +294,30 @@ def make_proxy_class(name, doc=None):
 
        .. classmethod:: method(handler)
 
-          Decorator which takes a `handler` which gets called with the
-          `proxied` object, the name of the called special method, positional
-          and keyword arguments of the called method. If the handler returns
-          :data:`brownie.datastructures.missing` the special method is called,
-          to achieve the usual behaviour.
+          Decorator which takes a `handler` looking like this:
+
+          .. function:: handler(self, proxied, name, get_result, *args, **kwargs)
+
+             :param self:
+                The proxy object (`self`)
+
+             :param proxied:
+                The wrapped object.
+
+             :param name:
+                The name of the called special method.
+
+             :param proxied:
+                A function which takes `proxied`, the positional and keyword
+                arguments and returns the correct result for the operation,
+                *always* use this function if you want to work everything
+                normally.
+
+             :param \*args:
+                The positional arguments passed to the method.
+
+             :param \*\*kwargs:
+                The keyword arguments passed to the method.
 
        .. classmethod:: getattr(handler)
 

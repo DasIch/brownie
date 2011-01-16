@@ -75,27 +75,36 @@ class TestMakeProxyClass(TestBase):
 
     @test
     def special_method_handling(self):
-        proxy_cls = make_proxy_class('FooProxy')
-        method_calls = []
-
-        @proxy_cls.method
-        def method_handler(self, proxied, name, *args, **kwargs):
+        def simple_method_handler(
+                    self, proxied, name, get_result, *args, **kwargs
+                ):
             method_calls.append((name, args, kwargs))
             return missing
 
-        proxy = proxy_cls(1)
-        Assert(proxy + 1) == 2
-        Assert(proxy - 1) == 0
-        Assert(proxy * 1) == 1
-        Assert(proxy / 1) == 1
-        Assert(proxy < 1) == False
-        Assert(method_calls) == [
-            ('__add__', (1, ), {}),
-            ('__sub__', (1, ), {}),
-            ('__mul__', (1, ), {}),
-            ('__div__', (1, ), {}),
-            ('__lt__', (1, ), {})
-        ]
+        def advanced_method_handler(
+                    self, proxied, name, get_result, *args, **kwargs
+                ):
+            method_calls.append((name, args, kwargs))
+            return get_result(proxied, *args, **kwargs)
+
+        for handler in [simple_method_handler, advanced_method_handler]:
+            proxy_cls = make_proxy_class('FooProxy')
+            proxy_cls.method(handler)
+            method_calls = []
+
+            proxy = proxy_cls(1)
+            Assert(proxy + 1) == 2
+            Assert(proxy - 1) == 0
+            Assert(proxy * 1) == 1
+            Assert(proxy / 1) == 1
+            Assert(proxy < 1) == False
+            Assert(method_calls) == [
+                ('__add__', (1, ), {}),
+                ('__sub__', (1, ), {}),
+                ('__mul__', (1, ), {}),
+                ('__div__', (1, ), {}),
+                ('__lt__', (1, ), {})
+            ]
 
 
 tests = Tests([TestMakeProxyClass])
