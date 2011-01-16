@@ -9,8 +9,6 @@ features.
 
 - Added Python 3.x support.
 - Added :mod:`brownie.proxies`.
-- Optimized :class:`brownie.datastructures.LazyList` so that the internal
-  iterator is not exhausted for negative indices.
 
 0.3.1
 -----

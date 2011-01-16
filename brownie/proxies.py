@@ -235,7 +235,7 @@ class ProxyBase(object):
             return result
     """)
 
-    for method, operator in COMPARISON_METHODS.iteritems():
+    for method, operator in COMPARISON_METHODS.items():
         exec(method_template % dict(name=method, operator=operator))
     implemented.update(COMPARISON_METHODS)
     del operator

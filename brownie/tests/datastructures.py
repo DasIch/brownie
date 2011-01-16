@@ -780,7 +780,7 @@ class TestLazyList(TestBase):
         l = LazyList(self._genrange(10))
         Assert(l.exhausted) == False
         l[-1]
-        Assert(l.exhausted) == False
+        Assert(l.exhausted) == True
 
     @test
     def iteration(self):
@@ -865,6 +865,8 @@ class TestLazyList(TestBase):
         l = LazyList(self._genrange(10))
         l[5]
         Assert(l.exhausted) == False
+        l = LazyList(self._genrange(10))
+        Assert(l[-1]) == 9
 
     @test
     def getslice(self):
