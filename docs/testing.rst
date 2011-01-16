@@ -57,6 +57,9 @@ At the moment the following test environments are available:
 `py25`, `pypy`
     Runs all unit tests on Python 2.5
 
-`py26`, `py27`, `py31`
-    Runs all unit tests on Python 2.6, 2.7 or 3.1 respectively as well as
+`py26`, `py27`
+    Runs all unit tests on Python 2.6 or 2.7 respectively as well as
     doctests and examples in the documentation.
+
+`py31`
+    Runs all unit tests on Python 3.1.
