@@ -865,7 +865,7 @@ class LazyList(object):
     def _exhaust(self, i=None):
         if self.exhausted:
             return
-        elif i is None or i < 0:
+        elif i is None:
             index_range = count(self.known_length)
         elif isinstance(i, slice):
             start, stop = i.start, i.stop
@@ -874,6 +874,8 @@ class LazyList(object):
             else:
                 index_range = xrange(self.known_length, stop)
         else:
+            if i < 0:
+                i = ~i
             index_range = xrange(self.known_length, i + 1)
         for i in index_range:
             try:
@@ -910,8 +912,7 @@ class LazyList(object):
 
         This method exhausts the internal iterator up until the given `index`.
         """
-        if index >= self.known_length or index < 0:
-            self._exhaust(index)
+        self._exhaust(index)
         self._collected_data.insert(index, object)
 
     def pop(self, index=None):
