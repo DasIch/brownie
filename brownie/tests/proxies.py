@@ -257,6 +257,55 @@ class TestMakeProxyClass(TestBase):
         Assert(a[1:-1]) == b[1:-1] == [2]
         Assert(a[:-1]) == b[:-1] == [0, 1]
 
+    @test
+    def setslice(self):
+        class Foo(object):
+            def __init__(self):
+                self.sequence = [0, 1, 2]
+
+            def __eq__(self, other):
+                if isinstance(other, list):
+                    return self.sequence == other
+                return self.sequence == other.sequence
+
+            def __ne__(self, other):
+                return self.sequence != other.sequence
+
+            __hash__ = None
+
+            def __len__(self):
+                return len(self.sequence)
+
+            def __repr__(self):
+                return repr(self.sequence)
+
+        class Bar(Foo):
+            def __setitem__(self, key, value):
+                self.sequence[key] = value
+
+        class Baz(Foo):
+            def __setslice__(self, i, j, value):
+                self.sequence[i:j] = value
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        make_proxies = lambda: (proxy_cls(Bar()), proxy_cls(Baz()))
+
+        a, b = make_proxies()
+        a[:] = b[:] = 'abc'
+        Assert(a) == b == ['a', 'b', 'c']
+
+        a, b = make_proxies()
+        a[1:] = b[1:] = 'bc'
+        Assert(a) == b == [0, 'b', 'c']
+
+        a, b = make_proxies()
+        a[1:-1] = b[1:-1] = ['b']
+        Assert(a) == b == [0, 'b', 2]
+
+        a, b = make_proxies()
+        a[:-1] = b[:-1] = ['a', 'b']
+        Assert(a) == b == ['a', 'b', 2]
+
 
 tests.register(TestMakeProxyClass)
 
