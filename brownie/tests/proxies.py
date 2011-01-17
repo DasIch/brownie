@@ -190,7 +190,7 @@ class TestMakeProxyClass(TestBase):
         Assert(list(proxy)) == [0, 1, 2]
 
     @test
-    def reversed_fallback(self):
+    def reversed(self):
         class Foo(object):
             def __getitem__(self, key):
                 if key >= 3:
@@ -200,9 +200,15 @@ class TestMakeProxyClass(TestBase):
             def __len__(self):
                 return 3
 
+        class Bar(object):
+            def __reversed__(self):
+                yield 2
+                yield 1
+                yield 0
+
         proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
-        proxy = proxy_cls(Foo())
-        Assert(list(reversed(proxy))) == [2, 1, 0]
+        Assert(list(reversed(proxy_cls(Foo())))) == [2, 1, 0]
+        Assert(list(reversed(proxy_cls(Bar())))) == [2, 1, 0]
 
 
 tests.register(TestMakeProxyClass)
