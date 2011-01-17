@@ -194,6 +194,9 @@ class ProxyBase(object):
     def __init__(self, proxied):
         self.__proxied = proxied
 
+    def __force(self, proxied):
+        return self.__proxied
+
     def __method_handler(self, proxied, name, get_result, *args, **kwargs):
         return missing
 
@@ -246,11 +249,12 @@ class ProxyBase(object):
         def %(name)s(self, *args, **kwargs):
             def get_result(proxied, *args, **kwargs):
                 other = args[0]
-                if ProxyBase in type(other).mro():
-                    other = other._ProxyBase__proxied
+                if type(self) is type(other):
+                    other = other._ProxyBase__force(other._ProxyBase__proxied)
                 return proxied.%(name)s(
                     *((other, ) + args[1:]), **kwargs
                 )
+
             result = self._ProxyBase__method_handler(
                 self._ProxyBase__proxied,
                 '%(name)s',
@@ -262,9 +266,9 @@ class ProxyBase(object):
                 return get_result(self._ProxyBase__proxied, *args, **kwargs)
             return result
     """)
-    for method in REGULAR_BINARY_ARITHMETIC_METHODS:
+    for method in BINARY_ARITHMETHIC_METHODS:
         exec(method_template % dict(name=method))
-    implemented.update(REGULAR_BINARY_ARITHMETIC_METHODS)
+    implemented.update(BINARY_ARITHMETHIC_METHODS)
 
     method_template = textwrap.dedent("""
         def %(name)s(self, *args, **kwargs):
@@ -334,6 +338,19 @@ def as_proxy(cls):
                 """
                 setattr(proxied, name, obj)
 
+            def force(self, proxied):
+                """
+                Returns a 'real' version of `proxied`. This is required when
+                `proxied` is something abstract like a function which returns
+                an object like which the proxy is supposed to behave.
+
+                Internally this is used when a binary operator is used with the
+                proxy on the left side. Built-in types complain if we call the
+                special method with the proxy given on the right side of the
+                operator, therefore the proxy on the right side is 'forced'.
+                """
+                return proxied
+
             def repr(self, proxied):
                 """
                 Gets called for the representation of the proxy.
@@ -351,6 +368,7 @@ def as_proxy(cls):
         'method': '_ProxyBase__method_handler',
         'getattr': '_ProxyBase__getattr_handler',
         'setattr': '_ProxyBase__setattr_handler',
+        'force': '_ProxyBase__force',
         'repr': '_ProxyBase__repr_handler'
     }
 

@@ -117,6 +117,26 @@ class TestMakeProxyClass(TestBase):
         Assert(proxy_cls.__module__) == FooProxy.__module__
         Assert(proxy_cls.__doc__) == FooProxy.__doc__
 
+    @test
+    def forcing(self):
+        func = lambda: 1
+
+        class FooProxy(object):
+            def method(self, proxied, name, get_result, *args, **kwargs):
+                return get_result(proxied(), *args, **kwargs)
+
+            def force(self, proxied):
+                return proxied()
+        FooProxy = as_proxy(FooProxy)
+
+        proxy = FooProxy(func)
+        Assert(proxy + proxy) == 2
+
+        a = FooProxy(lambda: 1)
+        b = FooProxy(lambda: 2)
+        Assert(a - b) == -1
+        Assert(b - a) == 1
+
 tests.register(TestMakeProxyClass)
 
 
