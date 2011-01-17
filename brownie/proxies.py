@@ -227,6 +227,9 @@ class ProxyBase(object):
     # the special methods we implemented so far (for special cases)
     implemented = set()
 
+    # simple comparison methods such as __complex__ are not necessarily
+    # defined like other special methods, especially for built-in types
+    # by using the built-in functions we achieve the desired behaviour.
     method_template = textwrap.dedent("""
         def %(name)s(self):
             def get_result(proxied):
