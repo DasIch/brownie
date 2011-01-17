@@ -244,6 +244,15 @@ class ProxyBase(object):
         return result
     implemented.add('__contains__')
 
+    def __getslice__(self, i, j):
+        def get_result(proxied, i, j):
+            return proxied[i:j]
+        result = self.__method_handler(self.__proxied, '__getslice__', i, j)
+        if result is missing:
+            return get_result(self.__proxied, i, j)
+        return result
+    implemented.add('__getslice__')
+
     # simple methods such as __complex__ are not necessarily defined like
     # other special methods, especially for built-in types by using the
     # built-in functions we achieve the desired behaviour.

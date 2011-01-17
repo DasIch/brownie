@@ -233,6 +233,30 @@ class TestMakeProxyClass(TestBase):
             for i in xrange(3):
                 assert i in proxy_cls(cls())
 
+    @test
+    def getslice(self):
+        class Foo(object):
+            def __getitem__(self, key):
+                return [0, 1, 2][key]
+
+            def __len__(self):
+                return 3
+
+        class Bar(object):
+            def __getslice__(self, i, j):
+                return [0, 1, 2][i:j]
+
+            def __len__(self):
+                return 3
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        a = proxy_cls(Foo())
+        b = proxy_cls(Bar())
+        Assert(a[:]) == b[:] == [0, 1, 2]
+        Assert(a[1:]) == b[1:] == [1, 2]
+        Assert(a[1:-1]) == b[1:-1] == [2]
+        Assert(a[:-1]) == b[:-1] == [0, 1]
+
 
 tests.register(TestMakeProxyClass)
 
