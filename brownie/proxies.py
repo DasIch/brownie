@@ -118,14 +118,17 @@ UNARY_ARITHMETHIC_METHODS = frozenset([
     '__invert__' # ~
 ])
 
+SIMPLE_CONTAINER_METHODS = {
+    '__len__': len,
+    '__iter__': iter,
+    '__reversed__': reversed
+}
 
-CONTAINER_METHODS = frozenset([
-    '__len__',      # len()
+
+CONTAINER_METHODS = frozenset(SIMPLE_CONTAINER_METHODS) | frozenset([
     '__getitem__',  # ...[]
     '__setitem__',  # ...[] = ...
     '__delitem__',  # del ...[]
-    '__iter__',     # iter()
-    '__reversed__', # reversed()
     '__contains__'  # ... in ...
 ])
 
@@ -173,6 +176,11 @@ SPECIAL_METHODS = (
     CONTEXT_MANAGER_METHODS |
     UNGROUPABLE_METHODS
 )
+
+
+SIMPLE_METHODS = {}
+SIMPLE_METHODS.update(SIMPLE_CONVERSION_METHODS)
+SIMPLE_METHODS.update(SIMPLE_CONTAINER_METHODS)
 
 
 class ProxyMeta(type):
@@ -227,9 +235,9 @@ class ProxyBase(object):
     # the special methods we implemented so far (for special cases)
     implemented = set()
 
-    # simple comparison methods such as __complex__ are not necessarily
-    # defined like other special methods, especially for built-in types
-    # by using the built-in functions we achieve the desired behaviour.
+    # simple methods such as __complex__ are not necessarily defined like
+    # other special methods, especially for built-in types by using the
+    # built-in functions we achieve the desired behaviour.
     method_template = textwrap.dedent("""
         def %(name)s(self):
             def get_result(proxied):
@@ -241,9 +249,9 @@ class ProxyBase(object):
                 return get_result(self._ProxyBase__proxied)
             return result
     """)
-    for method, function in SIMPLE_CONVERSION_METHODS.items():
+    for method, function in SIMPLE_METHODS.items():
         exec(method_template % dict(name=method, func=function.__name__))
-    implemented.update(SIMPLE_CONVERSION_METHODS)
+    implemented.update(SIMPLE_METHODS)
     del function
 
     # we need to special case comparison methods due to the fact that

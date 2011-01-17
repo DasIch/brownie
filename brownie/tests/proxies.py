@@ -178,6 +178,17 @@ class TestMakeProxyClass(TestBase):
         assert not proxy_cls(Foo())
         assert proxy_cls(Bar())
 
+    @test
+    def getitem_based_iteration(self):
+        class Foo(object):
+            def __getitem__(self, key):
+                if key >= 3:
+                    raise IndexError(3)
+                return key
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        proxy = proxy_cls(Foo())
+        Assert(list(proxy)) == [0, 1, 2]
+
 
 tests.register(TestMakeProxyClass)
 
