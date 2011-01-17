@@ -15,7 +15,7 @@ from brownie.datastructures import missing
 tests = Tests()
 
 
-class TestMakeProxyClass(TestBase):
+class TestAsProxy(TestBase):
     @test
     def default_repr(self):
         proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
@@ -307,7 +307,7 @@ class TestMakeProxyClass(TestBase):
         Assert(a) == b == ['a', 'b', 2]
 
 
-tests.register(TestMakeProxyClass)
+tests.register(TestAsProxy)
 
 
 @tests.test
