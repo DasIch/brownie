@@ -152,11 +152,17 @@ class TestMakeProxyClass(TestBase):
                 return getattr(proxied, name)
         FooProxy = as_proxy(FooProxy)
 
-        p = FooProxy(1)
-        p.imag
+        class Foo(object):
+            spam = 1
+
+            def __add__(self, other):
+                return None
+
+        p = FooProxy(Foo())
+        p.spam
         p + p
         Assert(method_access) == ['__add__']
-        Assert(getattr_access) == ['imag']
+        Assert(getattr_access) == ['spam']
 
     @test
     def nonzero_via_len(self):
