@@ -8,8 +8,11 @@
 """
 from attest import Tests, TestBase, test, Assert
 
-from brownie.proxies import as_proxy
+from brownie.proxies import as_proxy, get_wrapped
 from brownie.datastructures import missing
+
+
+tests = Tests()
 
 
 class TestMakeProxyClass(TestBase):
@@ -114,5 +117,11 @@ class TestMakeProxyClass(TestBase):
         Assert(proxy_cls.__module__) == FooProxy.__module__
         Assert(proxy_cls.__doc__) == FooProxy.__doc__
 
+tests.register(TestMakeProxyClass)
 
-tests = Tests([TestMakeProxyClass])
+
+@tests.test
+def test_get_wrapped():
+    proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+    wrapped = 1
+    Assert(get_wrapped(proxy_cls(wrapped))).is_(wrapped)

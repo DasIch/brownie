@@ -360,3 +360,11 @@ def as_proxy(cls):
             attributes[internal_name] = handler.im_func
 
     return ProxyMeta(cls.__name__, (ProxyBase, ), attributes)
+
+
+def get_wrapped(proxy):
+    """
+    Returns the item wrapped by a given `proxy` whereas `proxy` is an instance
+    of a class as returned by :func:`as_proxy`.
+    """
+    return proxy._ProxyBase__proxied
