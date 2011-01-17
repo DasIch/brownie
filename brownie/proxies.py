@@ -246,7 +246,7 @@ class ProxyBase(object):
     implemented.update(SIMPLE_CONVERSION_METHODS)
     del function
 
-    # we need to special case comparision methods due to the fact that
+    # we need to special case comparison methods due to the fact that
     # if we implement __lt__ and call it on the proxied object it might fail
     # because the proxied object implements __cmp__ instead.
     method_template = textwrap.dedent("""
