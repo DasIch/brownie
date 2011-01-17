@@ -158,6 +158,21 @@ class TestMakeProxyClass(TestBase):
         Assert(method_access) == ['__add__']
         Assert(getattr_access) == ['imag']
 
+    @test
+    def nonzero_via_len(self):
+        class Foo(object):
+            def __len__(self):
+                return 0
+
+        class Bar(object):
+            def __len__(self):
+                return 1
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        assert not proxy_cls(Foo())
+        assert proxy_cls(Bar())
+
+
 tests.register(TestMakeProxyClass)
 
 

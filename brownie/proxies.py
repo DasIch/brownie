@@ -14,18 +14,20 @@ from brownie.itools import starmap
 from brownie.datastructures import missing
 
 
-CONVERSION_METHODS = frozenset([
-    '__str__',     # str()
-    '__unicode__', # unicode()
+SIMPLE_CONVERSION_METHODS = {
+    '__str__':     str,
+    '__unicode__': unicode,
+    '__complex__': complex,
+    '__int__':     int,
+    '__long__':    long,
+    '__float__':   float,
+    '__oct__':     oct,
+    '__hex__':     hex,
+    '__nonzero__': bool
+}
 
-    '__complex__', # complex()
-    '__int__',     # int()
-    '__long__',    # long()
-    '__float__',   # float()
-    '__oct__',     # oct()
-    '__hex__',     # hex()
 
-    '__nonzero__', # truth-testing, bool()
+CONVERSION_METHODS = set(SIMPLE_CONVERSION_METHODS) | frozenset([
     '__index__',   # slicing, operator.index()
     '__coerce__',  # mixed-mode numeric arithmetic
 ])
@@ -225,6 +227,22 @@ class ProxyBase(object):
     # the special methods we implemented so far (for special cases)
     implemented = set()
 
+    method_template = textwrap.dedent("""
+        def %(name)s(self):
+            def get_result(proxied):
+                return %(func)s(proxied)
+            result = self._ProxyBase__method_handler(
+                self._ProxyBase__proxied, '%(name)s', get_result
+            )
+            if result is missing:
+                return get_result(self._ProxyBase__proxied)
+            return result
+    """)
+    for method, function in SIMPLE_CONVERSION_METHODS.items():
+        exec(method_template % dict(name=method, func=function.__name__))
+    implemented.update(SIMPLE_CONVERSION_METHODS)
+    del function
+
     # we need to special case comparision methods due to the fact that
     # if we implement __lt__ and call it on the proxied object it might fail
     # because the proxied object implements __cmp__ instead.
@@ -278,7 +296,7 @@ class ProxyBase(object):
                 self._ProxyBase__proxied, '%(name)s', get_result, *args, **kwargs
             )
             if result is missing:
-                return get_result(proxied, *args, **kwargs)
+                return get_result(self._ProxyBase__proxied, *args, **kwargs)
             return result
     """)
     for method in SPECIAL_METHODS - implemented:
