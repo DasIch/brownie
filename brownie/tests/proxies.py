@@ -210,6 +210,29 @@ class TestMakeProxyClass(TestBase):
         Assert(list(reversed(proxy_cls(Foo())))) == [2, 1, 0]
         Assert(list(reversed(proxy_cls(Bar())))) == [2, 1, 0]
 
+    @test
+    def contains(self):
+        class Foo(object):
+            def __getitem__(self, key):
+                if key >= 3:
+                    raise IndexError(key)
+                return key
+
+        class Bar(object):
+            def __iter__(self):
+                yield 0
+                yield 1
+                yield 2
+
+        class Baz(object):
+            def __contains__(self, other):
+                return other in (0, 1, 2)
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        for cls in (Foo, Bar, Baz):
+            for i in xrange(3):
+                assert i in proxy_cls(cls())
+
 
 tests.register(TestMakeProxyClass)
 

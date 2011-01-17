@@ -235,6 +235,15 @@ class ProxyBase(object):
     # the special methods we implemented so far (for special cases)
     implemented = set()
 
+    def __contains__(self, other):
+        def get_result(proxied, other):
+            return other in proxied
+        result = self.__method_handler(self.__proxied, '__contains__', other)
+        if result is missing:
+            return get_result(self.__proxied, other)
+        return result
+    implemented.add('__contains__')
+
     # simple methods such as __complex__ are not necessarily defined like
     # other special methods, especially for built-in types by using the
     # built-in functions we achieve the desired behaviour.
