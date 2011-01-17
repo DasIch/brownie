@@ -386,3 +386,33 @@ def get_wrapped(proxy):
     of a class as returned by :func:`as_proxy`.
     """
     return proxy._ProxyBase__proxied
+
+
+class LazyProxy(object):
+    """
+    Takes a callable and calls it every time this proxy is accessed to get an
+    object which is then wrapped by this proxy::
+
+        >>> from datetime import datetime
+
+        >>> now = LazyProxy(datetime.utcnow)
+        >>> now.second != now.second
+        True
+    """
+    def method(self, proxied, name, get_result, *args, **kwargs):
+        return get_result(proxied(), *args, **kwargs)
+
+    def getattr(self, proxied, name):
+        return getattr(proxied(), name)
+
+    def setattr(self, proxied, name, attr):
+        setattr(proxied(), name, attr)
+
+    def force(self, proxied):
+        return proxied()
+
+    def repr(self, proxied):
+        return '%s(%r)' % (type(self).__name__, proxied)
+
+
+LazyProxy = as_proxy(LazyProxy)

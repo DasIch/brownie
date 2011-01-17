@@ -12,3 +12,5 @@ Implements proxies and facilities to create them.
 .. autofunction:: as_proxy
 
 .. autofunction:: get_wrapped
+
+.. autoclass:: LazyProxy

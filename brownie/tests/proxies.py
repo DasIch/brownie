@@ -8,7 +8,7 @@
 """
 from attest import Tests, TestBase, test, Assert
 
-from brownie.proxies import as_proxy, get_wrapped
+from brownie.proxies import as_proxy, get_wrapped, LazyProxy
 from brownie.datastructures import missing
 
 
@@ -145,3 +145,34 @@ def test_get_wrapped():
     proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
     wrapped = 1
     Assert(get_wrapped(proxy_cls(wrapped))).is_(wrapped)
+
+
+class TestLazyProxy(TestBase):
+    @test
+    def special(self):
+        p = LazyProxy(lambda: 1)
+        Assert(p + p) == 2
+        Assert(p + 1) == 2
+        Assert(1 + p) == 2
+
+    @test
+    def getattr(self):
+        p = LazyProxy(int)
+        Assert(p).imag = 0.0
+
+    @test
+    def setattr(self):
+        class Foo(object): pass
+        foo = Foo()
+        p = LazyProxy(lambda: foo)
+        p.a = 1
+        Assert(p.a) == 1
+        Assert(foo.a) == 1
+
+    @test
+    def repr(self):
+        p = LazyProxy(int)
+        Assert(repr(p)) == 'LazyProxy(%r)' % int
+
+
+tests.register(TestLazyProxy)
