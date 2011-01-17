@@ -183,11 +183,26 @@ class TestMakeProxyClass(TestBase):
         class Foo(object):
             def __getitem__(self, key):
                 if key >= 3:
-                    raise IndexError(3)
+                    raise IndexError(key)
                 return key
         proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
         proxy = proxy_cls(Foo())
         Assert(list(proxy)) == [0, 1, 2]
+
+    @test
+    def reversed_fallback(self):
+        class Foo(object):
+            def __getitem__(self, key):
+                if key >= 3:
+                    raise IndexError(key)
+                return key
+
+            def __len__(self):
+                return 3
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        proxy = proxy_cls(Foo())
+        Assert(list(reversed(proxy))) == [2, 1, 0]
 
 
 tests.register(TestMakeProxyClass)
