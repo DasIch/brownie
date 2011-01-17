@@ -137,6 +137,27 @@ class TestMakeProxyClass(TestBase):
         Assert(a - b) == -1
         Assert(b - a) == 1
 
+    @test
+    def getattr_not_called_on_method(self):
+        getattr_access = []
+        method_access = []
+
+        class FooProxy(object):
+            def method(self, proxied, name, get_result, *args, **kwargs):
+                method_access.append(name)
+                return get_result(proxied, *args, **kwargs)
+
+            def getattr(self, proxied, name):
+                getattr_access.append(name)
+                return getattr(proxied, name)
+        FooProxy = as_proxy(FooProxy)
+
+        p = FooProxy(1)
+        p.imag
+        p + p
+        Assert(method_access) == ['__add__']
+        Assert(getattr_access) == ['imag']
+
 tests.register(TestMakeProxyClass)
 
 
