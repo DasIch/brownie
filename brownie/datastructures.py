@@ -525,6 +525,27 @@ class OrderedDict(dict):
         key = (reversed(self) if last else iter(self)).next()
         return key, OrderedDict.pop(self, key)
 
+    def move_to_end(self, key, last=True):
+        """
+        Moves the item with the given `key` to the end of the dictionary if
+        `last` is ``True`` otherwise to the beginning.
+
+        Raises :exc:`KeyError` if no item with the given `key` exists.
+        """
+        if key not in self:
+            raise KeyError(key)
+        link = self._map[key]
+        prev, next = link.prev, link.next
+        prev.next, next.prev = next, prev
+        if last:
+            replacing = self._root.prev
+            replacing.next = self._root.prev = link
+            link.prev, link.next = replacing, self._root
+        else:
+            replacing = self._root.next
+            self._root.next = replacing.prev = link
+            link.prev, link.next = self._root, replacing
+
     def update(self, *args, **kwargs):
         """
         Updates the dictionary with a mapping and/or from keyword arguments.

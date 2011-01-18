@@ -9,6 +9,7 @@ features.
 
 - Added Python 3.x support.
 - Added :mod:`brownie.proxies`.
+- Added :meth:`brownie.datastructures.OrderedDict.move_to_end`.
 
 0.3.1
 -----

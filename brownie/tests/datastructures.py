@@ -583,6 +583,14 @@ class OrderedDictTestMixin(object):
         Assert(d.popitem(last=False)) == (1, 2)
 
     @test
+    def move_to_end(self):
+        d = self.dict_class([(1, 2), (3, 4), (5, 6)])
+        d.move_to_end(1)
+        Assert(d.items()) == [(3, 4), (5, 6), (1, 2)]
+        d.move_to_end(5, last=False)
+        Assert(d.items()) == [(5, 6), (3, 4), (1, 2)]
+
+    @test
     def update_order(self):
         d = self.dict_class()
         d.update([(1, 2), (3, 4)])
@@ -614,18 +622,24 @@ class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
         assert isinstance(d, dict)
 
 
-class TestImmutableOrderedDict(TestBase, OrderedDictTestMixin,
-                               ImmutableDictTestMixin):
-    dict_class = ImmutableOrderedDict
-
-    clear_does_not_keep_ordering = pop_does_not_keep_ordering = None
-    setitem_order = setdefault_order = update_order = None
+class ImmutableOrderedDictTextMixin(OrderedDictTestMixin):
+    update_order = setitem_order = setdefault_order = \
+        pop_does_not_keep_ordering = clear_does_not_keep_ordering = None
 
     @test
     def popitem(self):
         d = self.dict_class()
         with Assert.raises(TypeError):
             d.popitem()
+        d = self.dict_class([(1, 2)])
+        with Assert.raises(TypeError):
+            d.popitem()
+
+
+class TestImmutableOrderedDict(TestBase, ImmutableOrderedDictTextMixin,
+                               ImmutableDictTestMixin):
+    dict_class = ImmutableOrderedDict
+
 
     @test_if(GE_PYTHON_26)
     def type_checking(self):
@@ -645,11 +659,6 @@ class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
         types = [dict, MultiDict, OrderedDict]
         for type in types:
             assert isinstance(d, type), type
-
-
-class ImmutableOrderedDictTextMixin(OrderedDictTestMixin):
-    update_order = setitem_order = setdefault_order = popitem = \
-        pop_does_not_keep_ordering = clear_does_not_keep_ordering = None
 
 
 class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
