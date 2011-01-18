@@ -219,6 +219,9 @@ class ProxyBase(object):
     def __repr_handler(self, proxied):
         return repr(proxied)
 
+    def __dir__(self):
+        return dir(self.__proxied)
+
     def __getattribute__(self, name):
         if name.startswith('_ProxyBase__'):
             return object.__getattribute__(self, name)

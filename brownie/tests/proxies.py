@@ -359,6 +359,20 @@ class TestAsProxy(TestBase):
         del b[:-1]
         Assert(a) == b == [2]
 
+    @test
+    def dir(self):
+        class Foo(object):
+            bar = None
+
+            def spam(self):
+                pass
+
+            def eggs(self):
+                pass
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        Assert(dir(Foo)) == dir(proxy_cls(Foo))
+
 
 tests.register(TestAsProxy)
 
