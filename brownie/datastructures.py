@@ -1331,7 +1331,7 @@ class SetQueue(queue.Queue):
     Ordered set queues are useful when implementing data structures like
     event buses or event queues where duplicate events need to be coalesced
     into a single event. An example use case is the inotify API in the Linux
-    kernel which shares the same behavior.
+    kernel which shares the same behaviour.
 
     Queued items must be immutable and hashable so that they can be used as
     dictionary keys or added to sets. Items must have only read-only properties
