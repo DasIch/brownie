@@ -257,12 +257,23 @@ class ProxyBase(object):
         def get_result(proxied, i, j, value):
             proxied[i:j] = value
         result = self.__method_handler(
-            self.__proxied, '__setslice__', i, j, value
+            self.__proxied, '__setslice__', get_result, i, j, value
         )
         if result is missing:
             return get_result(self.__proxied, i, j, value)
         return result
     implemented.add('__setslice__')
+
+    def __delslice__(self, i, j):
+        def get_result(proxied, i, j):
+            del proxied[i:j]
+        result = self.__method_handler(
+            self.__proxied, '__delslice__', get_result, i, j
+        )
+        if result is missing:
+            return get_result(self.__proxied, i, j)
+        return result
+    implemented.add('__delslice__')
 
     # simple methods such as __complex__ are not necessarily defined like
     # other special methods, especially for built-in types by using the

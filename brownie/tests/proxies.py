@@ -306,6 +306,59 @@ class TestAsProxy(TestBase):
         a[:-1] = b[:-1] = ['a', 'b']
         Assert(a) == b == ['a', 'b', 2]
 
+    @test
+    def delslice(self):
+        class Foo(object):
+            def __init__(self):
+                self.sequence = [0, 1, 2]
+
+            def __eq__(self, other):
+                if isinstance(other, list):
+                    return self.sequence == other
+                return self.sequence == other.sequence
+
+            def __ne__(self, other):
+                return self.sequence != other.sequence
+
+            __hash__ = None
+
+            def __len__(self):
+                return len(self.sequence)
+
+            def __repr__(self):
+                return repr(self.sequence)
+
+        class Bar(Foo):
+            def __delitem__(self, key):
+                del self.sequence[key]
+
+        class Baz(Foo):
+            def __delslice__(self, i, j):
+                del self.sequence[i:j]
+
+        proxy_cls = as_proxy(type('FooProxy', (object, ), {}))
+        make_proxies = lambda: (proxy_cls(Bar()), proxy_cls(Baz()))
+
+        a, b = make_proxies()
+        del a[:]
+        del b[:]
+        Assert(a) == b == []
+
+        a, b = make_proxies()
+        del a[1:]
+        del b[1:]
+        Assert(a) == b == [0]
+
+        a, b = make_proxies()
+        del a[1:-1]
+        del b[1:-1]
+        Assert(a) == b == [0, 2]
+
+        a, b = make_proxies()
+        del a[:-1]
+        del b[:-1]
+        Assert(a) == b == [2]
+
 
 tests.register(TestAsProxy)
 
