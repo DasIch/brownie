@@ -9,3 +9,5 @@ languages.
 .. autofunction:: compose
 
 .. autofunction:: flip
+
+.. autofunction:: bind_arguments

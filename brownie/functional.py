@@ -3,11 +3,13 @@
     brownie.functional
     ~~~~~~~~~~~~~~~~~~
 
-    Implements functions known from functional programming languages.
+    Implements functions known from functional programming languages and other
+    things which are useful when dealing with functions.
 
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+from inspect import getargspec
 from functools import wraps
 
 from brownie.pycompat import reduce
@@ -46,3 +48,87 @@ def flip(function):
     def wrap(*args, **kwargs):
         return function(*reversed(args), **kwargs)
     return wrap
+
+
+def bind_arguments(func, args=(), kwargs=None):
+    """
+    Returns a dictionary with the names of the parameters as keys with
+    their arguments as values.
+
+    Raises a :exc:`ValueError` if there are too many `args` and/or `kwargs`
+    they are missing or repeated.
+
+    .. versionadded:: 0.5
+    """
+    kwargs = {} if kwargs is None else kwargs
+    argspec = getargspec(func)
+    defaults = argspec.defaults or []
+    positionals = argspec.args[len(defaults):]
+    kwparams = zip(argspec.args[:len(defaults)], defaults)
+
+    required = set(positionals)
+    overwritable = set(name for name, default in kwparams)
+    settable = required | overwritable
+
+    positional_count = len(positionals)
+    kwparam_count = len(kwparams)
+    arg_count = len(args)
+
+    result = dict(kwparams, **dict(zip(positionals, args)))
+
+    remaining = args[positional_count:]
+    for (param, _), arg in zip(kwparams, remaining):
+        result[param] = arg
+        overwritable.discard(param)
+    if len(remaining) > kwparam_count:
+        if argspec.varargs is None:
+            raise ValueError(
+                'expected at most %d positional arguments, got %d' % (
+                    positional_count + kwparam_count,
+                    len(args)
+                )
+            )
+        else:
+            result[argspec.varargs] = tuple(remaining[kwparam_count:])
+
+    remaining = {}
+    unexpected = []
+    for key, value in kwargs.iteritems():
+        if key in result and key not in overwritable:
+            raise ValueError("got multiple values for '%s'" % key)
+        elif key in settable:
+            result[key] = value
+        elif argspec.keywords:
+            result_kwargs = result.setdefault('kwargs', {})
+            result_kwargs[key] = value
+        else:
+            unexpected.append(key)
+    if len(unexpected) == 1:
+        raise ValueError(
+            "got unexpected keyword argument '%s'" % unexpected[0]
+        )
+    elif len(unexpected) == 2:
+        raise ValueError(
+            "got unexpected keyword arguments '%s' and '%s'" % tuple(unexpected)
+        )
+    elif unexpected:
+        raise ValueError("got unexpected keyword arguments %s and '%s'" % (
+            ', '.join("'%s'" % arg for arg in unexpected[:-1]), unexpected[-1]
+        ))
+
+    if set(result) < set(positionals):
+        missing = set(result) ^ set(positionals)
+        if len(missing) == 1:
+            raise ValueError("'%s' is missing" % missing.pop())
+        elif len(missing) == 2:
+            raise ValueError("'%s' and '%s' are missing" % tuple(missing))
+        else:
+            missing = tuple(missing)
+            raise ValueError("%s and '%s' are missing" % (
+                ', '.join("'%s'" % name for name in missing[:-1]), missing[-1]
+            ))
+    if argspec.varargs:
+        result.setdefault(argspec.varargs, ())
+    if argspec.keywords:
+        result.setdefault(argspec.keywords, {})
+    return result

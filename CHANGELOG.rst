@@ -3,6 +3,12 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.5 - [Codename to be selected]
+-------------------------------
+*Currently in development*
+
+- Added :func:`brownie.functional.bind_arguments`.
+
 0.4 - Domovoi
 -------------
 
