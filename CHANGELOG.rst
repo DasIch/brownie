@@ -5,7 +5,6 @@ features.
 
 0.4 - [Codename to be selected]
 -------------------------------
-*Currently in development*
 
 - Added Python 3.x support.
 - Added :mod:`brownie.proxies`.
