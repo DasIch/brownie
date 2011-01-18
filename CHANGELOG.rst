@@ -3,8 +3,8 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
-0.4 - [Codename to be selected]
--------------------------------
+0.4 - Domovoi
+-------------
 
 - Added Python 3.x support.
 - Added :mod:`brownie.proxies`.
