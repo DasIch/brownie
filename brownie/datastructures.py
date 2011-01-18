@@ -531,6 +531,8 @@ class OrderedDict(dict):
         `last` is ``True`` otherwise to the beginning.
 
         Raises :exc:`KeyError` if no item with the given `key` exists.
+
+        .. versionadded:: 0.4
         """
         if key not in self:
             raise KeyError(key)
