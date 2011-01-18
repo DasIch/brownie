@@ -635,6 +635,12 @@ class ImmutableOrderedDictTextMixin(OrderedDictTestMixin):
         with Assert.raises(TypeError):
             d.popitem()
 
+    @test
+    def move_to_end(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        with Assert.raises(TypeError):
+            d.move_to_end(1)
+
 
 class TestImmutableOrderedDict(TestBase, ImmutableOrderedDictTextMixin,
                                ImmutableDictTestMixin):

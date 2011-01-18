@@ -654,6 +654,8 @@ class ImmutableOrderedDict(ImmutableDictMixin, OrderedDict):
 
     virtual_superclasses = (ImmutableDict, )
 
+    move_to_end = raise_immutable
+
     __repr__ = OrderedDict.__repr__
 
 
@@ -664,7 +666,7 @@ class OrderedMultiDict(MultiDictMixin, OrderedDict):
     virtual_superclasses = (MultiDict, )
 
 
-class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, OrderedDict):
+class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, ImmutableOrderedDict):
     """An immutable :class:`OrderedMultiDict`."""
     __metaclass__ = AbstractClassMeta
 
