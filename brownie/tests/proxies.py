@@ -6,10 +6,15 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
-from attest import Tests, TestBase, test, Assert
+import sys
+
+from attest import Tests, TestBase, test, test_if, Assert
 
 from brownie.proxies import as_proxy, get_wrapped, LazyProxy
 from brownie.datastructures import missing
+
+
+GE_PYTHON_26 = sys.version_info >= (2, 6)
 
 
 tests = Tests()
@@ -359,7 +364,7 @@ class TestAsProxy(TestBase):
         del b[:-1]
         Assert(a) == b == [2]
 
-    @test
+    @test_if(GE_PYTHON_26)
     def dir(self):
         class Foo(object):
             bar = None
