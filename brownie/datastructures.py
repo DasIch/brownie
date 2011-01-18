@@ -672,7 +672,9 @@ class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, ImmutableOrderedDict):
 
     virtual_superclasses = (ImmutableMultiDict, OrderedMultiDict)
 
-    __repr__ = OrderedMultiDict.__repr__
+    def __repr__(self):
+        content = repr(self.items()) if self else ''
+        return '%s(%s)' % (self.__class__.__name__, content)
 
 
 class Counter(dict):
