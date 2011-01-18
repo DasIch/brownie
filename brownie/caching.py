@@ -78,9 +78,8 @@ class LRUCache(OrderedDict, CacheBase):
         self.maxsize = maxsize
 
     def __getitem__(self, key):
-        value = self.pop(key)
-        self[key] = value
-        return value
+        self.move_to_end(key)
+        return OrderedDict.__getitem__(self, key)
 
     def __setitem__(self, key, value):
         if len(self) >= self.maxsize:
