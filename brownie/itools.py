@@ -8,9 +8,7 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, PSF see LICENSE.rst for details
 """
-from itertools import repeat
-
-from brownie.pycompat import izip
+from itertools import repeat, izip
 
 
 class chain(object):

@@ -11,7 +11,7 @@
 from heapq import nlargest
 from operator import itemgetter
 from functools import wraps
-from itertools import count, repeat
+from itertools import count, repeat, izip, ifilter
 try:
     import queue
 except ImportError:
@@ -19,7 +19,6 @@ except ImportError:
 
 from brownie.itools import izip_longest, starmap, unique, chain
 from brownie.abstract import AbstractClassMeta
-from brownie.pycompat import izip, ifilter
 
 
 class Missing(object):

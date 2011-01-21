@@ -9,11 +9,6 @@
     :license: BSD, see LICENSE.rst for details
 """
 try:
-    from itertools import izip, ifilter
-except ImportError:
-    izip = zip
-    ifilter = filter
-try:
     from functools import reduce
 except ImportError:
     reduce = reduce
