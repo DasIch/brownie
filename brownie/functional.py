@@ -132,3 +132,6 @@ def bind_arguments(func, args=(), kwargs=None):
     if argspec.keywords:
         result.setdefault(argspec.keywords, {})
     return result
+
+
+__all__ = ['compose', 'flip', 'bind_arguments']

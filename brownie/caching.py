@@ -140,3 +140,6 @@ class LFUCache(dict, CacheBase):
         return '%s(%s, %f)' % (
             self.__class__.__name__, dict.__repr__(self), self.maxsize
         )
+
+
+__all__ = ['cached_property', 'LRUCache', 'LFUCache']

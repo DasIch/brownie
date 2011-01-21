@@ -83,3 +83,6 @@ class AbstractClassMeta(ABCMeta, VirtualSubclassMeta):
         and the result would be the same, the usage here is just to demonstrate
         the specific problem which is solved.
     """
+
+
+__all__ = ['ABCMeta', 'VirtualSubclassMeta', 'AbstractClassMeta']

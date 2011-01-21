@@ -45,3 +45,6 @@ def import_string(name):
         __import__(module, globals=None, locals=None, fromlist=[obj]),
         obj
     )
+
+
+__all__ = ['import_string']

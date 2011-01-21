@@ -488,3 +488,6 @@ class LazyProxy(object):
 
 
 LazyProxy = as_proxy(LazyProxy)
+
+
+__all__ = ['as_proxy', 'get_wrapped', 'LazyProxy']

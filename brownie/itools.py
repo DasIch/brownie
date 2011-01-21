@@ -224,3 +224,9 @@ def unique(iterable):
         if item not in seen:
             seen.add(item)
             yield item
+
+
+__all__ = [
+    'chain', 'izip_longest', 'permutations', 'product', 'starmap',
+    'combinations_with_replacement', 'compress', 'count', 'grouped', 'unique'
+]
