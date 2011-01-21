@@ -61,10 +61,10 @@ def bind_arguments(func, args=(), kwargs=None):
     .. versionadded:: 0.5
     """
     kwargs = {} if kwargs is None else kwargs
-    argspec = getargspec(func)
-    defaults = argspec.defaults or []
-    positionals = argspec.args[len(defaults):]
-    kwparams = zip(argspec.args[:len(defaults)], defaults)
+    params, varargs, varkwargs, defaults = getargspec(func)
+    defaults = defaults or []
+    positionals = params[len(defaults):]
+    kwparams = zip(params[:len(defaults)], defaults)
 
     required = set(positionals)
     overwritable = set(name for name, default in kwparams)
@@ -81,7 +81,7 @@ def bind_arguments(func, args=(), kwargs=None):
         result[param] = arg
         overwritable.discard(param)
     if len(remaining) > kwparam_count:
-        if argspec.varargs is None:
+        if varargs is None:
             raise ValueError(
                 'expected at most %d positional arguments, got %d' % (
                     positional_count + kwparam_count,
@@ -89,7 +89,7 @@ def bind_arguments(func, args=(), kwargs=None):
                 )
             )
         else:
-            result[argspec.varargs] = tuple(remaining[kwparam_count:])
+            result[varargs] = tuple(remaining[kwparam_count:])
 
     remaining = {}
     unexpected = []
@@ -98,7 +98,7 @@ def bind_arguments(func, args=(), kwargs=None):
             raise ValueError("got multiple values for '%s'" % key)
         elif key in settable:
             result[key] = value
-        elif argspec.keywords:
+        elif varkwargs:
             result_kwargs = result.setdefault('kwargs', {})
             result_kwargs[key] = value
         else:
@@ -127,10 +127,10 @@ def bind_arguments(func, args=(), kwargs=None):
             raise ValueError("%s and '%s' are missing" % (
                 ', '.join("'%s'" % name for name in missing[:-1]), missing[-1]
             ))
-    if argspec.varargs:
-        result.setdefault(argspec.varargs, ())
-    if argspec.keywords:
-        result.setdefault(argspec.keywords, {})
+    if varargs:
+        result.setdefault(varargs, ())
+    if varkwargs:
+        result.setdefault(varkwargs, {})
     return result
 
 
