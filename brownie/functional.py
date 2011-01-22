@@ -24,6 +24,9 @@ def compose(*functions):
     >>> from brownie.functional import compose
     >>> compose(lambda x: x + 1, lambda x: x * 2)(1)
     3
+
+    .. note:: Each function (except the last one) has to take the result of the
+              last function as argument.
     """
     if not functions:
         raise TypeError('expected at least 1 argument, got 0')
