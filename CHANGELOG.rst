@@ -3,10 +3,18 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.4.1
+-----
+
+- Python 3.x support was totally broken which was undiscovered due to the
+  way tests are run. Looking into the issue and considering the response
+  I got so far I choose to drop 3.x support for now as fixing it would
+  take way too much time and effort.
+
 0.4 - Domovoi
 -------------
 
-- Added Python 3.x support.
+- Added Python 3.x support. [See 0.4.1]
 - Added :mod:`brownie.proxies`.
 - Added :meth:`brownie.datastructures.OrderedDict.move_to_end`.
 
