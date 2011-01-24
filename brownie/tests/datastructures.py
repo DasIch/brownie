@@ -10,6 +10,7 @@
 """
 from __future__ import with_statement
 import sys
+import pickle
 import random
 from threading import Thread
 
@@ -187,6 +188,13 @@ class DictTestMixin(object):
             def __new__(cls, *args, **kwargs):
                 return 42
         Assert(D.fromkeys([])) == 42
+
+    @test
+    def picklability(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        pickled = pickle.loads(pickle.dumps(d))
+        Assert(pickled == d)
+        Assert(pickled.__class__).is_(d.__class__)
 
 
 class ImmutableDictTestMixin(DictTestMixin):
