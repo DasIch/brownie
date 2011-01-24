@@ -1050,6 +1050,14 @@ class TestLazyList(TestBase):
         l[-1]
         repr(l) == repr(data)
 
+    @test
+    def picklability(self):
+        l = LazyList(self._genrange(10))
+        pickled = pickle.loads(pickle.dumps(l))
+        Assert(pickled) == l
+        Assert(pickled.__class__) == l.__class__
+
+
 
 class TestOrderedSet(TestBase):
     @test

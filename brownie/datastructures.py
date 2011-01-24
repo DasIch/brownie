@@ -856,6 +856,11 @@ class LazyList(object):
     +-----------------+                                                       |
     | ``list *= n``   |                                                       |
     +-----------------+-------------------------------------------------------+
+
+
+    .. versionadded:: 0.5
+       It is now possible to pickle :class:`LazyList`\s, however this will
+       exhaust the list.
     """
     @classmethod
     def factory(cls, callable):
@@ -1141,6 +1146,14 @@ class LazyList(object):
             raise TypeError(
                 "can't multiply sequence by non-int: {0}".format(other)
             )
+
+    @exhausting
+    def __getstate__(self):
+        return self._collected_data
+
+    def __setstate__(self, state):
+        self.exhausted = True
+        self._collected_data = state
 
     def __repr__(self):
         """
