@@ -85,8 +85,16 @@ class ImmutableDictMixin(object):
 
 
 class ImmutableDict(ImmutableDictMixin, dict):
-    """An immutable :class:`dict`."""
+    """
+    An immutable :class:`dict`.
+
+    .. versionadded:: 0.5
+       :class:`ImmutableDict` is now hashable, given the content is.
+    """
     __metaclass__ = AbstractClassMeta
+
+    def __hash__(self):
+        return hash(tuple(self.items()))
 
 
 class CombinedDictMixin(object):

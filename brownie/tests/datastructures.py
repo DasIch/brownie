@@ -257,6 +257,13 @@ class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
     def type_checking(self):
         assert isinstance(self.dict_class(), dict)
 
+    @test
+    def hashability(self):
+        a = self.dict_class([(1, 2), (3, 4)])
+        b = self.dict_class(a)
+        Assert(hash(a)) == hash(b)
+        Assert(hash(a)) != hash(ImmutableDict([(1, 2), (5, 6)]))
+
 
 class CombinedDictTestMixin(object):
     # .fromkeys() doesn't work here, so we don't need that test
