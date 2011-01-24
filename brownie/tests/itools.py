@@ -132,7 +132,8 @@ def test_grouped():
 def test_unique():
     tests = [
         ('aabbcc', 'abc'),
-        ('aa', 'a')
+        ('aa', 'a'),
+        (([1, 2], [1, 2], [3, 4], 5, 5, 5), ([1, 2], [3, 4], 5))
     ]
     for test, result in tests:
         Assert(list(unique(test))) == list(result)

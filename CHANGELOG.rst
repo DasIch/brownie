@@ -8,6 +8,7 @@ features.
 *Currently in development*
 
 - Added :func:`brownie.functional.bind_arguments`.
+- Allow using :func:`brownie.itools.unique` with non-hashable items.
 
 0.4.1
 -----

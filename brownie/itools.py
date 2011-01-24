@@ -214,14 +214,23 @@ def grouped(n, iterable, fillvalue=None):
 
 def unique(iterable):
     """
-    Yields items from the given `iterable` of hashable items, once seen an
+    Yields items from the given `iterable` of (hashable) items, once seen an
     item is not yielded again.
+
+    .. versionchanged:: 0.5
+       Items don't have to be hashable any more.
     """
     seen = set()
+    seen_unhashable = []
     for item in iterable:
-        if item not in seen:
-            seen.add(item)
-            yield item
+        try:
+            if item not in seen:
+                seen.add(item)
+                yield item
+        except TypeError:
+            if item not in seen_unhashable:
+                seen_unhashable.append(item)
+                yield item
 
 
 __all__ = [
