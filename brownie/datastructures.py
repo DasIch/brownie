@@ -884,7 +884,6 @@ class LazyList(object):
             self._iterator = iter(iterable)
             self.exhausted = False
             self._collected_data = []
-        self._added_data = []
 
     def _exhaust(self, i=None):
         if self.exhausted:
@@ -964,13 +963,10 @@ class LazyList(object):
                 self._collected_data.remove(object)
                 return
             except ValueError:
-                try:
-                    self._added_data.remove(object)
-                except ValueError:
-                    if self.exhausted:
-                        raise
-                    else:
-                        self._exhaust(self.known_length)
+                if self.exhausted:
+                    raise
+                else:
+                    self._exhaust(self.known_length)
 
     @exhausting
     def reverse(self):
@@ -1034,7 +1030,7 @@ class LazyList(object):
 
         This method exhausts the internal iterator.
         """
-        return self.known_length + len(self._added_data)
+        return self.known_length
 
     def __contains__(self, other):
         for obj in self:
