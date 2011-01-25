@@ -263,6 +263,8 @@ class ImmutableDictTest(TestBase, ImmutableDictTestMixin):
         b = self.dict_class(a)
         Assert(hash(a)) == hash(b)
         Assert(hash(a)) != hash(ImmutableDict([(1, 2), (5, 6)]))
+        with Assert.raises(TypeError):
+            hash(ImmutableDict({1: []}))
 
 
 class CombinedDictTestMixin(object):
