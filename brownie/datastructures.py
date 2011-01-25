@@ -164,9 +164,15 @@ class CombinedDict(CombinedDictMixin, ImmutableDictMixin, dict):
     not supported, the same goes for additional keyword arguments.
 
     .. versionadded:: 0.2
+
+    .. versionadded:: 0.5
+       :class:`CombinedDict` is now hashable, given the content is.
     """
     __metaclass__ = AbstractClassMeta
     virtual_superclasses = (ImmutableDict, )
+
+    def __hash__(self):
+        return hash(tuple(self.dicts))
 
 
 class MultiDictMixin(object):

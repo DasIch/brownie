@@ -11,6 +11,7 @@ features.
 - Allow using :func:`brownie.itools.unique` with non-hashable items.
 - Added :mod:`pickle` support to :class:`brownie.datastructures.LazyList`.
 - Made :class:`brownie.datastructures.ImmutableDict` hashable.
+- Made :class:`brownie.datastructures.CombinedDict` hashable.
 
 0.4.1
 -----

@@ -322,6 +322,14 @@ class TestCombinedDict(TestBase, CombinedDictTestMixin, ImmutableDictTestMixin):
         assert isinstance(d, ImmutableDict)
         assert isinstance(d, dict)
 
+    @test
+    def hashability(self):
+        a = CombinedDict([ImmutableDict({1: 2}), ImmutableDict({3: 4})])
+        Assert(hash(a)) == hash(CombinedDict(a.dicts))
+        Assert(hash(a)) != hash(CombinedDict(reversed(a.dicts)))
+        with Assert.raises(TypeError):
+            hash(CombinedDict([{}]))
+
 
 class MultiDictTestMixin(object):
     dict_class = None
