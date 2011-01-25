@@ -12,6 +12,7 @@ features.
 - Added :mod:`pickle` support to :class:`brownie.datastructures.LazyList`.
 - Made :class:`brownie.datastructures.ImmutableDict` hashable.
 - Made :class:`brownie.datastructures.CombinedDict` hashable.
+- Made :class:`brownie.datastructures.ImmutableMultiDict` hashable.
 
 0.4.1
 -----

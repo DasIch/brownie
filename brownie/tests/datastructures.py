@@ -499,6 +499,13 @@ class TestImmutableMultiDict(TestBase, ImmutableMultiDictTestMixin,
         for type in types:
             assert isinstance(d, type), type
 
+    @test
+    def hashability(self):
+        d = self.dict_class({1: [2, 3]})
+        Assert(hash(d)) == hash(self.dict_class(d))
+        with Assert.raises(TypeError):
+            hash(self.dict_class({1: [[]]}))
+
 
 class TestCombinedMultiDict(TestBase, CombinedDictTestMixin,
                             ImmutableMultiDictTestMixin,

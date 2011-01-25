@@ -410,10 +410,18 @@ class ImmutableMultiDictMixin(ImmutableDictMixin, MultiDictMixin):
 
 
 class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
-    """An immutable :class:`MultiDict`."""
+    """
+    An immutable :class:`MultiDict`.
+
+    .. versionadded:: 0.5
+       :class:`MultiDict` is now hashable, given the content is.
+    """
     __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (MultiDict, ImmutableDict)
+
+    def __hash__(self):
+        return hash(tuple((key, tuple(value)) for key, value in self.lists()))
 
 
 class CombinedMultiDict(CombinedDictMixin, ImmutableMultiDictMixin, dict):
