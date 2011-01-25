@@ -414,7 +414,7 @@ class ImmutableMultiDict(ImmutableMultiDictMixin, dict):
     An immutable :class:`MultiDict`.
 
     .. versionadded:: 0.5
-       :class:`MultiDict` is now hashable, given the content is.
+       :class:`ImmutableMultiDict` is now hashable, given the content is.
     """
     __metaclass__ = AbstractClassMeta
 
