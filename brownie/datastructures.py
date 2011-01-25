@@ -670,12 +670,18 @@ class ImmutableOrderedDict(ImmutableDictMixin, OrderedDict):
     An immutable :class:`OrderedDict`.
 
     .. versionadded:: 0.2
+
+    .. versionadded:: 0.5
+       :class:`ImmutableOrderedDict` is now hashable, given the content is.
     """
     __metaclass__ = AbstractClassMeta
 
     virtual_superclasses = (ImmutableDict, )
 
     move_to_end = raise_immutable
+
+    def __hash__(self):
+        return hash(tuple(self.iteritems()))
 
     __repr__ = OrderedDict.__repr__
 

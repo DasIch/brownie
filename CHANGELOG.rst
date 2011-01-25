@@ -13,6 +13,7 @@ features.
 - Made :class:`brownie.datastructures.ImmutableDict` hashable.
 - Made :class:`brownie.datastructures.CombinedDict` hashable.
 - Made :class:`brownie.datastructures.ImmutableMultiDict` hashable.
+- Made :class:`brownie.datastructures.ImmutableOrderedDict` hashable.
 
 0.4.1
 -----

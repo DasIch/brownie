@@ -686,6 +686,14 @@ class TestImmutableOrderedDict(TestBase, ImmutableOrderedDictTextMixin,
         assert isinstance(d, ImmutableDict)
         assert isinstance(d, dict)
 
+    @test
+    def hashability(self):
+        d = self.dict_class([(1, 2), (3, 4)])
+        Assert(hash(d)) == hash(self.dict_class(d))
+        Assert(hash(d)) != hash(self.dict_class(reversed(d.items())))
+        with Assert.raises(TypeError):
+            hash(self.dict_class(foo=[]))
+
 
 class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
                            DictTestMixin):
