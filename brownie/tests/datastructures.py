@@ -31,6 +31,7 @@ from brownie.datastructures import (
     Counter,
     CombinedDict,
     CombinedMultiDict,
+    FixedDict,
     namedtuple
 )
 
@@ -720,6 +721,26 @@ class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
                  OrderedDict]
         for type in types:
             assert isinstance(d, type), type
+
+
+class TestFixedDict(TestBase, DictTestMixin):
+    dict_class = FixedDict
+
+    @test
+    def setitem(self):
+        d = self.dict_class()
+        d[1] = 2
+        Assert(d[1]) == 2
+        with Assert.raises(KeyError):
+            d[1] = 3
+
+    @test
+    def update(self):
+        d = self.dict_class()
+        d.update({1: 2})
+        Assert(d[1]) == 2
+        with Assert.raises(KeyError):
+            d.update({1: 3})
 
 
 class TestCounter(TestBase):
@@ -1425,5 +1446,5 @@ tests = Tests([
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
     TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,
     TestCombinedMultiDict, TestImmutableOrderedDict, TestSetQueue,
-    TestNamedTuple
+    TestNamedTuple, TestFixedDict
 ])

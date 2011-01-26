@@ -25,6 +25,9 @@ Mappings
 .. autoclass:: OrderedMultiDict
    :members:
 
+.. autoclass:: FixedDict
+   :members:
+
 Immutable Mappings
 ------------------
 

@@ -707,6 +707,42 @@ class ImmutableOrderedMultiDict(ImmutableMultiDictMixin, ImmutableOrderedDict):
         return '%s(%s)' % (self.__class__.__name__, content)
 
 
+class FixedDict(dict):
+    """
+    A :class:`dict` whose items can only be created or deleted not changed.
+
+    If you attempt to change an item a :exc:`KeyError` is raised.
+
+    .. versionadded:: 0.5
+    """
+    def __setitem__(self, key, value):
+        if key in self:
+            raise KeyError('already set')
+        dict.__setitem__(self, key, value)
+
+    def update(self, *args, **kwargs):
+        if len(args) > 1:
+            raise TypeError(
+                'expected at most 1 argument, got %d' % len(args)
+            )
+        mappings = []
+        if args:
+            if hasattr(args[0], 'iteritems'):
+                mappings.append(args[0].iteritems())
+            else:
+                mappings.append(args[0])
+        mappings.append(kwargs.iteritems())
+        for mapping in mappings:
+            for key, value in mapping:
+                FixedDict.__setitem__(self, key, value)
+
+    def __repr__(self):
+        return '%s(%s)' % (
+            self.__class__.__name__,
+            dict.__repr__(self) if self else ''
+        )
+
+
 class Counter(dict):
     """
     :class:`dict` subclass for counting hashable objects. Elements are stored
