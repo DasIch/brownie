@@ -160,4 +160,4 @@ def bind_arguments(func, args=(), kwargs=None):
     return result
 
 
-__all__ = ['compose', 'flip', 'bind_arguments']
+__all__ = ['compose', 'flip', 'get_signature', 'bind_arguments']
