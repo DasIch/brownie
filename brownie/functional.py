@@ -89,10 +89,12 @@ class Signature(namedtuple('SignatureBase', [
         func = getattr(func, 'im_func', func)
         params, varargs, varkwargs, defaults = getargspec(func)
         defaults = [] if defaults is None else defaults
-        index = 0 if len(defaults) == len(params) else len(defaults) or len(params)
         return cls(
-            params[:index],
-            zip(params[index:], defaults),
+            params[
+                :0 if len(defaults) == len(params)
+                else -len(defaults) or len(params)
+            ],
+            zip(params[-len(defaults):], defaults),
             varargs,
             varkwargs
         )

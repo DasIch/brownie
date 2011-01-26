@@ -52,6 +52,10 @@ class TestSignature(TestBase):
 
     @test
     def mixed_positionals_keyword_arguments(self):
+        func = lambda a, b, c=3: None
+        Assert(Signature.from_function(func)) == (
+            ['a', 'b'], [('c', 3)], None, None
+        )
         func = lambda a, b, c=3, d=4: None
         Assert(Signature.from_function(func)) == (
             ['a', 'b'], [('c', 3), ('d', 4)], None, None
