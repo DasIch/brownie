@@ -1602,5 +1602,6 @@ __all__ = [
     'missing', 'iter_multi_items', 'MultiDict', 'OrderedDict', 'Counter',
     'OrderedMultiDict', 'ImmutableDict', 'ImmutableMultiDict',
     'ImmutableOrderedDict', 'ImmutableOrderedMultiDict', 'CombinedDict',
-    'CombinedMultiDict', 'LazyList', 'OrderedSet', 'SetQueue', 'namedtuple'
+    'CombinedMultiDict', 'LazyList', 'OrderedSet', 'SetQueue', 'namedtuple',
+    'FixedDict'
 ]
