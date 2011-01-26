@@ -10,6 +10,7 @@ languages.
 
 .. autofunction:: flip
 
-.. autofunction:: get_signature
+.. autoclass:: Signature
+   :members:
 
 .. autofunction:: bind_arguments

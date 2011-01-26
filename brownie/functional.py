@@ -13,6 +13,7 @@ from inspect import getargspec
 from functools import wraps
 
 from brownie.pycompat import reduce
+from brownie.datastructures import namedtuple
 
 
 def compose(*functions):
@@ -53,30 +54,48 @@ def flip(function):
     return wrap
 
 
-def get_signature(func):
+class Signature(namedtuple('SignatureBase', [
+            'positionals', 'kwparams', 'varargs', 'varkwargs'
+        ])):
     """
-    Takes a function or method and returns the signature as a tuple containing
-    the following items:
+    A named tuple representing a function signature.
 
-    1. A list of required positional parameters.
-    2. A list containing the keyword arguments, each as a tuple containing the
+    :param positionals:
+       A list of required positional parameters.
+
+    :param kwparams:
+       A list containing the keyword arguments, each as a tuple containing the
        name and default value, in order of their appearance in the function
        definition.
-    3. The name used for arbitrary positional arguments or `None`.
-    4. The name used for arbitary keyword arguments or `None`.
+
+    :param varargs:
+       The name used for arbitrary positional arguments or `None`.
+
+    :param varkwargs:
+       The name used for arbitary keyword arguments or `None`.
+
+    .. warning::
+       The size of :class:`Signature` tuples may change in the future to
+       accommodate additional information like annotations. Therefore you
+       should not rely on it.
 
     .. versionadded:: 0.5
     """
-    func = getattr(func, 'im_func', func)
-    params, varargs, varkwargs, defaults = getargspec(func)
-    defaults = [] if defaults is None else defaults
-    index = 0 if len(defaults) == len(params) else len(defaults) or len(params)
-    return (
-        params[:index],
-        zip(params[index:], defaults),
-        varargs,
-        varkwargs
-    )
+    @classmethod
+    def from_function(cls, func):
+        """
+        Constructs a :class:`Signature` from the given function or method.
+        """
+        func = getattr(func, 'im_func', func)
+        params, varargs, varkwargs, defaults = getargspec(func)
+        defaults = [] if defaults is None else defaults
+        index = 0 if len(defaults) == len(params) else len(defaults) or len(params)
+        return cls(
+            params[:index],
+            zip(params[index:], defaults),
+            varargs,
+            varkwargs
+        )
 
 
 def bind_arguments(func, args=(), kwargs=None):
@@ -90,24 +109,24 @@ def bind_arguments(func, args=(), kwargs=None):
     .. versionadded:: 0.5
     """
     kwargs = {} if kwargs is None else kwargs
-    positionals, kwparams, varargs, varkwargs = get_signature(func)
+    signature = Signature.from_function(func)
 
-    required = set(positionals)
-    overwritable = set(name for name, default in kwparams)
+    required = set(signature.positionals)
+    overwritable = set(name for name, default in signature.kwparams)
     settable = required | overwritable
 
-    positional_count = len(positionals)
-    kwparam_count = len(kwparams)
+    positional_count = len(signature.positionals)
+    kwparam_count = len(signature.kwparams)
     arg_count = len(args)
 
-    result = dict(kwparams, **dict(zip(positionals, args)))
+    result = dict(signature.kwparams, **dict(zip(signature.positionals, args)))
 
     remaining = args[positional_count:]
-    for (param, _), arg in zip(kwparams, remaining):
+    for (param, _), arg in zip(signature.kwparams, remaining):
         result[param] = arg
         overwritable.discard(param)
     if len(remaining) > kwparam_count:
-        if varargs is None:
+        if signature.varargs is None:
             raise ValueError(
                 'expected at most %d positional arguments, got %d' % (
                     positional_count + kwparam_count,
@@ -115,7 +134,7 @@ def bind_arguments(func, args=(), kwargs=None):
                 )
             )
         else:
-            result[varargs] = tuple(remaining[kwparam_count:])
+            result[signature.varargs] = tuple(remaining[kwparam_count:])
 
     remaining = {}
     unexpected = []
@@ -124,8 +143,8 @@ def bind_arguments(func, args=(), kwargs=None):
             raise ValueError("got multiple values for '%s'" % key)
         elif key in settable:
             result[key] = value
-        elif varkwargs:
-            result_kwargs = result.setdefault('kwargs', {})
+        elif signature.varkwargs:
+            result_kwargs = result.setdefault(signature.varkwargs, {})
             result_kwargs[key] = value
         else:
             unexpected.append(key)
@@ -142,8 +161,8 @@ def bind_arguments(func, args=(), kwargs=None):
             ', '.join("'%s'" % arg for arg in unexpected[:-1]), unexpected[-1]
         ))
 
-    if set(result) < set(positionals):
-        missing = set(result) ^ set(positionals)
+    if set(result) < set(signature.positionals):
+        missing = set(result) ^ set(signature.positionals)
         if len(missing) == 1:
             raise ValueError("'%s' is missing" % missing.pop())
         elif len(missing) == 2:
@@ -153,11 +172,11 @@ def bind_arguments(func, args=(), kwargs=None):
             raise ValueError("%s and '%s' are missing" % (
                 ', '.join("'%s'" % name for name in missing[:-1]), missing[-1]
             ))
-    if varargs:
-        result.setdefault(varargs, ())
-    if varkwargs:
-        result.setdefault(varkwargs, {})
+    if signature.varargs:
+        result.setdefault(signature.varargs, ())
+    if signature.varkwargs:
+        result.setdefault(signature.varkwargs, {})
     return result
 
 
-__all__ = ['compose', 'flip', 'get_signature', 'bind_arguments']
+__all__ = ['compose', 'flip', 'Signature', 'bind_arguments']
