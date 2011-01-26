@@ -15,6 +15,7 @@ features.
 - Made :class:`brownie.datastructures.ImmutableMultiDict` hashable.
 - Made :class:`brownie.datastructures.ImmutableOrderedDict` hashable.
 - Added :func:`brownie.functional.get_signature`.
+- Added :func:`brownie.Datastructures.namedtuple`.
 
 0.4.1
 -----

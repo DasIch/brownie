@@ -68,3 +68,8 @@ Queues
    :members:
    :inherited-members:
    :show-inheritance:
+
+Tuples
+------
+
+.. autofunction:: namedtuple

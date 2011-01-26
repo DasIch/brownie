@@ -30,7 +30,8 @@ from brownie.datastructures import (
     ImmutableOrderedMultiDict,
     Counter,
     CombinedDict,
-    CombinedMultiDict
+    CombinedMultiDict,
+    namedtuple
 )
 
 
@@ -1349,9 +1350,80 @@ class TestSetQueue(TestBase):
         consumer.join()
 
 
+class TestNamedTuple(TestBase):
+    @test
+    def string_field_names(self):
+        nt = namedtuple('foo', 'foo bar')
+        Assert(nt._fields) == ('foo', 'bar')
+        nt = namedtuple('foo', 'foo,bar')
+        Assert(nt._fields) == ('foo', 'bar')
+
+    @test
+    def typename(self):
+        nt = namedtuple('foo', [])
+        Assert(nt.__name__) == 'foo'
+        with Assert.raises(ValueError):
+            namedtuple('def', [])
+
+    @test
+    def fieldnames(self):
+        with Assert.raises(ValueError):
+            nt = namedtuple('foo', ['foo', 'bar', 'def'])
+
+        with Assert.raises(ValueError):
+            nt = namedtuple('foo', ['foo', 'bar', 'foo'])
+
+        nt = namedtuple('foo', ['spam', 'eggs'])
+        Assert(nt._fields) == ('spam', 'eggs')
+
+        nt = namedtuple('foo', ['foo', 'bar', 'def'], rename=True)
+        Assert(nt._fields) == ('foo', 'bar', '_1')
+        Assert(nt(1, 2, 3)._1) == 3
+
+        nt = namedtuple('foo', ['foo', 'bar', 'foo'], rename=True)
+        Assert(nt._fields) == ('foo', 'bar', '_1')
+        Assert(nt(1, 2, 3)._1) == 3
+
+    @test
+    def renaming(self):
+        nt = namedtuple('foo', ['foo', 'foo', 'foo'], rename=True)
+        t = nt(1, 2, 3)
+        Assert(t.foo) == 1
+        Assert(t._1) == 2
+        Assert(t._2) == 3
+
+    @test
+    def repr(self):
+        nt = namedtuple('foo', ['spam', 'eggs'])
+        Assert(nt(1, 2)) == (1, 2)
+        Assert(repr(nt(1, 2))) == 'foo(spam=1, eggs=2)'
+
+    @test
+    def _make(self):
+        nt = namedtuple('foo', ['spam', 'eggs'])
+        Assert(nt._make((1, 2))) == (1, 2)
+        with Assert.raises(TypeError):
+            nt._make((1, 2, 3))
+
+    @test
+    def _asdict(self):
+        nt = namedtuple('foo', ['spam', 'eggs'])
+        Assert(nt(1, 2)._asdict()) == {'spam': 1, 'eggs': 2}
+
+    @test
+    def _replace(self):
+        nt = namedtuple('foo', ['spam', 'eggs'])
+        t = nt(1, 2)
+        Assert(t._replace(spam=3)) == (3, 2)
+        Assert(t._replace(eggs=4)) == (1, 4)
+        with Assert.raises(ValueError):
+            t._replace(foo=1)
+
+
 tests = Tests([
     TestMissing, ImmutableDictTest, TestMultiDict, TestOrderedDict,
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
     TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,
-    TestCombinedMultiDict, TestImmutableOrderedDict, TestSetQueue
+    TestCombinedMultiDict, TestImmutableOrderedDict, TestSetQueue,
+    TestNamedTuple
 ])
