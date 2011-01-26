@@ -53,6 +53,32 @@ def flip(function):
     return wrap
 
 
+def get_signature(func):
+    """
+    Takes a function or method and returns the signature as a tuple containing
+    the following items:
+
+    1. A list of required positional parameters.
+    2. A list containing the keyword arguments, each as a tuple containing the
+       name and default value, in order of their appearance in the function
+       definition.
+    3. The name used for arbitrary positional arguments or `None`.
+    4. The name used for arbitary keyword arguments or `None`.
+
+    .. versionadded:: 0.5
+    """
+    func = getattr(func, 'im_func', func)
+    params, varargs, varkwargs, defaults = getargspec(func)
+    defaults = [] if defaults is None else defaults
+    index = 0 if len(defaults) == len(params) else len(defaults) or len(params)
+    return (
+        params[:index],
+        zip(params[index:], defaults),
+        varargs,
+        varkwargs
+    )
+
+
 def bind_arguments(func, args=(), kwargs=None):
     """
     Returns a dictionary with the names of the parameters as keys with
@@ -64,10 +90,7 @@ def bind_arguments(func, args=(), kwargs=None):
     .. versionadded:: 0.5
     """
     kwargs = {} if kwargs is None else kwargs
-    params, varargs, varkwargs, defaults = getargspec(func)
-    defaults = defaults or []
-    positionals = params[len(defaults):]
-    kwparams = zip(params[:len(defaults)], defaults)
+    positionals, kwparams, varargs, varkwargs = get_signature(func)
 
     required = set(positionals)
     overwritable = set(name for name, default in kwparams)

@@ -13,7 +13,7 @@ import re
 
 from attest import Tests, Assert, TestBase, test
 
-from brownie.functional import compose, flip, bind_arguments
+from brownie.functional import compose, flip, get_signature, bind_arguments
 
 
 tests = Tests()
@@ -35,6 +35,43 @@ def test_flip():
     Assert(flip(f)(1, 2)) == (2, {})
     kwargs = {'foo': 'bar'}
     Assert(flip(f)(1, 2, **kwargs)) == (2, kwargs)
+
+
+class TestGetSignature(TestBase):
+    @test
+    def positionals(self):
+        func = lambda a, b, c: None
+        Assert(get_signature(func)) == (['a', 'b', 'c'], [], None, None)
+
+    @test
+    def keyword_arguments(self):
+        func = lambda a=1, b=2, c=3: None
+        Assert(get_signature(func)) == (
+            [], [('a', 1), ('b', 2), ('c', 3)], None, None
+        )
+
+    @test
+    def mixed_positionals_keyword_arguments(self):
+        func = lambda a, b, c=3, d=4: None
+        Assert(get_signature(func)) == (
+            ['a', 'b'], [('c', 3), ('d', 4)], None, None
+        )
+
+    @test
+    def arbitary_positionals(self):
+        foo = lambda *foo: None
+        bar = lambda *bar: None
+        for func, name in [(foo, 'foo'), (bar, 'bar')]:
+            Assert(get_signature(func)) == ([], [], name, None)
+
+    @test
+    def arbitary_keyword_arguments(self):
+        spam = lambda **spam: None
+        eggs = lambda **eggs: None
+        for func, name in [(spam, 'spam'), (eggs, 'eggs')]:
+            Assert(get_signature(func)) == ([], [], None, name)
+
+tests.register(TestGetSignature)
 
 
 class TestBindArguments(TestBase):
