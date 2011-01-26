@@ -17,6 +17,7 @@ features.
 - Added :func:`brownie.datastructures.namedtuple`.
 - Added :class:`brownie.functional.Signature`.
 - Added :class:`brownie.datastructures.FixedDict`.
+- Added `seen` parameter to :func:`brownie.itools.unique`.
 
 0.4.1
 -----

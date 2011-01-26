@@ -137,3 +137,5 @@ def test_unique():
     ]
     for test, result in tests:
         Assert(list(unique(test))) == list(result)
+
+    Assert(list(unique('aaabbbbccc', seen='ab'))) == ['c']

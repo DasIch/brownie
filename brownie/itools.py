@@ -212,15 +212,21 @@ def grouped(n, iterable, fillvalue=None):
     return izip_longest(fillvalue=fillvalue, *([iter(iterable)] * n))
 
 
-def unique(iterable):
+def unique(iterable, seen=None):
     """
     Yields items from the given `iterable` of (hashable) items, once seen an
     item is not yielded again.
 
+    :param seen:
+       An iterable specifying already 'seen' items which will be excluded
+       from the result.
+
+       .. versionadded:: 0.5
+
     .. versionchanged:: 0.5
        Items don't have to be hashable any more.
     """
-    seen = set()
+    seen = set() if seen is None else set(seen)
     seen_unhashable = []
     for item in iterable:
         try:
