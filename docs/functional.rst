@@ -14,3 +14,5 @@ languages.
    :members:
 
 .. autofunction:: bind_arguments
+
+.. autoclass:: curried

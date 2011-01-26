@@ -12,8 +12,9 @@
 from inspect import getargspec
 from functools import wraps
 
+from brownie.itools import izip_longest, unique
 from brownie.pycompat import reduce
-from brownie.datastructures import namedtuple
+from brownie.datastructures import namedtuple, FixedDict
 
 
 def compose(*functions):
@@ -181,4 +182,91 @@ def bind_arguments(func, args=(), kwargs=None):
     return result
 
 
-__all__ = ['compose', 'flip', 'Signature', 'bind_arguments']
+class curried(object):
+    """
+    :class:`curried` is a decorator providing currying for callable objects.
+
+    Each call to the curried callable returns a new curried object unless it
+    is called with every argument required for a 'successful' call to the
+    function::
+
+        >>> foo = curried(lambda a, b, c: a + b * c)
+        >>> foo(1, 2, 3)
+        6
+        >>> bar = foo(c=2)
+        >>> bar(2, 3)
+        8
+        >>> baz = bar(3)
+        >>> baz(3)
+        9
+
+    By the way if the function takes arbitrary positional and/or keyword
+    arguments this will work as expected.
+
+    .. versionadded:: 0.5
+    """
+    def __init__(self, function):
+        self.function = function
+
+        self.signature = Signature.from_function(function)
+        self.params = self.signature.positionals + [
+            name for name, default in self.signature.kwparams
+        ]
+        self.args = {}
+        self.changeable_args = set(
+            name for name, default in self.signature.kwparams
+        )
+
+    @property
+    def remaining_params(self):
+        return unique(self.params, set(self.args) - self.changeable_args)
+
+    def _updated(self, args):
+        result = object.__new__(self.__class__)
+        result.__dict__.update(self.__dict__)
+        result.args = args
+        return result
+
+    def __call__(self, *args, **kwargs):
+        collected_args = self.args.copy()
+        for remaining, arg in izip_longest(self.remaining_params, args):
+            if remaining is None:
+                if self.signature.varargs is None:
+                    raise TypeError('unexpected positional argument: %r' % arg)
+                collected_args.setdefault(self.signature.varargs, []).append(arg)
+            elif arg is None:
+                break
+            else:
+                if (remaining in collected_args and
+                    remaining in self.signature.positionals
+                        ):
+                    raise TypeError(
+                        "'%s' has been repeated: %r" % (remaining, arg)
+                    )
+                collected_args[remaining] = arg
+                self.changeable_args.discard(remaining)
+        for key, value in kwargs.iteritems():
+            if key in self.params:
+                if key in collected_args:
+                    raise TypeError("'%s' has been repeated: %r" % (key, value))
+                self.changeable_args.discard(key)
+                collected_args[key] = value
+            else:
+                if self.signature.varkwargs is None:
+                    raise TypeError('unexpected keyword argument')
+                else:
+                    collected_args.setdefault(
+                        self.signature.varkwargs,
+                        FixedDict()
+                    )[key] = value
+        if set(self.signature.positionals) <= set(collected_args):
+            func_kwargs = dict(self.signature.kwparams)
+            func_kwargs = FixedDict(self.signature.kwparams, **collected_args)
+            func_kwargs.update(func_kwargs.pop(self.signature.varkwargs, {}))
+            args = map(func_kwargs.pop, self.params)
+            args += func_kwargs.pop(self.signature.varargs, [])
+            return self.function(*args, **func_kwargs)
+        return self._updated(collected_args)
+
+
+__all__ = ['compose', 'flip', 'Signature', 'bind_arguments', 'curried']

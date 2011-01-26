@@ -18,6 +18,7 @@ features.
 - Added :class:`brownie.functional.Signature`.
 - Added :class:`brownie.datastructures.FixedDict`.
 - Added `seen` parameter to :func:`brownie.itools.unique`.
+- Added :class:`brownie.functional.curried`.
 
 0.4.1
 -----
