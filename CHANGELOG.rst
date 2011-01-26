@@ -14,7 +14,7 @@ features.
 - Made :class:`brownie.datastructures.CombinedDict` hashable.
 - Made :class:`brownie.datastructures.ImmutableMultiDict` hashable.
 - Made :class:`brownie.datastructures.ImmutableOrderedDict` hashable.
-- Added :func:`brownie.Datastructures.namedtuple`.
+- Added :func:`brownie.datastructures.namedtuple`.
 - Added :class:`brownie.functional.Signature`.
 - Added :class:`brownie.datastructures.FixedDict`.
 
