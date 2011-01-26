@@ -85,7 +85,7 @@ def bind_arguments(func, args=(), kwargs=None):
     their arguments as values.
 
     Raises a :exc:`ValueError` if there are too many `args` and/or `kwargs`
-    they are missing or repeated.
+    that are missing or repeated.
 
     .. versionadded:: 0.5
     """
