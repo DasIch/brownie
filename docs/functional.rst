@@ -13,6 +13,4 @@ languages.
 .. autoclass:: Signature
    :members:
 
-.. autofunction:: bind_arguments
-
 .. autoclass:: curried

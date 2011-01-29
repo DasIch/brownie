@@ -13,7 +13,7 @@ import re
 
 from attest import Tests, Assert, TestBase, test
 
-from brownie.functional import compose, flip, Signature, bind_arguments, curried
+from brownie.functional import compose, flip, Signature, curried
 
 
 tests = Tests()
@@ -75,18 +75,14 @@ class TestSignature(TestBase):
         for func, name in [(spam, 'spam'), (eggs, 'eggs')]:
             Assert(Signature.from_function(func)) == ([], [], None, name)
 
-tests.register(TestSignature)
-
-
-class TestBindArguments(TestBase):
     @test
-    def no_args(self):
-        func = lambda: None
+    def bind_arguments_no_args(self):
+        sig = Signature.from_function(lambda: None)
 
-        Assert(bind_arguments(func)) == {}
+        Assert(sig.bind_arguments()) == {}
 
         with Assert.raises(ValueError) as exc:
-            bind_arguments(func, (1, ), {})
+            sig.bind_arguments((1, ), {})
         Assert(exc.args[0]) == 'expected at most 0 positional arguments, got 1'
 
         tests = [
@@ -100,18 +96,18 @@ class TestBindArguments(TestBase):
 
         for kwargs, message in tests:
             with Assert.raises(ValueError) as exc:
-                bind_arguments(func, kwargs=kwargs)
+                sig.bind_arguments(kwargs=kwargs)
             err_msg = exc.args[0].obj
             assert re.match(message, err_msg) is not None
             for name in kwargs:
                 assert name in err_msg
 
     @test
-    def only_positionals(self):
-        func = lambda a, b, c: None
+    def bind_arguments_only_positionals(self):
+        sig = Signature.from_function(lambda a, b, c: None)
 
-        Assert(bind_arguments(func, (1, 2, 3))) == dict(a=1, b=2, c=3)
-        Assert(bind_arguments(func, (1, 2), {'c': 3})) == dict(a=1, b=2, c=3)
+        Assert(sig.bind_arguments((1, 2, 3))) == dict(a=1, b=2, c=3)
+        Assert(sig.bind_arguments((1, 2), {'c': 3})) == dict(a=1, b=2, c=3)
 
         tests = [
             ([('a', 1), ('b', 2)], "'.' is missing"),
@@ -126,10 +122,10 @@ class TestBindArguments(TestBase):
                 values.append(value)
 
             with Assert.raises(ValueError) as exc_args:
-                bind_arguments(func, values)
+                sig.bind_arguments(values)
 
             with Assert.raises(ValueError) as exc_kwargs:
-                bind_arguments(func, kwargs=dict(args))
+                sig.bind_arguments(kwargs=dict(args))
 
             for exc in [exc_args, exc_kwargs]:
                 err_msg = exc.args[0].obj
@@ -138,80 +134,86 @@ class TestBindArguments(TestBase):
                     assert name in err_msg
 
         with Assert.raises(ValueError) as exc:
-            bind_arguments(func, (1, 2, 3), {'c': 4})
+            sig.bind_arguments((1, 2, 3), {'c': 4})
         Assert(exc.args[0]) == "got multiple values for 'c'"
 
     @test
-    def only_keyword_arguments(self):
-        func = lambda a=1, b=2, c=3: None
+    def bind_arguments_only_keyword_arguments(self):
+        sig = Signature.from_function(lambda a=1, b=2, c=3: None)
 
-        Assert(bind_arguments(func)) == dict(a=1, b=2, c=3)
-        Assert(bind_arguments(func, ('a', ))) == dict(a='a', b=2, c=3)
-        Assert(bind_arguments(func, (), {'a': 'a'})) == dict(a='a', b=2, c=3)
-
-    @test
-    def arbitary_positionals(self):
-        func = lambda *args: None
-        Assert(bind_arguments(func)) == {'args': ()}
-        Assert(bind_arguments(func, (1, 2, 3))) == {'args': (1, 2, 3)}
+        Assert(sig.bind_arguments()) == dict(a=1, b=2, c=3)
+        Assert(sig.bind_arguments(('a', ))) == dict(a='a', b=2, c=3)
+        Assert(sig.bind_arguments((), {'a': 'a'})) == dict(a='a', b=2, c=3)
 
     @test
-    def mixed_positionals(self):
-        func = lambda a, b, *args: None
-        Assert(bind_arguments(func, (1, 2))) == dict(a=1, b=2, args=())
-        Assert(bind_arguments(func, (1, 2, 3))) == dict(a=1, b=2, args=(3, ))
+    def bind_arguments_arbitary_positionals(self):
+        sig = Signature.from_function(lambda *args: None)
+
+        Assert(sig.bind_arguments()) == {'args': ()}
+        Assert(sig.bind_arguments((1, 2, 3))) == {'args': (1, 2, 3)}
+
+    @test
+    def bind_arguments_mixed_positionals(self):
+        sig = Signature.from_function(lambda a, b, *args: None)
+
+        Assert(sig.bind_arguments((1, 2))) == dict(a=1, b=2, args=())
+        Assert(sig.bind_arguments((1, 2, 3))) == dict(a=1, b=2, args=(3, ))
         with Assert.raises(ValueError):
-            Assert(bind_arguments(func))
+            Assert(sig.bind_arguments())
 
     @test
-    def arbitary_keyword_arguments(self):
-        func = lambda **kwargs: None
-        Assert(bind_arguments(func)) == {'kwargs': {}}
-        Assert(bind_arguments(func, (), {'a': 1})) == {'kwargs': {'a': 1}}
+    def bind_arguments_arbitary_keyword_arguments(self):
+        sig = Signature.from_function(lambda **kwargs: None)
+
+        Assert(sig.bind_arguments()) == {'kwargs': {}}
+        Assert(sig.bind_arguments((), {'a': 1})) == {'kwargs': {'a': 1}}
 
     @test
-    def mixed_keyword_arguments(self):
-        func = lambda a=1, b=2, **kwargs: None
-        Assert(bind_arguments(func)) == dict(a=1, b=2, kwargs={})
-        Assert(bind_arguments(func, (3, 4))) == dict(a=3, b=4, kwargs={})
-        Assert(bind_arguments(func, (), {'c': 3})) == dict(
+    def bind_arguments_mixed_keyword_arguments(self):
+        sig = Signature.from_function(lambda a=1, b=2, **kwargs: None)
+
+        Assert(sig.bind_arguments()) == dict(a=1, b=2, kwargs={})
+        Assert(sig.bind_arguments((3, 4))) == dict(a=3, b=4, kwargs={})
+        Assert(sig.bind_arguments((), {'c': 3})) == dict(
             a=1,
             b=2,
             kwargs=dict(c=3)
         )
 
     @test
-    def mixed_positional_arbitary_keyword_arguments(self):
-        func = lambda a, b, **kwargs: None
-        Assert(bind_arguments(func, (1, 2))) == dict(a=1, b=2, kwargs={})
-        Assert(bind_arguments(func, (1, 2), {'c': 3})) == dict(
+    def bind_arguments_mixed_positional_arbitary_keyword_arguments(self):
+        sig = Signature.from_function(lambda a, b, **kwargs: None)
+
+        Assert(sig.bind_arguments((1, 2))) == dict(a=1, b=2, kwargs={})
+        Assert(sig.bind_arguments((1, 2), {'c': 3})) == dict(
             a=1,
             b=2,
             kwargs=dict(c=3)
         )
-        Assert(bind_arguments(func, (), dict(a=1, b=2))) == dict(
+        Assert(sig.bind_arguments((), dict(a=1, b=2))) == dict(
             a=1,
             b=2,
             kwargs={}
         )
         with Assert.raises(ValueError):
-            bind_arguments(func)
+            sig.bind_arguments()
         with Assert.raises(ValueError):
-            bind_arguments(func, (1, 2), {'a': 3})
+            sig.bind_arguments((1, 2), {'a': 3})
 
     @test
-    def mixed_keyword_arguments_arbitary_positionals(self):
-        func = lambda a=1, b=2, *args: None
-        Assert(bind_arguments(func)) == dict(a=1, b=2, args=())
-        Assert(bind_arguments(func, (3, 4))) == dict(a=3, b=4, args=())
-        Assert(bind_arguments(func, (3, 4, 5))) == dict(a=3, b=4, args=(5, ))
-        Assert(bind_arguments(func, (), {'a': 3, 'b': 4})) == dict(
+    def bind_arguments_mixed_keyword_arguments_arbitary_positionals(self):
+        sig = Signature.from_function(lambda a=1, b=2, *args: None)
+
+        Assert(sig.bind_arguments()) == dict(a=1, b=2, args=())
+        Assert(sig.bind_arguments((3, 4))) == dict(a=3, b=4, args=())
+        Assert(sig.bind_arguments((3, 4, 5))) == dict(a=3, b=4, args=(5, ))
+        Assert(sig.bind_arguments((), {'a': 3, 'b': 4})) == dict(
             a=3, b=4, args=()
         )
         with Assert.raises(ValueError):
-            bind_arguments(func, (3, ), {'a': 4})
+            sig.bind_arguments((3, ), {'a': 4})
 
-tests.register(TestBindArguments)
+tests.register(TestSignature)
 
 
 class TestCurried(TestBase):

@@ -100,85 +100,81 @@ class Signature(namedtuple('SignatureBase', [
             varkwargs
         )
 
+    def bind_arguments(self, args=(), kwargs=None):
+        """
+        Returns a dictionary with the names of the parameters as keys with
+        their arguments as values.
 
-def bind_arguments(func, args=(), kwargs=None):
-    """
-    Returns a dictionary with the names of the parameters as keys with
-    their arguments as values.
+        Raises a :exc:`ValueError` if there are too many `args` and/or `kwargs`
+        that are missing or repeated.
+        """
+        kwargs = {} if kwargs is None else kwargs
 
-    Raises a :exc:`ValueError` if there are too many `args` and/or `kwargs`
-    that are missing or repeated.
+        required = set(self.positionals)
+        overwritable = set(name for name, default in self.kwparams)
+        settable = required | overwritable
 
-    .. versionadded:: 0.5
-    """
-    kwargs = {} if kwargs is None else kwargs
-    signature = Signature.from_function(func)
+        positional_count = len(self.positionals)
+        kwparam_count = len(self.kwparams)
 
-    required = set(signature.positionals)
-    overwritable = set(name for name, default in signature.kwparams)
-    settable = required | overwritable
+        result = dict(self.kwparams, **dict(zip(self.positionals, args)))
 
-    positional_count = len(signature.positionals)
-    kwparam_count = len(signature.kwparams)
-
-    result = dict(signature.kwparams, **dict(zip(signature.positionals, args)))
-
-    remaining = args[positional_count:]
-    for (param, _), arg in zip(signature.kwparams, remaining):
-        result[param] = arg
-        overwritable.discard(param)
-    if len(remaining) > kwparam_count:
-        if signature.varargs is None:
-            raise ValueError(
-                'expected at most %d positional arguments, got %d' % (
-                    positional_count + kwparam_count,
-                    len(args)
+        remaining = args[positional_count:]
+        for (param, _), arg in zip(self.kwparams, remaining):
+            result[param] = arg
+            overwritable.discard(param)
+        if len(remaining) > kwparam_count:
+            if self.varargs is None:
+                raise ValueError(
+                    'expected at most %d positional arguments, got %d' % (
+                        positional_count + kwparam_count,
+                        len(args)
+                    )
                 )
+            else:
+                result[self.varargs] = tuple(remaining[kwparam_count:])
+
+        remaining = {}
+        unexpected = []
+        for key, value in kwargs.iteritems():
+            if key in result and key not in overwritable:
+                raise ValueError("got multiple values for '%s'" % key)
+            elif key in settable:
+                result[key] = value
+            elif self.varkwargs:
+                result_kwargs = result.setdefault(self.varkwargs, {})
+                result_kwargs[key] = value
+            else:
+                unexpected.append(key)
+        if len(unexpected) == 1:
+            raise ValueError(
+                "got unexpected keyword argument '%s'" % unexpected[0]
             )
-        else:
-            result[signature.varargs] = tuple(remaining[kwparam_count:])
-
-    remaining = {}
-    unexpected = []
-    for key, value in kwargs.iteritems():
-        if key in result and key not in overwritable:
-            raise ValueError("got multiple values for '%s'" % key)
-        elif key in settable:
-            result[key] = value
-        elif signature.varkwargs:
-            result_kwargs = result.setdefault(signature.varkwargs, {})
-            result_kwargs[key] = value
-        else:
-            unexpected.append(key)
-    if len(unexpected) == 1:
-        raise ValueError(
-            "got unexpected keyword argument '%s'" % unexpected[0]
-        )
-    elif len(unexpected) == 2:
-        raise ValueError(
-            "got unexpected keyword arguments '%s' and '%s'" % tuple(unexpected)
-        )
-    elif unexpected:
-        raise ValueError("got unexpected keyword arguments %s and '%s'" % (
-            ', '.join("'%s'" % arg for arg in unexpected[:-1]), unexpected[-1]
-        ))
-
-    if set(result) < set(signature.positionals):
-        missing = set(result) ^ set(signature.positionals)
-        if len(missing) == 1:
-            raise ValueError("'%s' is missing" % missing.pop())
-        elif len(missing) == 2:
-            raise ValueError("'%s' and '%s' are missing" % tuple(missing))
-        else:
-            missing = tuple(missing)
-            raise ValueError("%s and '%s' are missing" % (
-                ', '.join("'%s'" % name for name in missing[:-1]), missing[-1]
+        elif len(unexpected) == 2:
+            raise ValueError(
+                "got unexpected keyword arguments '%s' and '%s'" % tuple(unexpected)
+            )
+        elif unexpected:
+            raise ValueError("got unexpected keyword arguments %s and '%s'" % (
+                ', '.join("'%s'" % arg for arg in unexpected[:-1]), unexpected[-1]
             ))
-    if signature.varargs:
-        result.setdefault(signature.varargs, ())
-    if signature.varkwargs:
-        result.setdefault(signature.varkwargs, {})
-    return result
+
+        if set(result) < set(self.positionals):
+            missing = set(result) ^ set(self.positionals)
+            if len(missing) == 1:
+                raise ValueError("'%s' is missing" % missing.pop())
+            elif len(missing) == 2:
+                raise ValueError("'%s' and '%s' are missing" % tuple(missing))
+            else:
+                missing = tuple(missing)
+                raise ValueError("%s and '%s' are missing" % (
+                    ', '.join("'%s'" % name for name in missing[:-1]), missing[-1]
+                ))
+        if self.varargs:
+            result.setdefault(self.varargs, ())
+        if self.varkwargs:
+            result.setdefault(self.varkwargs, {})
+        return result
 
 
 class curried(object):
@@ -268,4 +264,4 @@ class curried(object):
         return self._updated(collected_args)
 
 
-__all__ = ['compose', 'flip', 'Signature', 'bind_arguments', 'curried']
+__all__ = ['compose', 'flip', 'Signature', 'curried']
