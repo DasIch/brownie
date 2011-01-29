@@ -14,7 +14,7 @@ from heapq import nlargest
 from keyword import iskeyword
 from operator import itemgetter
 from functools import wraps
-from itertools import count, repeat, izip, ifilter
+from itertools import count, repeat, izip, ifilter, imap
 try:
     import queue
 except ImportError:
@@ -1237,6 +1237,61 @@ class LazyList(object):
         )
 
     del exhausting
+
+
+class CombinedSequence(object):
+    """
+    A sequence combining other sequences.
+
+    .. note::
+       At the moment it is not possible to mutate the contained sequences
+       this may change in the future.
+
+    .. versionadded:: 0.5
+    """
+    def __init__(self, sequences):
+        self.sequences = list(sequences)
+
+    def at_index(self, index):
+        """
+        Returns the sequence and the 'sequence local' index::
+
+            >>> foo = [1, 2, 3]
+            >>> bar = [4, 5, 6]
+            >>> cs = CombinedSequence([foo, bar])
+            >>> cs[3]
+            4
+            >>> cs.at_index(3)
+            ([4, 5, 6], 0)
+        """
+        seen = 0
+        if index >= 0:
+            for sequence in self.sequences:
+                if seen <= index < seen + len(sequence):
+                    return sequence, index - seen
+                seen += len(sequence)
+        else:
+            for sequence in reversed(self.sequences):
+                if seen >= index > seen - len(sequence):
+                    return sequence, index - seen
+                seen -= len(sequence)
+        raise IndexError(index)
+
+    def __getitem__(self, index):
+        sequence, index = self.at_index(index)
+        return sequence[index]
+
+    def __len__(self):
+        return sum(map(len, self.sequences))
+
+    def __iter__(self):
+        return chain.from_iterable(self.sequences)
+
+    def __reversed__(self):
+        return chain.from_iterable(reversed(map(reversed, self.sequences)))
+
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__, self.sequences)
 
 
 class OrderedSet(object):

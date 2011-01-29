@@ -19,6 +19,7 @@ from attest import Tests, TestBase, test, Assert, test_if
 from brownie.datastructures import (
     missing,
     LazyList,
+    CombinedSequence,
     OrderedSet,
     SetQueue,
     MultiDict,
@@ -1112,6 +1113,48 @@ class TestLazyList(TestBase):
         Assert(pickled.__class__) == l.__class__
 
 
+class TestCombinedSequence(TestBase):
+    @test
+    def at_index(self):
+        foo = [1, 2, 3]
+        bar = [4, 5, 6]
+        s = CombinedSequence([foo, bar])
+
+        for iterator in xrange(len(s) - 1), xrange(0, -len(s), -1):
+            for i in iterator:
+                list, index = s.at_index(i)
+                if 0 <= i <= 2 or -6 <= i <= -3:
+                    Assert(list).is_(foo)
+                    Assert(foo[index]) == s[i]
+                else:
+                    Assert(list).is_(bar)
+                    Assert(bar[index]) == s[i]
+
+    @test
+    def getitem(self):
+        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        for a, b, item in zip(xrange(len(s) - 1), xrange(-len(s)), range(6)):
+            Assert(s[a]) == s[b] == item
+
+    @test
+    def len(self):
+        tests = [
+            ([], 0),
+            ([[]], 0),
+            ([[], []], 0),
+            ([[1, 2], [3, 4]], 4)
+        ]
+        for args, result in tests:
+            Assert(len(CombinedSequence(args))) == result
+
+    @test
+    def iteration(self):
+        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        for expected, item in zip(range(6), s):
+            Assert(expected) == item
+        for expected, item in zip(range(5, 0, -1), reversed(s)):
+            Assert(expected) == item
+
 
 class TestOrderedSet(TestBase):
     @test
@@ -1446,5 +1489,5 @@ tests = Tests([
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
     TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,
     TestCombinedMultiDict, TestImmutableOrderedDict, TestSetQueue,
-    TestNamedTuple, TestFixedDict
+    TestNamedTuple, TestFixedDict, TestCombinedSequence
 ])

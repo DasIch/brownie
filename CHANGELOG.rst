@@ -19,6 +19,7 @@ features.
 - Added :class:`brownie.datastructures.FixedDict`.
 - Added `seen` parameter to :func:`brownie.itools.unique`.
 - Added :class:`brownie.functional.curried`.
+- Added :class:`brownie.datastructures.CombinedSequence`.
 
 0.4.1
 -----

@@ -58,6 +58,9 @@ Sequences
 .. autoclass:: LazyList
    :members: factory, count, insert, pop, remove, reverse, sort
 
+.. autoclass:: CombinedSequence
+   :members:
+
 Sets
 ----
 
