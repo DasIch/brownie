@@ -1113,12 +1113,14 @@ class TestLazyList(TestBase):
         Assert(pickled.__class__) == l.__class__
 
 
-class TestCombinedSequence(TestBase):
+class CombinedSequenceTestMixin(object):
+    sequence_cls = None
+
     @test
     def at_index(self):
         foo = [1, 2, 3]
         bar = [4, 5, 6]
-        s = CombinedSequence([foo, bar])
+        s = self.sequence_cls([foo, bar])
 
         for iterator in xrange(len(s) - 1), xrange(0, -len(s), -1):
             for i in iterator:
@@ -1132,7 +1134,7 @@ class TestCombinedSequence(TestBase):
 
     @test
     def getitem(self):
-        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        s = self.sequence_cls([[0, 1, 2], [3, 4, 5]])
         for a, b, item in zip(xrange(len(s) - 1), xrange(-len(s)), range(6)):
             Assert(s[a]) == s[b] == item
 
@@ -1145,11 +1147,11 @@ class TestCombinedSequence(TestBase):
             ([[1, 2], [3, 4]], 4)
         ]
         for args, result in tests:
-            Assert(len(CombinedSequence(args))) == result
+            Assert(len(self.sequence_cls(args))) == result
 
     @test
     def iteration(self):
-        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        s = self.sequence_cls([[0, 1, 2], [3, 4, 5]])
         for expected, item in zip(range(6), s):
             Assert(expected) == item
         for expected, item in zip(range(5, 0, -1), reversed(s)):
@@ -1157,16 +1159,20 @@ class TestCombinedSequence(TestBase):
 
     @test
     def equality(self):
-        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
-        Assert(s) == CombinedSequence(s.sequences)
-        Assert(s) != CombinedSequence([[]])
+        s = self.sequence_cls([[0, 1, 2], [3, 4, 5]])
+        Assert(s) == self.sequence_cls(s.sequences)
+        Assert(s) != self.sequence_cls([[]])
 
     @test
     def picklability(self):
-        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        s = self.sequence_cls([[0, 1, 2], [3, 4, 5]])
         pickled = pickle.loads(pickle.dumps(s))
         Assert(pickled) == s
-        Assert(pickled.__class__).is_(CombinedSequence)
+        Assert(pickled.__class__).is_(self.sequence_cls)
+
+
+class TestCombinedSequence(TestBase, CombinedSequenceTestMixin):
+    sequence_cls = CombinedSequence
 
 
 class TestOrderedSet(TestBase):
