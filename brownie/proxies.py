@@ -7,10 +7,7 @@
     :license: BSD, see LICENSE for details
 """
 import textwrap
-from functools import partial
-from itertools import repeat
 
-from brownie.itools import starmap
 from brownie.datastructures import missing
 
 

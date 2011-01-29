@@ -120,7 +120,6 @@ def bind_arguments(func, args=(), kwargs=None):
 
     positional_count = len(signature.positionals)
     kwparam_count = len(signature.kwparams)
-    arg_count = len(args)
 
     result = dict(signature.kwparams, **dict(zip(signature.positionals, args)))
 

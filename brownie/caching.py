@@ -8,8 +8,6 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
-from heapq import nsmallest
-from operator import itemgetter
 from functools import wraps
 
 from brownie.datastructures import OrderedDict, Counter, missing

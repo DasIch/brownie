@@ -1230,8 +1230,6 @@ class TestOrderedSet(TestBase):
     def issub_super_set(self):
         a = OrderedSet('abc')
         b = OrderedSet('abcdef')
-        c = set('abc')
-        d = set('abcdef')
 
         a.issubset(a)
         a.issuperset(a)

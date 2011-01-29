@@ -8,13 +8,12 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
-import sys
 import textwrap
 from heapq import nlargest
 from keyword import iskeyword
 from operator import itemgetter
 from functools import wraps
-from itertools import count, repeat, izip, ifilter, imap
+from itertools import count, repeat, izip, ifilter
 try:
     import queue
 except ImportError:
