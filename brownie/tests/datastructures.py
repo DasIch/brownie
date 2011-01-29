@@ -1161,6 +1161,13 @@ class TestCombinedSequence(TestBase):
         Assert(s) == CombinedSequence(s.sequences)
         Assert(s) != CombinedSequence([[]])
 
+    @test
+    def picklability(self):
+        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        pickled = pickle.loads(pickle.dumps(s))
+        Assert(pickled) == s
+        Assert(pickled.__class__).is_(CombinedSequence)
+
 
 class TestOrderedSet(TestBase):
     @test
