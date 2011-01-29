@@ -1242,10 +1242,6 @@ class CombinedSequence(object):
     """
     A sequence combining other sequences.
 
-    .. note::
-       At the moment it is not possible to mutate the contained sequences
-       this may change in the future.
-
     .. versionadded:: 0.5
     """
     def __init__(self, sequences):
