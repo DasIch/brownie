@@ -1289,6 +1289,18 @@ class CombinedSequence(object):
     def __reversed__(self):
         return chain.from_iterable(reversed(map(reversed, self.sequences)))
 
+    def __eq__(self, other):
+        if isinstance(other, list):
+            return list(self) == other
+        elif isinstance(other, self.__class__):
+            return self.sequences == other.sequences
+        return False
+
+    def __ne__(self, other):
+        return not self == other
+
+    __hash__ = None
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.sequences)
 

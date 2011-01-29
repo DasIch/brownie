@@ -1155,6 +1155,12 @@ class TestCombinedSequence(TestBase):
         for expected, item in zip(range(5, 0, -1), reversed(s)):
             Assert(expected) == item
 
+    @test
+    def equality(self):
+        s = CombinedSequence([[0, 1, 2], [3, 4, 5]])
+        Assert(s) == CombinedSequence(s.sequences)
+        Assert(s) != CombinedSequence([[]])
+
 
 class TestOrderedSet(TestBase):
     @test
