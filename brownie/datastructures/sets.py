@@ -9,7 +9,7 @@
 from functools import wraps
 
 from brownie.itools import chain
-from brownie.datastructures import OrderedDict
+from brownie.datastructures.mappings import OrderedDict
 
 
 class OrderedSet(object):
