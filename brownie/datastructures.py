@@ -1273,6 +1273,8 @@ class CombinedSequence(object):
         raise IndexError(index)
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return list(iter(self))[index]
         sequence, index = self.at_index(index)
         return sequence[index]
 

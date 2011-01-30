@@ -1139,6 +1139,15 @@ class CombinedSequenceTestMixin(object):
             Assert(s[a]) == s[b] == item
 
     @test
+    def getslice(self):
+        s = self.sequence_cls([[0, 1, 2], [3, 4, 5]])
+        Assert(s[:]) == range(6)
+        Assert(s[:3]) == s[:-3] == [0, 1, 2]
+        Assert(s[3:]) == s[-3:] == [3, 4, 5]
+        Assert(s[2:]) == [2, 3, 4, 5]
+        Assert(s[-2:]) == [4, 5]
+
+    @test
     def len(self):
         tests = [
             ([], 0),
