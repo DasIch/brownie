@@ -1299,6 +1299,16 @@ class CombinedSequence(object):
 
     __hash__ = None
 
+    def __mul__(self, times):
+        if not isinstance(times, int):
+            return NotImplemented
+        return list(self) * times
+
+    def __rmul__(self, times):
+        if not isinstance(times, int):
+            return NotImplemented
+        return times * list(self)
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.sequences)
 

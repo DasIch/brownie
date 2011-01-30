@@ -1179,6 +1179,13 @@ class CombinedSequenceTestMixin(object):
         Assert(pickled) == s
         Assert(pickled.__class__).is_(self.sequence_cls)
 
+    @test
+    def multiplication(self):
+        s = self.sequence_cls([[0, 1, 2], [3, 4, 5]])
+        Assert(s * 2) == 2 * s == [0, 1, 2, 3, 4, 5] * 2
+        with Assert.raises(TypeError):
+            s * []
+
 
 class TestCombinedSequence(TestBase, CombinedSequenceTestMixin):
     sequence_cls = CombinedSequence
