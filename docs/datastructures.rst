@@ -64,6 +64,8 @@ Sequences
 .. autoclass:: CombinedList
    :members:
 
+.. autofunction:: namedtuple
+
 Sets
 ----
 
@@ -77,8 +79,3 @@ Queues
    :members:
    :inherited-members:
    :show-inheritance:
-
-Tuples
-------
-
-.. autofunction:: namedtuple
