@@ -61,6 +61,9 @@ Sequences
 .. autoclass:: CombinedSequence
    :members:
 
+.. autoclass:: CombinedList
+   :members:
+
 Sets
 ----
 

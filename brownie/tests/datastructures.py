@@ -13,6 +13,7 @@ import sys
 import pickle
 import random
 from threading import Thread
+from itertools import repeat
 
 from attest import Tests, TestBase, test, Assert, test_if
 
@@ -20,6 +21,7 @@ from brownie.datastructures import (
     missing,
     LazyList,
     CombinedSequence,
+    CombinedList,
     OrderedSet,
     SetQueue,
     MultiDict,
@@ -1191,6 +1193,108 @@ class TestCombinedSequence(TestBase, CombinedSequenceTestMixin):
     sequence_cls = CombinedSequence
 
 
+class TestCombinedList(TestBase, CombinedSequenceTestMixin):
+    sequence_cls = CombinedList
+
+    @test
+    def count(self):
+        s = self.sequence_cls([[1, 1, 2], [3, 1, 4]])
+        Assert(s.count(1)) == 3
+        Assert(s.count(2)) == s.count(3) == s.count(4) == 1
+
+    @test
+    def index(self):
+        s = self.sequence_cls([[1, 1, 2], [3, 1, 4]])
+        Assert(s.index(1)) == 0
+        Assert(s.index(1, 1)) == 1
+        Assert(s.index(1, 2)) == 4
+        with Assert.raises(ValueError):
+            s.index(1, 2, 3)
+
+    @test
+    def setitem(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        s[0] = 'foo'
+        Assert(s[0]) == foo[0] == 'foo'
+
+    @test
+    def setslice(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        s[:3] = 'abc'
+        Assert(s) == ['a', 'b', 'c', 3, 4, 5]
+        Assert(foo) == ['a', 'b', 'c']
+        s[::2] = repeat(None)
+        Assert(s) == [None, 'b', None, 3, None, 5]
+
+    @test
+    def append(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        s.append(6)
+        Assert(s[-1]) == bar[-1] == 6
+
+    @test
+    def extend(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        s.extend([6, 7])
+        Assert(s[-2:]) == bar[-2:] == [6, 7]
+
+    @test
+    def insert(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        s.insert(1, 6)
+        Assert(s[:4]) == foo == [0, 6, 1, 2]
+        Assert(bar) == [3, 4, 5]
+
+    @test
+    def pop(self):
+        s = self.sequence_cls([])
+        with Assert.raises(IndexError):
+            s.pop()
+        s = self.sequence_cls([[0, 1, 2]])
+        with Assert.raises(IndexError):
+            s.pop(3)
+        Assert(s.pop()) == 2
+        Assert(s.pop(0)) == 0
+
+    @test
+    def remove(self):
+        s = self.sequence_cls([])
+        with Assert.raises(ValueError):
+            s.remove(1)
+        s = self.sequence_cls([[1, 1]])
+        s.remove(1)
+        Assert(s) == [1]
+        s = self.sequence_cls([[1, 2], [1, 2]])
+        s.remove(1)
+        Assert(s) == [2, 1, 2]
+        s = self.sequence_cls([[2], [1, 2]])
+        s.remove(1)
+        Assert(s) == [2, 2]
+
+    @test
+    def reverse(self):
+        foo, bar = [1, 2, 3], [4, 5, 6]
+        s = self.sequence_cls([foo, bar])
+        s.reverse()
+        Assert(s) == [6, 5, 4, 3, 2, 1]
+        Assert(foo) == [6, 5, 4]
+        Assert(bar) == [3, 2, 1]
+
+    @test
+    def sort(self):
+        foo, bar = [3, 1, 2], [4, 6, 5]
+        s = self.sequence_cls([foo, bar])
+        s.sort()
+        Assert(s) == [1, 2, 3, 4, 5, 6]
+        Assert(foo) == [1, 2, 3]
+        Assert(bar) == [4, 5, 6]
+
+
 class TestOrderedSet(TestBase):
     @test
     def length(self):
@@ -1522,5 +1626,5 @@ tests = Tests([
     TestCounter, TestLazyList, TestImmutableMultiDict, TestOrderedMultiDict,
     TestImmutableOrderedMultiDict, TestOrderedSet, TestCombinedDict,
     TestCombinedMultiDict, TestImmutableOrderedDict, TestSetQueue,
-    TestNamedTuple, TestFixedDict, TestCombinedSequence
+    TestNamedTuple, TestFixedDict, TestCombinedSequence, TestCombinedList
 ])

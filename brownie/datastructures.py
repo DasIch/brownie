@@ -1313,6 +1313,105 @@ class CombinedSequence(object):
         return '%s(%r)' % (self.__class__.__name__, self.sequences)
 
 
+class CombinedList(CombinedSequence):
+    """
+    A list combining other lists.
+
+    .. versionadded:: 0.5
+    """
+    def count(self, item):
+        """
+        Returns the number of occurrences of the given `item`.
+        """
+        return sum(sequence.count(item) for sequence in self.sequences)
+
+    def index(self, item, start=None, stop=None):
+        """
+        Returns the index of the first occurence of the given `item` between
+        `start` and `stop`.
+        """
+        start = 0 if start is None else start
+        for index, it in enumerate(self[start:stop]):
+            if item == it:
+                return index + start
+        raise ValueError('%r not in list' % item)
+
+    def __setitem__(self, index, item):
+        if isinstance(index, slice):
+            start = 0 if index.start is None else index.start
+            stop = len(self) if index.stop is None else index.stop
+            step = 1 if index.step is None else index.step
+            for index, item in zip(range(start, stop, step), item):
+                self[index] = item
+        else:
+            list, index = self.at_index(index)
+            list[index] = item
+
+    def append(self, item):
+        """
+        Appends the given `item` to the end of the list.
+        """
+        self.sequences[-1].append(item)
+
+    def extend(self, items):
+        """
+        Extends the list by appending from the given iterable.
+        """
+        self.sequences[-1].extend(items)
+
+    def insert(self, index, item):
+        """
+        Inserts the given `item` before the item at the given `index`.
+        """
+        list, index = self.at_index(index)
+        list.insert(index, item)
+
+    def pop(self, index=-1):
+        """
+        Removes and returns the item at the given `index`.
+
+        An :exc:`IndexError` is raised if the index is out of range.
+        """
+        list, index = self.at_index(index)
+        return list.pop(index)
+
+    def remove(self, item):
+        """
+        Removes the first occurence of the given `item` from the list.
+        """
+        for sequence in self.sequences:
+            try:
+                return sequence.remove(item)
+            except ValueError:
+                # we may find a value in the next sequence
+                pass
+        raise ValueError('%r not in list' % item)
+
+    def _set_values(self, values):
+        lengths = map(len, self.sequences)
+        previous_length = 0
+        for length in lengths:
+            stop = previous_length + length
+            self[previous_length:stop] = values[previous_length:stop]
+            previous_length += length
+
+    def reverse(self):
+        """
+        Reverses the list in-place::
+
+            >>> a = [1, 2, 3]
+            >>> b = [4, 5, 6]
+            >>> l = CombinedList([a, b])
+            >>> l.reverse()
+            >>> a
+            [6, 5, 4]
+        """
+        self._set_values(self[::-1])
+
+    def sort(self, cmp=None, key=None, reverse=False):
+        self._set_values(sorted(self, cmp, key, reverse))
+
+
 class OrderedSet(object):
     """
     A :class:`set` which remembers insertion order.
