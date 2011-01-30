@@ -1409,6 +1409,9 @@ class CombinedList(CombinedSequence):
         self._set_values(self[::-1])
 
     def sort(self, cmp=None, key=None, reverse=False):
+        """
+        Sorts the list in-place, see :meth:`list.sort`.
+        """
         self._set_values(sorted(self, cmp, key, reverse))
 
 
