@@ -484,6 +484,17 @@ class CombinedList(CombinedSequence):
             list, index = self.at_index(index)
             list[index] = item
 
+    def __delitem__(self, index):
+        if isinstance(index, slice):
+            start = 0 if index.start is None else index.start
+            stop = len(self) if index.stop is None else index.stop
+            step = 1 if index.step is None else index.step
+            for list, index in map(self.at_index, range(start, stop, step)):
+                del list[index]
+        else:
+            list, index = self.at_index(index)
+            del list[index]
+
     def append(self, item):
         """
         Appends the given `item` to the end of the list.

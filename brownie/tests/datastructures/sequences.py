@@ -430,6 +430,23 @@ class TestCombinedList(TestBase, CombinedSequenceTestMixin):
         Assert(s) == [None, 'b', None, 3, None, 5]
 
     @test
+    def delitem(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        del s[0]
+        Assert(s) == [1, 2, 3, 4, 5]
+        Assert(foo) == [1, 2]
+
+    @test
+    def delslice(self):
+        foo, bar = [0, 1, 2], [3, 4, 5]
+        s = self.sequence_cls([foo, bar])
+        del s[2:4]
+        Assert(s) == [0, 1, 4, 5]
+        Assert(foo) == [0, 1]
+        Assert(bar) == [4, 5]
+
+    @test
     def append(self):
         foo, bar = [0, 1, 2], [3, 4, 5]
         s = self.sequence_cls([foo, bar])
