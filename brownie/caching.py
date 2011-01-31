@@ -45,6 +45,12 @@ class CacheBase(object):
 
         In order to clear the cache of the decorated function call `.clear()`
         on it.
+
+        ::
+
+            @CacheBase.decorate(maxsize=1024) # items stored in the cache
+            def foo(a, b):
+                return a + b # imagine a very expensive operation here
         """
         def decorator(function, _maxsize=maxsize):
             cache = cls(maxsize=maxsize)
