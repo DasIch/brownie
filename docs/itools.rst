@@ -25,3 +25,5 @@ Implements :mod:`itertools` functions for earlier versions of Python.
 .. autofunction:: grouped
 
 .. autofunction:: unique
+
+.. autofunction:: flatten

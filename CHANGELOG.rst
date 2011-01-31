@@ -20,6 +20,7 @@ features.
 - Added :class:`brownie.functional.curried`.
 - Added :class:`brownie.datastructures.CombinedSequence`.
 - Added :class:`brownie.datastructures.CombinedList`.
+- Added :func:`brownie.itools.flatten`.
 
 0.4.1
 -----

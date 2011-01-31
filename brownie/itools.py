@@ -239,7 +239,34 @@ def unique(iterable, seen=None):
                 yield item
 
 
+def flatten(iterable, ignore=(basestring, )):
+    """
+    Flattens a nested `iterable`.
+
+    :param ignore:
+        Types of iterable objects which should be yielded as-is.
+
+    .. versionadded:: 0.5
+    """
+    stack = [iter(iterable)]
+    while stack:
+        try:
+            item = stack[-1].next()
+            if isinstance(item, ignore):
+                yield item
+            elif isinstance(item, basestring) and len(item) == 1:
+                yield item
+            else:
+                try:
+                    stack.append(iter(item))
+                except TypeError:
+                    yield item
+        except StopIteration:
+            stack.pop()
+
+
 __all__ = [
     'chain', 'izip_longest', 'permutations', 'product', 'starmap',
-    'combinations_with_replacement', 'compress', 'count', 'grouped', 'unique'
+    'combinations_with_replacement', 'compress', 'count', 'grouped', 'unique',
+    'flatten'
 ]

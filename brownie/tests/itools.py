@@ -20,7 +20,8 @@ from brownie.itools import (
     starmap,
     grouped,
     unique,
-    chain
+    chain,
+    flatten
 )
 
 
@@ -139,3 +140,17 @@ def test_unique():
         Assert(list(unique(test))) == list(result)
 
     Assert(list(unique('aaabbbbccc', seen='ab'))) == ['c']
+
+
+@tests.test
+def test_flatten():
+    tests = [
+        (([1, 2, 3], ), [1, 2, 3]),
+        (([1, [2, 3]], ), [1, 2, 3]),
+        (([1, [2, [3]]], ), [1, 2, 3]),
+        (([1, [2, [3], 4], 5, 6], ), [1, 2, 3, 4, 5, 6]),
+        ((['foo', 'bar'], ), ['foo', 'bar']),
+        ((['ab', 'cd'], ()), ['a', 'b', 'c', 'd'])
+    ]
+    for args, result in tests:
+        Assert(list(flatten(*args))) == result
