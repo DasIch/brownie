@@ -8,7 +8,7 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
-from functools import wraps
+from functools import wraps, partial
 
 from brownie.datastructures import OrderedDict, Counter, missing
 
@@ -146,4 +146,17 @@ class LFUCache(dict, CacheBase):
         )
 
 
-__all__ = ['cached_property', 'LRUCache', 'LFUCache']
+#: A memoization decorator, which uses a simple dictionary of infinite size as
+#: cache::
+#:
+#:     @memoize()
+#:     def foo(a, b):
+#:         return a + b
+#:
+#: .. versionadded:: 0.5
+memoize = lambda func: type(
+    '_MemoizeCache', (dict, CacheBase), {}
+).decorate()(func)
+
+
+__all__ = ['cached_property', 'LRUCache', 'LFUCache', 'memoize']

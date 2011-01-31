@@ -15,3 +15,5 @@ This module provides various caching mechanisms and utilities.
 
 .. autoclass:: LFUCache
    :members:
+
+.. autofunction:: memoize

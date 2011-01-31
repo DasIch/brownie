@@ -12,7 +12,7 @@ import time
 
 from attest import Tests, Assert, TestBase, test
 
-from brownie.caching import cached_property, LRUCache, LFUCache
+from brownie.caching import cached_property, LRUCache, LFUCache, memoize
 
 
 tests = Tests()
@@ -98,3 +98,13 @@ class TestLFUCache(TestBase):
         Assert(repr(cache)) == 'LFUCache({}, inf)'
 
 tests.register(TestLFUCache)
+
+
+@tests.test
+def test_memoize():
+    @memoize
+    def foo(a, b):
+        return a + b
+    Assert(foo(1, 1)) == 2
+    Assert(foo(1, 1)) == 2
+    Assert(foo(1, 2)) == 3

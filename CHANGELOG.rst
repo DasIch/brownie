@@ -21,6 +21,7 @@ features.
 - Added :class:`brownie.datastructures.CombinedSequence`.
 - Added :class:`brownie.datastructures.CombinedList`.
 - Added :func:`brownie.itools.flatten`.
+- Added :func:`brownie.caching.memoize`.
 
 0.4.1
 -----
