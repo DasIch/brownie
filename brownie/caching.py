@@ -149,7 +149,7 @@ class LFUCache(dict, CacheBase):
 #: A memoization decorator, which uses a simple dictionary of infinite size as
 #: cache::
 #:
-#:     @memoize()
+#:     @memoize
 #:     def foo(a, b):
 #:         return a + b
 #:
