@@ -10,8 +10,8 @@
     :license: BSD, see LICENSE.rst for details
 """
 #: A string containing the full version number.
-__version__ = '0.4+'
+__version__ = '0.5'
 
 #: A tuple containing the full version number, which should be used for
 #: comparisons.
-__version_info__ = (0, 4)
+__version_info__ = (0, 5)
