@@ -3,8 +3,8 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
-0.5 - [Codename to be selected]
--------------------------------
+0.5 - Heinzelmännchen
+---------------------
 
 - Allow using :func:`brownie.itools.unique` with non-hashable items.
 - Added :mod:`pickle` support to :class:`brownie.datastructures.LazyList`.
