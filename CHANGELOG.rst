@@ -5,7 +5,6 @@ features.
 
 0.5 - [Codename to be selected]
 -------------------------------
-*Currently in development*
 
 - Allow using :func:`brownie.itools.unique` with non-hashable items.
 - Added :mod:`pickle` support to :class:`brownie.datastructures.LazyList`.
