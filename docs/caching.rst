@@ -11,7 +11,7 @@ This module provides various caching mechanisms and utilities.
    :members:
 
 .. autoclass:: LRUCache
-   :members: decorate
+   :members:
 
 .. autoclass:: LFUCache
-   :members: decorate
+   :members:

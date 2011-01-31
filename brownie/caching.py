@@ -66,8 +66,8 @@ class CacheBase(object):
 
 class LRUCache(OrderedDict, CacheBase):
     """
-    :class:`~brownie.datastructures.OrderedDict` which removes the least
-    recently used item once `maxsize` is reached.
+    :class:`~brownie.datastructures.OrderedDict` based cache which removes the
+    least recently used item once `maxsize` is reached.
 
     .. note:: The order of the dict is changed each time you access the dict.
     """
@@ -92,8 +92,8 @@ class LRUCache(OrderedDict, CacheBase):
 
 class LFUCache(dict, CacheBase):
     """
-    :class:`dict` which removes the least frequently used item once `maxsize`
-    is reached.
+    :class:`dict` based cache which removes the least frequently used item once
+    `maxsize` is reached.
     """
     def __init__(self, mapping=(), maxsize=float('inf')):
         dict.__init__(self, mapping)
