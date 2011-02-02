@@ -5,7 +5,7 @@ from codecs import open
 
 setup(
     name='Brownie',
-    version='0.5',
+    version='0.5.1',
     url='http://github.com/DasIch/brownie/',
     license='BSD',
     author='Daniel Neuhäuser',
