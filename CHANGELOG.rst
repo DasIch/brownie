@@ -3,6 +3,11 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.5.1
+-----
+
+- Added missing `datastructures` package.
+
 0.5 - Heinzelmännchen
 ---------------------
 
