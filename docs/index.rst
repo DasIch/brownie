@@ -15,14 +15,21 @@ Documentation
    parallel
    proxies
 
-Additional Information
-----------------------
+Developer Documentation
+-----------------------
 
 .. toctree::
    :maxdepth: 2
 
    contributing
    testing
+
+Additional Information
+----------------------
+
+.. toctree::
+   :maxdepth: 2
+
    designdefence
    license
    authors
