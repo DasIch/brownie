@@ -6,14 +6,14 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   abstract
-   caching
-   datastructures
-   functional
-   importing
-   itools
-   parallel
-   proxies
+   api/abstract
+   api/caching
+   api/datastructures
+   api/functional
+   api/importing
+   api/itools
+   api/parallel
+   api/proxies
 
 Developer Documentation
 -----------------------
@@ -21,8 +21,8 @@ Developer Documentation
 .. toctree::
    :maxdepth: 2
 
-   contributing
-   testing
+   developer/contributing
+   developer/testing
 
 Additional Information
 ----------------------
@@ -30,7 +30,7 @@ Additional Information
 .. toctree::
    :maxdepth: 2
 
-   designdefence
-   license
-   authors
-   changelog
+   additional/designdefence
+   additional/license
+   additional/authors
+   additional/changelog
