@@ -1,0 +1,3 @@
+Sphinx>=1.0
+Tox
+-e git+git://github.com/dag/attest.git#egg=attest
