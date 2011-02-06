@@ -239,7 +239,7 @@ class TestImmutableDict(TestBase, ImmutableDictTestMixin):
 
     @test_if(GE_PYTHON_26)
     def type_checking(self):
-        assert isinstance(self.dict_class(), dict)
+        Assert.isinstance(self.dict_class(), dict)
 
     @test
     def hashability(self):
@@ -305,8 +305,8 @@ class TestCombinedDict(TestBase, CombinedDictTestMixin, ImmutableDictTestMixin):
     @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
-        assert isinstance(d, ImmutableDict)
-        assert isinstance(d, dict)
+        Assert.isinstance(d, ImmutableDict)
+        Assert.isinstance(d, dict)
 
     @test
     def hashability(self):
@@ -427,7 +427,7 @@ class TestMultiDict(TestBase, MultiDictTestMixin, DictTestMixin):
 
     @test_if(GE_PYTHON_26)
     def type_checking(self):
-        assert isinstance(self.dict_class(), dict)
+        Assert.isinstance(self.dict_class(), dict)
 
 
 class ImmutableMultiDictTestMixin(MultiDictTestMixin):
@@ -481,7 +481,7 @@ class TestImmutableMultiDict(TestBase, ImmutableMultiDictTestMixin,
         d = self.dict_class()
         types = [dict, ImmutableDict, MultiDict]
         for type in types:
-            assert isinstance(d, type), type
+            Assert.isinstance(d, type), type
 
     @test
     def hashability(self):
@@ -551,7 +551,7 @@ class TestCombinedMultiDict(TestBase, CombinedDictTestMixin,
         types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict]
         d = self.dict_class()
         for type in types:
-            assert isinstance(d, type), type
+            Assert.isinstance(d, type), type
 
 
 class OrderedDictTestMixin(object):
@@ -635,7 +635,7 @@ class TestOrderedDict(TestBase, OrderedDictTestMixin, DictTestMixin):
     @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
-        assert isinstance(d, dict)
+        Assert.isinstance(d, dict)
 
 
 class ImmutableOrderedDictTextMixin(OrderedDictTestMixin):
@@ -666,9 +666,9 @@ class TestImmutableOrderedDict(TestBase, ImmutableOrderedDictTextMixin,
     @test_if(GE_PYTHON_26)
     def type_checking(self):
         d = self.dict_class()
-        assert isinstance(d, OrderedDict)
-        assert isinstance(d, ImmutableDict)
-        assert isinstance(d, dict)
+        Assert.isinstance(d, OrderedDict)
+        Assert.isinstance(d, ImmutableDict)
+        Assert.isinstance(d, dict)
 
     @test
     def hashability(self):
@@ -688,7 +688,7 @@ class TestOrderedMultiDict(TestBase, OrderedDictTestMixin, MultiDictTestMixin,
         d = self.dict_class()
         types = [dict, MultiDict, OrderedDict]
         for type in types:
-            assert isinstance(d, type), type
+            Assert.isinstance(d, type), type
 
 
 class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
@@ -702,7 +702,7 @@ class TestImmutableOrderedMultiDict(TestBase, ImmutableOrderedDictTextMixin,
         types = [dict, ImmutableDict, MultiDict, ImmutableMultiDict,
                  OrderedDict]
         for type in types:
-            assert isinstance(d, type), type
+            Assert.isinstance(d, type), type
 
 
 class TestFixedDict(TestBase, DictTestMixin):
