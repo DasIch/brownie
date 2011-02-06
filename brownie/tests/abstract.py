@@ -10,7 +10,7 @@
 """
 import sys
 
-from attest import Tests, TestBase, test_if, test
+from attest import Tests, TestBase, test_if, test, Assert
 
 from brownie.itools import product
 from brownie.abstract import VirtualSubclassMeta, ABCMeta, AbstractClassMeta
@@ -41,11 +41,11 @@ def test_virtual_subclass_meta():
         pass
 
     for a, b in product([Simple, InheritingSimple], [Foo, Bar]):
-        assert issubclass(a, b)
-        assert isinstance(a(), b)
+        Assert.issubclass(a, b)
+        Assert.isinstance(a(), b)
 
-    assert issubclass(InheritingSimple, Simple)
-    assert isinstance(InheritingSimple(), Simple)
+    Assert.issubclass(InheritingSimple, Simple)
+    Assert.isinstance(InheritingSimple(), Simple)
 
     class Spam(object):
         __metaclass__ = ABCMeta
@@ -65,8 +65,8 @@ def test_virtual_subclass_meta():
         virtual_superclasses = [Simple, SimpleMonty]
 
     for virtual_super_cls in [Foo, Bar, Simple, Spam, Eggs, SimpleMonty]:
-        assert issubclass(MultiInheritance, virtual_super_cls)
-        assert isinstance(MultiInheritance(), virtual_super_cls)
+        Assert.issubclass(MultiInheritance, virtual_super_cls)
+        Assert.isinstance(MultiInheritance(), virtual_super_cls)
 
 
 class TestABCMeta(TestBase):
@@ -80,8 +80,8 @@ class TestABCMeta(TestBase):
 
         Foo.register(Bar)
 
-        assert issubclass(Bar, Foo)
-        assert isinstance(Bar(), Foo)
+        Assert.issubclass(Bar, Foo)
+        Assert.isinstance(Bar(), Foo)
 
     @test
     def api_works_cleanly(self):
@@ -111,5 +111,5 @@ def test_abstract_class_meta():
 
         virtual_superclasses = [Bar]
 
-    assert issubclass(Baz, Foo)
-    assert issubclass(Baz, Bar)
+    Assert.issubclass(Baz, Foo)
+    Assert.issubclass(Baz, Bar)
