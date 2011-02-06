@@ -1,5 +1,6 @@
 .. highlight:: text
 
+.. _testing:
 
 Testing Brownie
 ===============

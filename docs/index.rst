@@ -21,6 +21,7 @@ Developer Documentation
 .. toctree::
    :maxdepth: 2
 
+   developer/introduction
    developer/contributing
    developer/testing
 
