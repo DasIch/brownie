@@ -799,6 +799,7 @@ class TestCounter(TestBase):
 
 tests = Tests([
     TestImmutableDict, TestCombinedDict, TestMultiDict, TestImmutableMultiDict,
-    TestCombinedMultiDict, TestOrderedDict, TestOrderedMultiDict, TestImmutableOrderedDict,
-    TestImmutableOrderedMultiDict, TestFixedDict, TestCounter
+    TestCombinedMultiDict, TestOrderedDict, TestOrderedMultiDict,
+    TestImmutableOrderedDict, TestImmutableOrderedMultiDict, TestFixedDict,
+    TestCounter
 ])
