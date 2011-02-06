@@ -30,8 +30,8 @@ tests = Tests()
 
 @tests.test
 def test_chain():
-    list(chain([1, 2], [3, 4])) == [1, 2, 3, 4]
-    list(chain.from_iterable([[1, 2], [3, 4]])) == [1, 2, 3, 4]
+    Assert(list(chain([1, 2], [3, 4]))) == [1, 2, 3, 4]
+    Assert(list(chain.from_iterable([[1, 2], [3, 4]]))) == [1, 2, 3, 4]
 
 
 @tests.test
