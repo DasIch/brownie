@@ -13,7 +13,8 @@ from __future__ import with_statement
 from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import missing
-from brownie.tests.datastructures import sets, queues, sequences, mappings
+from brownie.tests.datastructures import (sets, queues, sequences, mappings,
+                                          iterators)
 
 
 class TestMissing(TestBase):
@@ -28,5 +29,6 @@ class TestMissing(TestBase):
 
 
 tests = Tests([
-    TestMissing, queues.tests, sets.tests, sequences.tests, mappings.tests
+    TestMissing, queues.tests, sets.tests, sequences.tests, mappings.tests,
+    iterators.tests
 ])

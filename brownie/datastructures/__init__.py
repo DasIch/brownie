@@ -30,7 +30,7 @@ __all__ = [
     'OrderedMultiDict', 'ImmutableDict', 'ImmutableMultiDict',
     'ImmutableOrderedDict', 'ImmutableOrderedMultiDict', 'CombinedDict',
     'CombinedMultiDict', 'LazyList', 'OrderedSet', 'SetQueue', 'namedtuple',
-    'FixedDict'
+    'FixedDict', 'PeekableIterator'
 ]
 
 # circular imports
@@ -38,3 +38,4 @@ from brownie.datastructures.sets import *
 from brownie.datastructures.queues import *
 from brownie.datastructures.mappings import *
 from brownie.datastructures.sequences import *
+from brownie.datastructures.iterators import *

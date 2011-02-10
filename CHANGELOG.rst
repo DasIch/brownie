@@ -3,6 +3,13 @@ Changelog
 This log contains a list of bug fixes and added, modified or even removed
 features.
 
+0.6
+---
+
+*Currently in development*
+
+- Added :class:`brownie.datastructures.PeekableIterator`.
+
 0.5.1
 -----
 

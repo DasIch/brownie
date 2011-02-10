@@ -79,3 +79,9 @@ Queues
    :members:
    :inherited-members:
    :show-inheritance:
+
+Iterators
+---------
+
+.. autoclass:: PeekableIterator
+   :members:
