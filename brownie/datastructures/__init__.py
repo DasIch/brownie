@@ -10,7 +10,7 @@
 """
 
 
-class Missing(object):
+class missing(object):
     def __nonzero__(self):
         return False
 
@@ -20,9 +20,7 @@ class Missing(object):
 #: Sentinel object which can be used instead of ``None``. This is useful if
 #: you have optional parameters to which a user can pass ``None`` e.g. in
 #: datastructures.
-missing = Missing()
-
-del Missing
+missing = missing()
 
 
 __all__ = [
