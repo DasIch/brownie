@@ -15,6 +15,7 @@ all = Tests('brownie.tests.%s.tests' % module for module in [
     'proxies',
     'abstract',
     'parallel',
+    'terminal',
     'importing',
     'functional',
     'datastructures'

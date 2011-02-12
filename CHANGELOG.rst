@@ -9,6 +9,7 @@ features.
 *Currently in development*
 
 - Added :class:`brownie.datastructures.PeekableIterator`.
+- Added :mod:`brownie.terminal`.
 
 0.5.1
 -----

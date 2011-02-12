@@ -14,6 +14,7 @@ Documentation
    api/itools
    api/parallel
    api/proxies
+   api/terminal
 
 Developer Documentation
 -----------------------
