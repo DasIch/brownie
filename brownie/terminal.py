@@ -97,7 +97,7 @@ class TerminalWriter(object):
         """
         Writes the given `line` to the :attr:`stream` respecting indentation.
         """
-        self.stream.write(self.prefix + line + '\n')
+        self.write(self.prefix + line + '\n')
 
     def writelines(self, lines):
         """
