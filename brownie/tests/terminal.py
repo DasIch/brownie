@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
+import sys
 import codecs
 from StringIO import StringIO
 
@@ -23,6 +24,47 @@ class TestTerminalWriter(TestBase):
         self.writer = TerminalWriter(self.stream)
         yield
         del self.stream, self.writer
+
+    @test
+    def from_bytestream(self):
+        # detect encoding from stream
+        stream = StringIO()
+        stream.encoding = 'utf-8'
+        writer = TerminalWriter.from_bytestream(stream)
+        with Assert.not_raising(UnicodeEncodeError):
+            writer.writeline(u'äöü')
+        Assert(stream.getvalue()) == u'äöü\n'.encode(stream.encoding)
+
+        # use given encoding
+        stream = StringIO()
+        writer = TerminalWriter.from_bytestream(stream, encoding='ascii')
+        writer.writeline(u'foo')
+        with Assert.raises(UnicodeEncodeError):
+            writer.writeline(u'äöü')
+        Assert(stream.getvalue()) == 'foo\n'
+
+        # use given encoding with ignore error policy
+        stream = StringIO()
+        writer = TerminalWriter.from_bytestream(
+            stream, encoding='ascii', errors='ignore'
+        )
+        writer.writeline(u'fooäöübar')
+        Assert(stream.getvalue()) == 'foobar\n'
+
+        # use given encoding with replace error policy
+        stream = StringIO()
+        writer = TerminalWriter.from_bytestream(
+            stream, encoding='ascii', errors='replace'
+        )
+        writer.writeline(u'fooäöübar')
+        Assert(stream.getvalue()) == 'foo???bar\n'
+
+        # fallback to sys.getdefaultencoding
+        stream = StringIO()
+        writer = TerminalWriter.from_bytestream(stream)
+        Assert(sys.getdefaultencoding()) == 'ascii'
+        with Assert.raises(UnicodeEncodeError):
+            writer.writeline(u'äöü')
 
     @test
     def init(self):

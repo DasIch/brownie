@@ -8,6 +8,8 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+import sys
+import codecs
 from contextlib import contextmanager
 
 
@@ -26,6 +28,34 @@ class TerminalWriter(object):
 
     .. versionadded:: 0.6
     """
+    @classmethod
+    def from_bytestream(cls, stream, encoding=None, errors='strict'):
+        """
+        Returns a :class:`TerminalWriter` for the given byte `stream`.
+
+        If an encoding cannot be determined from the stream it will fallback
+        to the given `encoding`, if it is `None` :meth:`sys.getdefaultencoding`
+        will be used.
+
+        Should an error occur during encoding you can specify what should
+        happen with the `errors` parameter:
+
+        `'strict'`
+            Raise an exception if an error occurs.
+
+        `'ignore'`
+            Ignore the characters for which the error occurs, these will be
+            removed from the string.
+
+        `'replace'`
+            Replaces the characters for which the error occurs with 'safe'
+            characters, usually '?'.
+        """
+        encoding = getattr(stream, 'encoding', encoding)
+        if encoding is None:
+            encoding = sys.getdefaultencoding()
+        return cls(codecs.lookup(encoding).streamwriter(stream, errors))
+
     def __init__(self, stream, prefix=u'', indent='\t'):
         #: The stream to which the output is written.
         self.stream = stream
