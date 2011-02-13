@@ -15,7 +15,7 @@ from __future__ import with_statement
 import re
 import sys
 import codecs
-from contextlib import contextmanager, nested
+from contextlib import contextmanager
 
 
 escape_char_re = re.compile(u'([%s])' % u''.join(map(unichr, range(32) + [127])))
