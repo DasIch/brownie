@@ -12,7 +12,7 @@ from __future__ import with_statement
 import re
 import sys
 import codecs
-from contextlib import contextmanager
+from contextlib import contextmanager, nested
 
 
 escape_char_re = re.compile(u'([%s])' % u''.join(map(unichr, range(32) + [127])))
@@ -294,14 +294,13 @@ class TerminalWriter(object):
         :param options:
             Options for this operation, see :meth:`options`.
         """
-        with self.options(**options):
+        with nested(self.line(), self.options(**options)):
             self.write(
                 self.prefix + (
                     self._escape(line) if self.should_escape(escape) else line
                 ),
                 escape=False
             )
-        self.write('\n', escape=False)
 
     def writelines(self, lines, escape=None, **options):
         """
