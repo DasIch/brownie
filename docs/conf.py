@@ -28,7 +28,7 @@ sys.path.append(os.path.abspath('_themes/minimalism'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.viewcode',
-    'sphinx.ext.doctest'
+    'sphinx.ext.doctest', 'sphinxcontrib.ansi'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -230,3 +230,5 @@ intersphinx_mapping = {
 }
 
 autodoc_member_order = 'bysource'
+
+html_ansi_stylesheet = 'black-on-white.css'
