@@ -226,20 +226,16 @@ class TerminalWriter(object):
         if kwargs:
             raise TypeError('got unexpected argument')
         self.optionstack.append(options)
-        self.apply_options(options)
+        self.apply_options(**options)
         try:
             yield self
         finally:
-            self.reset_options(options)
+            self.reset_options(**options)
             self.optionstack.pop()
             if self.optionstack:
-                self.apply_options(self.optionstack[-1])
+                self.apply_options(**self.optionstack[-1])
 
-    def apply_options(self, options):
-        text_colour = options.get('text_colour')
-        background_colour = options.get('background_colour')
-        attributes = options.get('attributes', [])
-
+    def apply_options(self, text_colour=None, background_colour=None, attributes=()):
         if text_colour:
             self.stream.write(text_colour)
         if background_colour:
@@ -247,12 +243,12 @@ class TerminalWriter(object):
         for attribute in attributes:
             self.stream.write(attribute)
 
-    def reset_options(self, options):
-        if 'text_colour' in options:
+    def reset_options(self, text_colour=None, background_colour=None, attributes=None):
+        if text_colour:
             self.stream.write(TEXT_COLOURS['reset'])
-        if 'background_colour' in options:
+        if background_colour:
             self.stream.write(BACKGROUND_COLOURS['reset'])
-        if 'attributes' in options:
+        if attributes:
             self.stream.write(ATTRIBUTES['reset'])
 
     @contextmanager
