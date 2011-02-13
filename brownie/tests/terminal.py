@@ -110,6 +110,13 @@ class TestTerminalWriter(TestBase):
         Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
 
     @test
+    def line(self):
+        with self.writer.line():
+            self.writer.write(u'foo')
+            Assert(self.stream.getvalue()) == 'foo'
+        Assert(self.stream.getvalue()) == 'foo\n'
+
+    @test
     def should_escape(self):
         Assert(self.writer.should_escape(None)) == True
         Assert(self.writer.should_escape(True)) == True

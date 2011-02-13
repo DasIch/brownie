@@ -255,6 +255,17 @@ class TerminalWriter(object):
         if 'attributes' in options:
             self.stream.write(ATTRIBUTES['reset'])
 
+    @contextmanager
+    def line(self):
+        """
+        A contextmanager which writes a newline to the :attr:`stream` after
+        the body is executed.
+
+        This is useful if you want to write a line with multiple different options.
+        """
+        yield
+        self.stream.write(u'\n')
+
     def should_escape(self, escape):
         return self.autoescape if escape is None else escape
 
@@ -317,26 +328,26 @@ class TerminalWriter(object):
 def main():
     writer = TerminalWriter.from_bytestream(sys.stdout)
     for dark, light in _colour_names:
-        writer.write(light, text_colour=light)
-        writer.write(' ')
-        writer.write(dark, text_colour=dark)
-        writer.write('\n', escape=False)
+        with writer.line():
+            writer.write(light, text_colour=light)
+            writer.write(' ')
+            writer.write(dark, text_colour=dark)
 
-        writer.write(light, background_colour=light)
-        writer.write(' ')
-        writer.write(dark, background_colour=dark)
-        writer.write('\n', escape=False)
+        with writer.line():
+            writer.write(light, background_colour=light)
+            writer.write(' ')
+            writer.write(dark, background_colour=dark)
 
     for name in ATTRIBUTES:
         writer.writeline(name, **{name: True})
-    with writer.options(underline=True):
-        writer.write('underline')
-        with writer.options(background_colour='red'):
-            writer.write('background')
-            writer.write('text', text_colour='green')
-            writer.write('background')
-        writer.write('underline')
-    writer.write('\n', escape=False)
+    with writer.line():
+        with writer.options(underline=True):
+            writer.write('underline')
+            with writer.options(background_colour='red'):
+                writer.write('background')
+                writer.write('text', text_colour='green')
+                writer.write('background')
+            writer.write('underline')
 
 if __name__ == '__main__':
     main()
