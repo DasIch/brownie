@@ -264,6 +264,18 @@ class TerminalWriter(object):
         finally:
             self.stream.write(u'\n')
 
+    @contextmanager
+    def escaping(self, shall_escape):
+        """
+        A contextmanager which lets you change the escaping behaviour for the block.
+        """
+        previous_setting = self.autoescape
+        self.autoescape = shall_escape
+        try:
+            yield self
+        finally:
+            self.autoescape = previous_setting
+
     def should_escape(self, escape):
         return self.autoescape if escape is None else escape
 
