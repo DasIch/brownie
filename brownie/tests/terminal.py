@@ -126,6 +126,16 @@ class TestTerminalWriter(TestBase):
             Assert(self.stream.getvalue()) == 'foo'
         Assert(self.stream.getvalue()) == 'foo\n'
 
+        self.stream = StringIO()
+        self.writer = TerminalWriter.from_bytestream(self.stream)
+        try:
+            with self.writer.line():
+                self.writer.write(u'foo')
+                raise Exception()
+        except Exception:
+            self.writer.writeline(u'bar')
+        Assert(self.stream.getvalue()) == 'foo\nbar\n'
+
     @test
     def should_escape(self):
         Assert(self.writer.should_escape(None)) == True

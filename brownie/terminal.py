@@ -259,8 +259,10 @@ class TerminalWriter(object):
 
         This is useful if you want to write a line with multiple different options.
         """
-        yield
-        self.stream.write(u'\n')
+        try:
+            yield
+        finally:
+            self.stream.write(u'\n')
 
     def should_escape(self, escape):
         return self.autoescape if escape is None else escape
@@ -290,11 +292,11 @@ class TerminalWriter(object):
         :param options:
             Options for this operation, see :meth:`options`.
         """
-        with nested(self.line(), self.options(**options)):
+        with self.options(**options):
             self.write(
                 self.prefix + (
                     self._escape(line) if self.should_escape(escape) else line
-                ),
+                ) + u'\n',
                 escape=False
             )
 
