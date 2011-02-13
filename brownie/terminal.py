@@ -5,6 +5,9 @@
 
     Utilities for handling simple output on a terminal.
 
+
+    .. versionadded:: 0.6
+
     :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
