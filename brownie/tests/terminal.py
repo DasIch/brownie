@@ -24,8 +24,9 @@ tests = Tests()
 @tests.test
 def test_escape():
     for control_character in map(chr, range(32) + [127]):
+        escaped = control_character.encode('string-escape')
         string = '%s[42mfoobar%s[0m' % (control_character, control_character)
-        escaped = '\\%s[42mfoobar\\%s[0m' % (control_character, control_character)
+        escaped = '%s[42mfoobar%s[0m' % (escaped, escaped)
         Assert(escape(string)) == escaped
 
 

@@ -61,7 +61,10 @@ def escape(string):
 
        http://www.ush.it/team/ush/hack_httpd_escape/adv.txt
     """
-    return escape_char_re.sub(r'\\\g<0>', string)
+    return escape_char_re.sub(
+        lambda m: m.group().encode('string-escape'),
+        string
+    )
 
 
 class TerminalWriter(object):
