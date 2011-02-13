@@ -5,7 +5,7 @@
 
     Implements useful parallelization stuff.
 
-    :copyright: 2010 by Daniel Neuhaeuser
+    :copyright: 2010-2011 by Daniel Neuhaeuser
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement

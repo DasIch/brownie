@@ -3,7 +3,7 @@
     brownie.proxies
     ~~~~~~~~~~~~~~~
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE for details
 """
 import textwrap

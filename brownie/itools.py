@@ -5,7 +5,7 @@
 
     Implements :mod:`itertools` functions for earlier version of Python.
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, PSF see LICENSE.rst for details
 """
 from itertools import repeat, izip

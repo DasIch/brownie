@@ -5,7 +5,7 @@
 
     This module implements basic datastructures.
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
 

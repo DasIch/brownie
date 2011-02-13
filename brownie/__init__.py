@@ -6,7 +6,7 @@
     Brownie provides various different utilities and datastructures, which are
     commonly used in Python applications.
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
 #: A string containing the full version number.

@@ -7,7 +7,7 @@
 
     .. versionadded:: 0.2
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
 try:

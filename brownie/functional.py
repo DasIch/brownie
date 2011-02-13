@@ -6,7 +6,7 @@
     Implements functions known from functional programming languages and other
     things which are useful when dealing with functions.
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
 from inspect import getargspec

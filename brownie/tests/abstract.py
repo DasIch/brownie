@@ -5,7 +5,7 @@
 
     Tests for mod:`brownie.abstract`.
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
 import sys

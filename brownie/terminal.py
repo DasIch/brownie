@@ -5,7 +5,7 @@
 
     Utilities for handling simple output on a terminal.
 
-    :copyright: 2010 by Daniel Neuhäuser
+    :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
