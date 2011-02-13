@@ -126,14 +126,14 @@ class TerminalWriter(object):
 
         if is_a_tty and termios and hasattr(stream, 'fileno'):
             self.control_characters = [
-                unicode(c) for c in termios.tcgetattr(stream.fileno())[-1]
+                c for c in termios.tcgetattr(stream.fileno())[-1]
                 if isinstance(c, basestring)
             ]
         else:
             # just to be on the safe side...
             self.control_characters = map(chr, range(32) + [127])
 
-        self.ansi_re = re.compile(u'[%s]' % ''.join(self.control_characters))
+        self.ansi_re = re.compile('[%s]' % ''.join(self.control_characters))
 
     def escape(self, string):
         """
