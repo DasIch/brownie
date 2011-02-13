@@ -15,10 +15,11 @@ from __future__ import with_statement
 import re
 import sys
 import codecs
+try:
+    import termios
+except ImportError:
+    termios = None
 from contextlib import contextmanager
-
-
-escape_char_re = re.compile(u'([%s])' % u''.join(map(unichr, range(32) + [127])))
 
 
 _ansi_sequence = '\033[%sm'
@@ -52,24 +53,6 @@ for i, (dark, light) in enumerate(_colour_names):
     BACKGROUND_COLOURS[light] = _ansi_sequence % ('%i;01' % (i + 40))
 
 
-def escape(string):
-    """
-    Escapes all control characters in the given `string`.
-
-    This is useful if you are dealing with 'untrusted' strings you want to
-    write to a file, stdout or stderr which may be viewed using tools such
-    as `cat` which execute ANSI escape sequences.
-
-    .. seealso::
-
-       http://www.ush.it/team/ush/hack_httpd_escape/adv.txt
-    """
-    return escape_char_re.sub(
-        lambda m: m.group().encode('unicode-escape'),
-        string
-    )
-
-
 class TerminalWriter(object):
     """
     This is a helper for dealing with output to a terminal.
@@ -87,10 +70,6 @@ class TerminalWriter(object):
         Defines if everything written is escaped (unless explicitly turned
         off), see :func:`escape` for more information.
     """
-    #: An alias which allows methods with an escape parameter to call the
-    #: escape function.
-    _escape = staticmethod(escape)
-
     @classmethod
     def from_bytestream(cls, stream, encoding=None, errors='strict', **kwargs):
         """
@@ -130,6 +109,33 @@ class TerminalWriter(object):
         self.autoescape = autoescape
 
         self.optionstack = []
+
+        if getattr(stream, 'istty', lambda: False)() and termios:
+            self.control_characters = [
+                unicode(c) for c in termios.tcgetattr(stream)[-1]
+                if isinstance(c, basestring)
+            ]
+        else:
+            # just to be on the safe side...
+            self.control_characters = map(chr, range(32) + [127])
+        self.ansi_re = re.compile(u'[%s]' % ''.join(self.control_characters))
+
+    def escape(self, string):
+        """
+        Escapes all control characters in the given `string`.
+
+        This is useful if you are dealing with 'untrusted' strings you want to
+        write to a file, stdout or stderr which may be viewed using tools such
+        as `cat` which execute ANSI escape sequences.
+
+        .. seealso::
+
+           http://www.ush.it/team/ush/hack_httpd_escape/adv.txt
+        """
+        return self.ansi_re.sub(
+            lambda m: m.group().encode('unicode-escape'),
+            string
+        )
 
     def indent(self):
         """
@@ -294,7 +300,7 @@ class TerminalWriter(object):
         """
         with self.options(**options):
             self.stream.write(
-                self._escape(string) if self.should_escape(escape) else string
+                self.escape(string) if self.should_escape(escape) else string
             )
 
     def writeline(self, line, escape=None, **options):
@@ -310,7 +316,7 @@ class TerminalWriter(object):
         with self.options(**options):
             self.write(
                 self.prefix + (
-                    self._escape(line) if self.should_escape(escape) else line
+                    self.escape(line) if self.should_escape(escape) else line
                 ) + u'\n',
                 escape=False
             )

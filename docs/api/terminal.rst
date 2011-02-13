@@ -8,7 +8,5 @@ These are helpers for application output on a terminal.
 .. versionadded:: 0.6
 
 
-.. autofunction:: escape
-
 .. autoclass:: TerminalWriter
    :members:

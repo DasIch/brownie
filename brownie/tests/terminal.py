@@ -13,21 +13,9 @@ import sys
 import codecs
 from StringIO import StringIO
 
-from brownie.terminal import escape, TerminalWriter
+from brownie.terminal import TerminalWriter
 
 from attest import Tests, TestBase, test, Assert
-
-
-tests = Tests()
-
-
-@tests.test
-def test_escape():
-    for control_character in map(unichr, range(32) + [127]):
-        escaped = control_character.encode('unicode-escape')
-        string = u'%s[42mfoobar%s[0m' % (control_character, control_character)
-        escaped = u'%s[42mfoobar%s[0m' % (escaped, escaped)
-        Assert(escape(string)) == escaped
 
 
 class TestTerminalWriter(TestBase):
@@ -212,4 +200,4 @@ class TestTerminalWriter(TestBase):
         )
 
 
-tests.register(TestTerminalWriter)
+tests = Tests([TestTerminalWriter])
