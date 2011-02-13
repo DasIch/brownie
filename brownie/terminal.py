@@ -79,7 +79,15 @@ class TerminalWriter(object):
 
     :param indent:
         String used for indentation.
+
+    :param autoescape:
+        Defines if everything written is escaped (unless explicitly turned
+        off), see :func:`escape` for more information.
     """
+    #: An alias which allows methods with an escape parameter to call the
+    #: escape function.
+    _escape = staticmethod(escape)
+
     @classmethod
     def from_bytestream(cls, stream, encoding=None, errors='strict'):
         """
@@ -108,13 +116,15 @@ class TerminalWriter(object):
             encoding = sys.getdefaultencoding()
         return cls(codecs.lookup(encoding).streamwriter(stream, errors))
 
-    def __init__(self, stream, prefix=u'', indent='\t'):
+    def __init__(self, stream, prefix=u'', indent='\t', autoescape=True):
         #: The stream to which the output is written.
         self.stream = stream
         #: The current prefix, includes indentation.
         self.prefix = prefix
         #: The string used for indentation.
         self.indent_string = indent
+        #: ``True`` if escaping should be done automatically.
+        self.autoescape = autoescape
 
         self.optionstack = []
 
@@ -245,42 +255,62 @@ class TerminalWriter(object):
         if 'attributes' in options:
             self.stream.write(ATTRIBUTES['reset'])
 
-    def write(self, string, **options):
+    def should_escape(self, escape):
+        return self.autoescape if escape is None else escape
+
+    def write(self, string, escape=None, **options):
         """
         Writes the `given` string to the :attr:`stream`.
 
+        :param escape:
+            Overrides :attr:`autoescape` if given.
+
         :param options:
             Options for this operation, see :meth:`options`.
         """
         with self.options(**options):
-            self.stream.write(string)
+            self.stream.write(
+                self._escape(string) if self.should_escape(escape) else string
+            )
 
-    def writeline(self, line, **options):
+    def writeline(self, line, escape=None, **options):
         """
         Writes the given `line` to the :attr:`stream` respecting indentation.
 
+        :param escape:
+            Overrides :attr:`autoescape` if given.
+
         :param options:
             Options for this operation, see :meth:`options`.
         """
         with self.options(**options):
-            self.write(self.prefix + line)
-        self.write('\n')
+            self.write(
+                self.prefix + (
+                    self._escape(line) if self.should_escape(escape) else line
+                ),
+                escape=False
+            )
+        self.write('\n', escape=False)
 
-    def writelines(self, lines, **options):
+    def writelines(self, lines, escape=None, **options):
         """
         Writes each line in the given iterable to the :attr:`stream` respecting
         indentation.
+
+        :param escape:
+            Overrides :attr:`autoescape` if given.
 
         :param options:
             Options for this operation, see :meth:`options`.
         """
         with self.options(**options):
             for line in lines:
-                self.writeline(line)
+                self.writeline(line, escape=escape)
 
     def __repr__(self):
-        return '%s(%r, prefix=%r, indent=%r)' % (
-            self.__class__.__name__, self.stream, self.prefix, self.indent_string
+        return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
+            self.__class__.__name__, self.stream, self.prefix,
+            self.indent_string, self.autoescape
         )
 
 
@@ -290,12 +320,12 @@ def main():
         writer.write(light, text_colour=light)
         writer.write(' ')
         writer.write(dark, text_colour=dark)
-        writer.write('\n')
+        writer.write('\n', escape=False)
 
         writer.write(light, background_colour=light)
         writer.write(' ')
         writer.write(dark, background_colour=dark)
-        writer.write('\n')
+        writer.write('\n', escape=False)
 
     for name in ATTRIBUTES:
         writer.writeline(name, **{name: True})
@@ -306,7 +336,7 @@ def main():
             writer.write('text', text_colour='green')
             writer.write('background')
         writer.write('underline')
-    writer.write('\n')
+    writer.write('\n', escape=False)
 
 if __name__ == '__main__':
     main()

@@ -83,6 +83,7 @@ class TestTerminalWriter(TestBase):
         Assert(self.writer.stream) == self.stream
         Assert(self.writer.prefix) == u''
         Assert(self.writer.indent_string) == u'\t'
+        Assert(self.writer.autoescape) == True
 
     @test
     def indent(self):
@@ -109,9 +110,25 @@ class TestTerminalWriter(TestBase):
         Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
 
     @test
+    def should_escape(self):
+        Assert(self.writer.should_escape(None)) == True
+        Assert(self.writer.should_escape(True)) == True
+        Assert(self.writer.should_escape(False)) == False
+
+        writer = TerminalWriter(self.stream, autoescape=False)
+        Assert(writer.should_escape(None)) == False
+        Assert(writer.should_escape(True)) == True
+        Assert(writer.should_escape(False)) == False
+
+    @test
     def write(self):
         self.writer.write(u'foo')
         Assert(self.stream.getvalue()) == u'foo'
+
+    @test
+    def write_escaped(self):
+        self.writer.write(u'\x1b[31mfoo')
+        Assert(self.stream.getvalue()) == '\\x1b[31mfoo'
 
     @test
     def writeline(self):
@@ -119,14 +136,37 @@ class TestTerminalWriter(TestBase):
         Assert(self.stream.getvalue()) == u'foo\n'
 
     @test
+    def writeline_escaped(self):
+        self.writer.writeline(u'\x1b[31mfoo')
+        Assert(self.stream.getvalue()) == '\\x1b[31mfoo\n'
+
+    @test
     def writelines(self):
         self.writer.writelines(u'foo bar baz'.split())
         Assert(self.stream.getvalue()) == u'foo\nbar\nbaz\n'
 
     @test
+    def writelines_escaped(self):
+        self.writer.writelines(
+            u'\x1b[31m' + line for line in u'foo bar baz'.split()
+        )
+        Assert(self.stream.getvalue()) == '\n'.join([
+            '\\x1b[31mfoo',
+            '\\x1b[31mbar',
+            '\\x1b[31mbaz\n'
+        ])
+
+    @test
     def repr(self):
-        Assert(repr(self.writer)) == 'TerminalWriter(%r, prefix=%r, indent=%r)' % (
-            self.stream, self.writer.prefix, self.writer.indent_string
+        Assert(repr(self.writer)) == ('TerminalWriter('
+            '%r, '
+            'prefix=%r, '
+            'indent=%r, '
+            'autoescape=%r'
+            ')'
+        ) % (
+            self.stream, self.writer.prefix, self.writer.indent_string,
+            self.writer.autoescape
         )
 
 
