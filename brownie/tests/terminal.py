@@ -109,6 +109,16 @@ class TestTerminalWriter(TestBase):
         self.writer.writeline(u'baz')
         Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
 
+        self.stream = StringIO()
+        self.writer = TerminalWriter.from_bytestream(self.stream)
+        try:
+            with self.writer.indentation():
+                self.writer.writeline(u'foo')
+                raise Exception() # arbitary exception
+        except Exception:
+            self.writer.writeline(u'bar')
+        Assert(self.stream.getvalue()) == '\tfoo\nbar\n'
+
     @test
     def line(self):
         with self.writer.line():
