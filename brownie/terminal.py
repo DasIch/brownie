@@ -286,6 +286,9 @@ class TerminalWriter(object):
             self.autoescape = previous_setting
 
     def should_escape(self, escape):
+        """
+        Returns :attr:`autoescape` if `escape` is None otherwise `escape`.
+        """
         return self.autoescape if escape is None else escape
 
     def write(self, string, escape=None, **options):
