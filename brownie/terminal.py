@@ -15,7 +15,7 @@ import codecs
 from contextlib import contextmanager
 
 
-escape_char_re = re.compile('([%s])' % ''.join(map(chr, range(32) + [127])))
+escape_char_re = re.compile(u'([%s])' % u''.join(map(unichr, range(32) + [127])))
 
 
 _ansi_sequence = '\033[%sm'
@@ -62,7 +62,7 @@ def escape(string):
        http://www.ush.it/team/ush/hack_httpd_escape/adv.txt
     """
     return escape_char_re.sub(
-        lambda m: m.group().encode('string-escape'),
+        lambda m: m.group().encode('unicode-escape'),
         string
     )
 
