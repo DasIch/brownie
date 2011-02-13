@@ -89,7 +89,7 @@ class TerminalWriter(object):
     _escape = staticmethod(escape)
 
     @classmethod
-    def from_bytestream(cls, stream, encoding=None, errors='strict'):
+    def from_bytestream(cls, stream, encoding=None, errors='strict', **kwargs):
         """
         Returns a :class:`TerminalWriter` for the given byte `stream`.
 
@@ -114,7 +114,7 @@ class TerminalWriter(object):
         encoding = getattr(stream, 'encoding', encoding)
         if encoding is None:
             encoding = sys.getdefaultencoding()
-        return cls(codecs.lookup(encoding).streamwriter(stream, errors))
+        return cls(codecs.lookup(encoding).streamwriter(stream, errors), **kwargs)
 
     def __init__(self, stream, prefix=u'', indent='\t', autoescape=True):
         #: The stream to which the output is written.
