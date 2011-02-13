@@ -69,6 +69,10 @@ class TerminalWriter(object):
     :param autoescape:
         Defines if everything written is escaped (unless explicitly turned
         off), see :func:`escape` for more information.
+
+    :param ignore_options:
+        Defines if options should be ignored or not, per default options are
+        ignored if the `stream` is not a tty.
     """
     @classmethod
     def from_bytestream(cls, stream, encoding=None, errors='strict', **kwargs):
@@ -98,7 +102,8 @@ class TerminalWriter(object):
             encoding = sys.getdefaultencoding()
         return cls(codecs.lookup(encoding).streamwriter(stream, errors), **kwargs)
 
-    def __init__(self, stream, prefix=u'', indent='\t', autoescape=True):
+    def __init__(self, stream, prefix=u'', indent='\t', autoescape=True,
+                 ignore_options=None):
         #: The stream to which the output is written.
         self.stream = stream
         #: The current prefix, includes indentation.
@@ -108,16 +113,26 @@ class TerminalWriter(object):
         #: ``True`` if escaping should be done automatically.
         self.autoescape = autoescape
 
+        is_a_tty = getattr(stream, 'isatty', lambda: False)()
+
+        if ignore_options is None and is_a_tty:
+            self.ignore_options = False
+        elif ignore_options is None:
+            self.ignore_options = True
+        else:
+            self.ignore_options = ignore_options
+
         self.optionstack = []
 
-        if getattr(stream, 'istty', lambda: False)() and termios:
+        if is_a_tty and termios and hasattr(stream, 'fileno'):
             self.control_characters = [
-                unicode(c) for c in termios.tcgetattr(stream)[-1]
+                unicode(c) for c in termios.tcgetattr(stream.fileno())[-1]
                 if isinstance(c, basestring)
             ]
         else:
             # just to be on the safe side...
             self.control_characters = map(chr, range(32) + [127])
+
         self.ansi_re = re.compile(u'[%s]' % ''.join(self.control_characters))
 
     def escape(self, string):
@@ -245,6 +260,8 @@ class TerminalWriter(object):
                 self.apply_options(**self.optionstack[-1])
 
     def apply_options(self, text_colour=None, background_colour=None, attributes=()):
+        if self.ignore_options:
+            return
         if text_colour:
             self.stream.write(text_colour)
         if background_colour:

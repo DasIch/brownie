@@ -72,6 +72,20 @@ class TestTerminalWriter(TestBase):
         Assert(self.writer.prefix) == u''
         Assert(self.writer.indent_string) == u'\t'
         Assert(self.writer.autoescape) == True
+        Assert(self.writer.ignore_options) == True
+
+        stream = StringIO()
+        stream.isatty = lambda: True
+        writer = TerminalWriter.from_bytestream(stream)
+        Assert(writer.ignore_options) == False
+        writer = TerminalWriter.from_bytestream(stream, ignore_options=True)
+        Assert(writer.ignore_options) == True
+
+        stream = StringIO()
+        writer = TerminalWriter.from_bytestream(stream)
+        Assert(writer.ignore_options) == True
+        writer = TerminalWriter.from_bytestream(stream, ignore_options=False)
+        Assert(writer.ignore_options) == False
 
     @test
     def indent(self):
