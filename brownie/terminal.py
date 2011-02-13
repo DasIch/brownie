@@ -8,9 +8,28 @@
     :copyright: 2010 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
+import re
 import sys
 import codecs
 from contextlib import contextmanager
+
+
+escape_char_re = re.compile('([%s])' % ''.join(map(chr, range(32) + [127])))
+
+
+def escape(string):
+    """
+    Escapes all control characters in the given `string`.
+
+    This is useful if you are dealing with 'untrusted' strings you want to
+    write to a file, stdout or stderr which may be viewed using tools such
+    as `cat` which execute ANSI escape sequences.
+
+    .. seealso::
+
+       http://www.ush.it/team/ush/hack_httpd_escape/adv.txt
+    """
+    return escape_char_re.sub(r'\\\g<0>', string)
 
 
 class TerminalWriter(object):
@@ -25,8 +44,6 @@ class TerminalWriter(object):
 
     :param indent:
         String used for indentation.
-
-    .. versionadded:: 0.6
     """
     @classmethod
     def from_bytestream(cls, stream, encoding=None, errors='strict'):
