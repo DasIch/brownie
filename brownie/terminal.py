@@ -40,14 +40,14 @@ class TerminalWriter(object):
         Should an error occur during encoding you can specify what should
         happen with the `errors` parameter:
 
-        `'strict'`
+        ``'strict'``
             Raise an exception if an error occurs.
 
-        `'ignore'`
+        ``'ignore'``
             Ignore the characters for which the error occurs, these will be
             removed from the string.
 
-        `'replace'`
+        ``'replace'``
             Replaces the characters for which the error occurs with 'safe'
             characters, usually '?'.
         """
