@@ -26,6 +26,8 @@ except ImportError:
     termios = None
 from contextlib import contextmanager
 
+from brownie.datastructures import namedtuple
+
 
 _ansi_sequence = '\033[%sm'
 
@@ -56,6 +58,9 @@ for i, (dark, light) in enumerate(_colour_names):
 
     BACKGROUND_COLOURS[dark] = _ansi_sequence % str(i + 40)
     BACKGROUND_COLOURS[light] = _ansi_sequence % ('%i;01' % (i + 40))
+
+
+Dimensions = namedtuple('Dimensions', ['height', 'width'])
 
 
 class TerminalWriter(object):
@@ -168,9 +173,9 @@ class TerminalWriter(object):
         except AttributeError:
             pass
         else:
-            return struct.unpack('hhhh', fcntl.ioctl(
+            return Dimensions(*struct.unpack('hhhh', fcntl.ioctl(
                 fileno, termios.TIOCGWINSZ, '\000' * 8)
-            )[:2]
+            )[:2])
         raise NotImplementedError('not implemented for the given stream or platform')
 
     def get_width(self, default=80):
