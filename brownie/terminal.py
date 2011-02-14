@@ -15,9 +15,13 @@ from __future__ import with_statement
 import re
 import sys
 import codecs
+import struct
 try:
+    # all available on unix platforms
+    import fcntl
     import termios
 except ImportError:
+    fcntl = None
     termios = None
 from contextlib import contextmanager
 
@@ -151,6 +155,22 @@ class TerminalWriter(object):
             lambda m: m.group().encode('unicode-escape'),
             string
         )
+
+    def get_dimensions(self):
+        """
+        Returns a tuple containing height and width of the terminal.
+
+        May raise :exc:`NotImplementedError` depending on the stream or platform.
+        """
+        try:
+            fileno = self.stream.fileno()
+        except AttributeError:
+            pass
+        else:
+            return struct.unpack('hhhh', fcntl.ioctl(
+                fileno, termios.TIOCGWINSZ, '\000' * 8)
+            )[:2]
+        raise NotImplementedError('not implemented for the given stream or platform')
 
     def indent(self):
         """

@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
+import os
 import sys
 import codecs
 from StringIO import StringIO
@@ -86,6 +87,17 @@ class TestTerminalWriter(TestBase):
         Assert(writer.ignore_options) == True
         writer = TerminalWriter.from_bytestream(stream, ignore_options=False)
         Assert(writer.ignore_options) == False
+
+    @test
+    def get_dimensions(self):
+        with Assert.raises(NotImplementedError):
+            self.writer.get_dimensions()
+        with os.fdopen(1) as stdout:
+            writer = TerminalWriter.from_bytestream(stdout)
+            with Assert.not_raising(NotImplementedError):
+                height, width = writer.get_dimensions()
+            Assert.isinstance(height, int)
+            Assert.isinstance(width, int)
 
     @test
     def indent(self):
