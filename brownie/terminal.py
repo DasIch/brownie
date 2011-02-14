@@ -13,6 +13,7 @@
 """
 from __future__ import with_statement
 import re
+import os
 import sys
 import codecs
 import struct
@@ -171,6 +172,22 @@ class TerminalWriter(object):
                 fileno, termios.TIOCGWINSZ, '\000' * 8)
             )[:2]
         raise NotImplementedError('not implemented for the given stream or platform')
+
+    def get_width(self, default=80):
+        """
+        Returns the width of the terminal.
+
+        This falls back to the `COLUMNS` environment variable and if that fails
+        to `default`. Therefore the returned value might not not be at all correct.
+        """
+        try:
+            _, width = self.get_dimensions()
+        except NotImplementedError:
+            try:
+                width = int(os.environ.get('COLUMNS', default))
+            except ValueError:
+                width = default
+        return width
 
     def indent(self):
         """

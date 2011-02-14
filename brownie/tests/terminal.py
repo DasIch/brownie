@@ -92,12 +92,20 @@ class TestTerminalWriter(TestBase):
     def get_dimensions(self):
         with Assert.raises(NotImplementedError):
             self.writer.get_dimensions()
-        with os.fdopen(1) as stdout:
-            writer = TerminalWriter.from_bytestream(stdout)
-            with Assert.not_raising(NotImplementedError):
-                height, width = writer.get_dimensions()
-            Assert.isinstance(height, int)
-            Assert.isinstance(width, int)
+        stdout = os.fdopen(1)
+        writer = TerminalWriter.from_bytestream(stdout)
+        with Assert.not_raising(NotImplementedError):
+            height, width = writer.get_dimensions()
+        Assert.isinstance(height, int)
+        Assert.isinstance(width, int)
+
+    @test
+    def get_width(self):
+        with Assert.not_raising(Exception):
+            self.writer.get_width()
+        stdout = os.fdopen(1)
+        writer = TerminalWriter.from_bytestream(stdout)
+        Assert(writer.get_width()) == writer.get_dimensions()[1]
 
     @test
     def indent(self):
