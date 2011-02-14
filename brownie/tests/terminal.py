@@ -92,8 +92,7 @@ class TestTerminalWriter(TestBase):
     def get_dimensions(self):
         with Assert.raises(NotImplementedError):
             self.writer.get_dimensions()
-        stdout = os.fdopen(1)
-        writer = TerminalWriter.from_bytestream(stdout)
+        writer = TerminalWriter.from_bytestream(sys.__stdout__)
         with Assert.not_raising(NotImplementedError):
             dimensions = writer.get_dimensions()
         height, width = dimensions
@@ -106,8 +105,7 @@ class TestTerminalWriter(TestBase):
     def get_width(self):
         with Assert.not_raising(Exception):
             self.writer.get_width()
-        stdout = os.fdopen(1)
-        writer = TerminalWriter.from_bytestream(stdout)
+        writer = TerminalWriter.from_bytestream(sys.__stdout__)
         Assert(writer.get_width()) == writer.get_dimensions()[1]
 
     @test
