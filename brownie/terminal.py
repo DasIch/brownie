@@ -43,21 +43,18 @@ ATTRIBUTES = dict((key, _ansi_sequence % value) for key, value in [
 TEXT_COLOURS = {'reset': _ansi_sequence % '39'}
 BACKGROUND_COLOURS = {'reset': _ansi_sequence % '49'}
 _colour_names = [
-    ('black',      'darkgrey'),
-    ('darkred',    'red'),
-    ('darkgreen',  'green'),
-    ('darkyellow', 'yellow'),
-    ('darkblue',   'blue'),
-    ('purple',     'fuchsia'),
-    ('turquoise',  'teal'),
-    ('lightgray',  'white')
+    'black',
+    'red',
+    'green',
+    'yellow',
+    'blue',
+    'fuchsia',
+    'teal',
+    'white'
 ]
-for i, (dark, light) in enumerate(_colour_names):
-    TEXT_COLOURS[dark] = _ansi_sequence % str(i + 30)
-    TEXT_COLOURS[light] = _ansi_sequence % ('%i;01' % (i + 30))
-
-    BACKGROUND_COLOURS[dark] = _ansi_sequence % str(i + 40)
-    BACKGROUND_COLOURS[light] = _ansi_sequence % ('%i;01' % (i + 40))
+for i, name in enumerate(_colour_names):
+    TEXT_COLOURS[name] = _ansi_sequence % str(i + 30)
+    BACKGROUND_COLOURS[name] = _ansi_sequence % ('%i' % (i + 40))
 
 
 Dimensions = namedtuple('Dimensions', ['height', 'width'])
@@ -279,14 +276,14 @@ class TerminalWriter(object):
 
            Dark       Light
            ====       =====
-           \x1b[30mblack\x1b[0m      \x1b[30;01mdarkgrey\x1b[0m
-           \x1b[31mdarkred\x1b[0m    \x1b[31;01mred\x1b[0m
-           \x1b[32mdarkgreen\x1b[0m  \x1b[32;01mgreen\x1b[0m
-           \x1b[33mdarkyellow\x1b[0m \x1b[33;01myellow\x1b[0m
-           \x1b[34mdarkblue\x1b[0m   \x1b[34;01mblue\x1b[0m
-           \x1b[35mpurple\x1b[0m     \x1b[35;01mfuchsia\x1b[0m
-           \x1b[36mturquoise\x1b[0m  \x1b[36;01mteal\x1b[0m
-           \x1b[37mlightgray\x1b[0m  \x1b[37;01mwhite\x1b[0m
+           \x1b[30mblack\x1b[0m
+           \x1b[31mdarkred\x1b[0m
+           \x1b[32mdarkgreen\x1b[0m
+           \x1b[33mdarkyellow\x1b[0m
+           \x1b[34mdarkblue\x1b[0m
+           \x1b[35mpurple\x1b[0m
+           \x1b[36mturquoise\x1b[0m
+           \x1b[37mlightgray\x1b[0m
         """
         options = self._get_options(kwargs)
         if kwargs:
@@ -407,16 +404,12 @@ class TerminalWriter(object):
 
 def main():
     writer = TerminalWriter.from_bytestream(sys.stdout)
-    for dark, light in _colour_names:
+    for name in _colour_names:
         with writer.line():
-            writer.write(light, text_colour=light)
-            writer.write(' ')
-            writer.write(dark, text_colour=dark)
+            writer.write(name, text_colour=name)
 
         with writer.line():
-            writer.write(light, background_colour=light)
-            writer.write(' ')
-            writer.write(dark, background_colour=dark)
+            writer.write(name, background_colour=name)
 
     for name in ATTRIBUTES:
         writer.writeline(name, **{name: True})
