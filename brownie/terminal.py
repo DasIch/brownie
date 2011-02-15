@@ -107,7 +107,10 @@ class TerminalWriter(object):
         encoding = getattr(stream, 'encoding', encoding)
         if encoding is None:
             encoding = sys.getdefaultencoding()
-        return cls(codecs.lookup(encoding).streamwriter(stream, errors), **kwargs)
+        return cls(
+            codecs.lookup(encoding).streamwriter(stream, errors),
+            **kwargs
+        )
 
     def __init__(self, stream, prefix=u'', indent='\t', autoescape=True,
                  ignore_options=None):
@@ -163,7 +166,8 @@ class TerminalWriter(object):
         """
         Returns a tuple containing height and width of the terminal.
 
-        May raise :exc:`NotImplementedError` depending on the stream or platform.
+        May raise :exc:`NotImplementedError` depending on the stream or
+        platform.
         """
         try:
             fileno = self.stream.fileno()
@@ -173,14 +177,17 @@ class TerminalWriter(object):
             return Dimensions(*struct.unpack('hhhh', fcntl.ioctl(
                 fileno, termios.TIOCGWINSZ, '\000' * 8)
             )[:2])
-        raise NotImplementedError('not implemented for the given stream or platform')
+        raise NotImplementedError(
+            'not implemented for the given stream or platform'
+        )
 
     def get_width(self, default=80):
         """
         Returns the width of the terminal.
 
         This falls back to the `COLUMNS` environment variable and if that fails
-        to `default`. Therefore the returned value might not not be at all correct.
+        to `default`. Therefore the returned value might not not be at all
+        correct.
         """
         try:
             _, width = self.get_dimensions()
@@ -298,7 +305,8 @@ class TerminalWriter(object):
             if self.optionstack:
                 self.apply_options(**self.optionstack[-1])
 
-    def apply_options(self, text_colour=None, background_colour=None, attributes=()):
+    def apply_options(self, text_colour=None, background_colour=None,
+                      attributes=()):
         if self.ignore_options:
             return
         if text_colour:
@@ -308,7 +316,8 @@ class TerminalWriter(object):
         for attribute in attributes:
             self.stream.write(attribute)
 
-    def reset_options(self, text_colour=None, background_colour=None, attributes=None):
+    def reset_options(self, text_colour=None, background_colour=None,
+                      attributes=None):
         if text_colour:
             self.stream.write(TEXT_COLOURS['reset'])
         if background_colour:
@@ -322,7 +331,8 @@ class TerminalWriter(object):
         A contextmanager which writes a newline to the :attr:`stream` after
         the body is executed.
 
-        This is useful if you want to write a line with multiple different options.
+        This is useful if you want to write a line with multiple different
+        options.
         """
         try:
             yield
@@ -332,7 +342,8 @@ class TerminalWriter(object):
     @contextmanager
     def escaping(self, shall_escape):
         """
-        A contextmanager which lets you change the escaping behaviour for the block.
+        A contextmanager which lets you change the escaping behaviour for the
+        block.
         """
         previous_setting = self.autoescape
         self.autoescape = shall_escape
