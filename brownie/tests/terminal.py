@@ -9,7 +9,6 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
-import os
 import sys
 import codecs
 from StringIO import StringIO
@@ -220,6 +219,20 @@ class TestTerminalWriter(TestBase):
             '\\x1b[31mbar',
             '\\x1b[31mbaz\n'
         ])
+
+    @test
+    def hr(self):
+        self.writer.hr()
+        content = self.stream.getvalue().strip()
+        Assert(len(content)) == self.writer.get_width()
+        Assert(content[0]) == '-'
+        assert all(content[0] == c for c in content)
+        self.stream = StringIO()
+        self.writer = TerminalWriter.from_bytestream(self.stream)
+        self.writer.hr(u'#')
+        content = self.stream.getvalue().strip()
+        Assert(content[0]) == '#'
+        assert all(content[0] == c for c in content)
 
     @test
     def repr(self):

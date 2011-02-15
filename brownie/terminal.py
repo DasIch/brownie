@@ -395,6 +395,16 @@ class TerminalWriter(object):
             for line in lines:
                 self.writeline(line, escape=escape)
 
+    def hr(self, character=u'-'):
+        """
+        Writes a horizontal ruler with the width of the terminal to the
+        :attr:`stream`.
+
+        :param character:
+            Specifies the character used for the ruler.
+        """
+        self.writeline(character * self.get_width())
+
     def __repr__(self):
         return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
             self.__class__.__name__, self.stream, self.prefix,
