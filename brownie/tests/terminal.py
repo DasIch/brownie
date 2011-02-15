@@ -11,6 +11,7 @@
 from __future__ import with_statement
 import sys
 import codecs
+import textwrap
 from StringIO import StringIO
 
 from brownie.terminal import TerminalWriter
@@ -233,6 +234,32 @@ class TestTerminalWriter(TestBase):
         content = self.stream.getvalue().strip()
         Assert(content[0]) == '#'
         assert all(content[0] == c for c in content)
+
+    @test
+    def table(self):
+        content = [['foo', 'bar'], ['spam', 'eggs']]
+        self.writer.table(content)
+        self.writer.table(content, padding=2)
+        self.writer.table(content, ['hello', 'world'])
+        Assert(self.stream.getvalue()) == textwrap.dedent("""\
+            foo  | bar
+            spam | eggs
+
+            foo   |  bar
+            spam  |  eggs
+
+            hello | world
+            ------+------
+            foo   | bar
+            spam  | eggs
+
+        """)
+        with Assert.raises(ValueError):
+            self.writer.table([])
+        with Assert.raises(ValueError):
+            self.writer.table([['foo', 'bar'], ['spam']])
+        with Assert.raises(ValueError):
+            self.writer.table([['foo', 'bar']], ['spam'])
 
     @test
     def repr(self):

@@ -24,6 +24,7 @@ try:
 except ImportError:
     fcntl = None
     termios = None
+from itertools import izip
 from contextlib import contextmanager
 
 from brownie.datastructures import namedtuple
@@ -415,6 +416,64 @@ class TerminalWriter(object):
             Specifies the character used for the ruler.
         """
         self.writeline(character * self.get_width())
+
+    def table(self, content, head=None, padding=1):
+        """
+        Writes a table using a list of rows (`content`) and an optional `head`.
+
+        :param padding:
+            Specifies the padding used for each cell to the left and right.
+
+        ::
+            >>> import sys
+            >>> from brownie.terminal import TerminalWriter
+            >>> writer = TerminalWriter.from_bytestream(sys.stdout)
+            >>> writer.table([
+            ... [u'foo', u'bar'],
+            ... [u'spam', u'eggs']
+            ... ])
+            foo  | bar
+            spam | eggs
+            <BLANKLINE>
+            >>> writer.table(
+            ... [
+            ...     [u'foo', u'bar'],
+            ...     [u'spam', u'eggs']
+            ... ],
+            ... [u'hello', u'world']
+            ... )
+            hello | world
+            ------+------
+            foo   | bar
+            spam  | eggs
+            <BLANKLINE>
+        """
+        if not content:
+            raise ValueError()
+        if head is not None and len(head) != len(content[0]):
+            raise ValueError()
+        if any(len(content[0]) != len(row) for row in content[1:]):
+            raise ValueError()
+        all_rows = [head] if head is not None else [] + content
+        cell_lengths = [
+            max(map(len, column)) for column in izip(*all_rows)
+        ]
+        def make_line(row):
+            return u'|'.join(
+                u' ' * padding + cell.ljust(cell_lengths[i]) + u' ' * padding
+                for i, cell in enumerate(row)
+            ).strip()
+        result = map(make_line, content)
+        if head:
+            line = make_line(head)
+            self.writeline(line)
+            self.writeline(
+                re.sub(r'[^\|]', '-', line)
+                .replace('|', '+')
+                .ljust(max(map(len, result)), '-')
+            )
+        self.writelines(result)
+        self.writeline('')
 
     def __repr__(self):
         return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
