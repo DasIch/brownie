@@ -43,7 +43,8 @@ class TestPeekableIterator(TestBase):
             Assert(item) == expected
 
         iterator = PeekableIterator(range(10))
-        Assert(iterator.peek()) == iterator.peek() == 0
+        Assert(iterator.peek()) == iterator.peek()
+        Assert(iterator.peek()) == [0]
 
     @test
     def repr(self):
