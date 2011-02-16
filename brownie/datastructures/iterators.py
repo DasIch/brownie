@@ -27,7 +27,7 @@ class PeekableIterator(object):
     def peek(self, n=1):
         """
         Returns the next `n` items without consuming the iterator, if the
-        iterator has more than `n` items :exc:`StopIteration` is raised.
+        iterator has less than `n` items these are returned.
 
         Raises :exc:`ValueError` if `n` is lower than 1.
         """
@@ -35,7 +35,10 @@ class PeekableIterator(object):
             raise ValueError('n should be greater than 0')
         items = list(self.remaining)[:n]
         while len(items) < n:
-            item = self.iterator.next()
+            try:
+                item = self.iterator.next()
+            except StopIteration:
+                break
             items.append(item)
             self.remaining.append(item)
         return items

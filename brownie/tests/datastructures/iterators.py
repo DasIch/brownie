@@ -35,8 +35,8 @@ class TestPeekableIterator(TestBase):
             iterator.peek(0)
         with Assert.raises(ValueError):
             iterator.peek(-1)
-        with Assert.raises(StopIteration):
-            iterator.peek(11)
+
+        Assert(iterator.peek(11)) == range(10)
 
         Assert(iterator.peek(10)) == range(10)
         for item, expected in zip(iterator, range(10)):
