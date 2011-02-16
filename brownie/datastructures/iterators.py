@@ -33,7 +33,7 @@ class PeekableIterator(object):
         """
         if n < 1:
             raise ValueError('n should be greater than 0')
-        items = list(self.remaining)
+        items = list(self.remaining)[:n]
         while len(items) < n:
             item = self.iterator.next()
             items.append(item)

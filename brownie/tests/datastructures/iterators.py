@@ -46,6 +46,9 @@ class TestPeekableIterator(TestBase):
         Assert(iterator.peek()) == iterator.peek()
         Assert(iterator.peek()) == [0]
 
+        Assert(iterator.peek(10)) == range(10)
+        Assert(iterator.peek(5)) == range(5)
+
     @test
     def repr(self):
         original = iter(xrange(10))
