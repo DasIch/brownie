@@ -10,6 +10,7 @@ features.
 
 - Added :class:`brownie.datastructures.PeekableIterator`.
 - Added :mod:`brownie.terminal`.
+- Added :func:`brownie.datastructures.sequences.LazyList.index`.
 
 0.5.1
 -----
