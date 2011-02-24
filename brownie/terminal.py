@@ -27,7 +27,7 @@ except ImportError:
 from itertools import izip
 from contextlib import contextmanager
 
-from brownie.datastructures import namedtuple
+from brownie.datastructures import namedtuple, StackedObject
 
 
 _ansi_sequence = '\033[%sm'
@@ -137,7 +137,7 @@ class TerminalWriter(object):
         else:
             self.ignore_options = ignore_options
 
-        self.optionstack = []
+        self.optionstack = StackedObject([])
 
         if is_a_tty and termios and hasattr(stream, 'fileno'):
             self.control_characters = [
@@ -300,7 +300,7 @@ class TerminalWriter(object):
         options = self._get_options(kwargs)
         if kwargs:
             raise TypeError('got unexpected argument')
-        self.optionstack.append(options)
+        self.optionstack.push(options)
         self.apply_options(**options)
         try:
             yield self
@@ -308,7 +308,7 @@ class TerminalWriter(object):
             self.reset_options(**options)
             self.optionstack.pop()
             if self.optionstack:
-                self.apply_options(**self.optionstack[-1])
+                self.apply_options(**self.optionstack.top)
 
     def apply_options(self, text_colour=None, background_colour=None,
                       attributes=()):
