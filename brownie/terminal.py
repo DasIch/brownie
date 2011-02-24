@@ -422,6 +422,7 @@ class TerminalWriter(object):
             Specifies the padding used for each cell to the left and right.
 
         ::
+
             >>> import sys
             >>> from brownie.terminal import TerminalWriter
             >>> writer = TerminalWriter.from_bytestream(sys.stdout)
