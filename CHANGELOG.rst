@@ -12,6 +12,7 @@ features.
 - Added :mod:`brownie.terminal`.
 - Added :func:`brownie.datastructures.sequences.LazyList.index`.
 - Added :class:`brownie.datastructures.StackedObject`.
+- Added `doc` parameter to :func:`brownie.datastructures.sequences.namedtuple`.
 
 0.5.1
 -----

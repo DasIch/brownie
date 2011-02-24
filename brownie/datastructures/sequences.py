@@ -574,7 +574,7 @@ class CombinedList(CombinedSequence):
         self._set_values(sorted(self, cmp, key, reverse))
 
 
-def namedtuple(typename, field_names, verbose=False, rename=False):
+def namedtuple(typename, field_names, verbose=False, rename=False, doc=None):
     """
     Returns a :class:`tuple` subclass named `typename` with a limited number
     of possible items who are accessible under their field name respectively.
@@ -647,7 +647,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
 
     code = textwrap.dedent("""
         class %(typename)s(tuple):
-            '''%(typename)s%(fields)s'''
+            '''%(docstring)s'''
 
             _fields = %(fields)s
 
@@ -684,7 +684,8 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
         'fields': repr(tuple(real_field_names)),
         'fieldnames': ', '.join(real_field_names),
         'field_count': len(real_field_names),
-        'reprtext': ', '.join(name + '=%r' for name in real_field_names)
+        'reprtext': ', '.join(name + '=%r' for name in real_field_names),
+        'docstring': doc or typename + '(%s)' % ', '.join(real_field_names)
     }
 
     for i, name in enumerate(real_field_names):

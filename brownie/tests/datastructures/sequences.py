@@ -522,6 +522,14 @@ class TestCombinedList(TestBase, CombinedSequenceTestMixin):
 
 class TestNamedTuple(TestBase):
     @test
+    def docstring(self):
+        nt = namedtuple('foo', 'foo bar')
+        Assert(nt.__doc__) == 'foo(foo, bar)'
+
+        nt = namedtuple('foo', 'foo bar', doc='hello user')
+        Assert(nt.__doc__) == 'hello user'
+
+    @test
     def string_field_names(self):
         nt = namedtuple('foo', 'foo bar')
         Assert(nt._fields) == ('foo', 'bar')
