@@ -243,7 +243,8 @@ class TerminalWriter(object):
 
     @contextmanager
     def options(self, text_colour=None, background_colour=None, bold=None,
-                faint=None, standout=None, blink=None, indentation=False):
+                faint=None, standout=None, underline=None, blink=None,
+                indentation=False, escape=None):
         """
         A contextmanager which allows you to set certain options for the
         following writes.
@@ -263,11 +264,17 @@ class TerminalWriter(object):
         :param standout:
             If present the text stands out.
 
+        :param underline:
+            If present the text is underlined.
+
         :param blink:
             If present the text blinks.
 
         :param indentation:
             Adds a level of indentation if ``True``.
+
+        :param escape:
+            Overrides the escaping behaviour for this block.
 
         .. note::
            The underlying terminal may support only certain options, especially
@@ -291,16 +298,25 @@ class TerminalWriter(object):
            \x1b[36mturquoise\x1b[0m
            \x1b[37mlightgray\x1b[0m
         """
-        attributes = bold, faint, standout, blink
+        attributes = [
+            name for name, using in [
+                ('bold', bold), ('faint', faint), ('standout', standout),
+                ('underline', underline), ('blink', blink)
+            ]
+            if using
+        ]
         if text_colour:
             self.stream.write(TEXT_COLOURS[text_colour])
         if background_colour:
             self.stream.write(BACKGROUND_COLOURS[background_colour])
-        for attribute in []:
+        for attribute in attributes:
             if attribute:
                 self.stream.write(ATTRIBUTES[attribute])
         if indentation:
             self.indent()
+        if escape is not None:
+            previous_setting = self.autoescape
+            self.autoescape = escape
         try:
             yield self
         finally:
@@ -312,6 +328,8 @@ class TerminalWriter(object):
                 self.stream.write(ATTRIBUTES['reset'])
             if indentation:
                 self.dedent()
+            if escape is not None:
+                self.autoescape = previous_setting
 
     @contextmanager
     def line(self):
@@ -326,19 +344,6 @@ class TerminalWriter(object):
             yield
         finally:
             self.writeline('')
-
-    @contextmanager
-    def escaping(self, shall_escape):
-        """
-        A contextmanager which lets you change the escaping behaviour for the
-        block.
-        """
-        previous_setting = self.autoescape
-        self.autoescape = shall_escape
-        try:
-            yield self
-        finally:
-            self.autoescape = previous_setting
 
     def should_escape(self, escape):
         """
@@ -494,6 +499,8 @@ def main():
             writer.write(name, background_colour=name)
 
     for name in ATTRIBUTES:
+        if name == 'reset':
+            continue
         writer.writeline(name, **{name: True})
     with writer.line():
         with writer.options(underline=True):

@@ -162,6 +162,21 @@ class TestTerminalWriter(TestBase):
         Assert(self.stream.getvalue()) == '\tfoo\nbar\n'
 
     @test
+    def options_escaping(self):
+        with self.writer.options(escape=False):
+            self.writer.writeline(u'\x1b[31mfoo')
+            with self.writer.options(escape=True):
+                self.writer.writeline(u'\x1b[31mbar')
+            self.writer.writeline(u'\x1b[31mbaz')
+        self.writer.writeline(u'\x1b[31mspam')
+        Assert(self.stream.getvalue()) == '\n'.join([
+            '\x1b[31mfoo',
+            '\\x1b[31mbar',
+            '\x1b[31mbaz',
+            '\\x1b[31mspam\n'
+        ])
+
+    @test
     def line(self):
         with self.writer.line():
             self.writer.write(u'foo')
@@ -176,21 +191,6 @@ class TestTerminalWriter(TestBase):
         except Exception:
             self.writer.writeline(u'bar')
         Assert(self.stream.getvalue()) == 'foo\nbar\n'
-
-    @test
-    def escaping(self):
-        with self.writer.escaping(False):
-            self.writer.writeline(u'\x1b[31mfoo')
-            with self.writer.escaping(True):
-                self.writer.writeline(u'\x1b[31mbar')
-            self.writer.writeline(u'\x1b[31mbaz')
-        self.writer.writeline(u'\x1b[31mspam')
-        Assert(self.stream.getvalue()) == '\n'.join([
-            '\x1b[31mfoo',
-            '\\x1b[31mbar',
-            '\x1b[31mbaz',
-            '\\x1b[31mspam\n'
-        ])
 
     @test
     def should_escape(self):
