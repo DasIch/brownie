@@ -401,7 +401,7 @@ class TerminalWriter(object):
                 flush=flush
             )
 
-    def writelines(self, lines, escape=None, **options):
+    def writelines(self, lines, escape=None, flush=True, **options):
         """
         Writes each line in the given iterable to the :attr:`stream` respecting
         indentation.
@@ -411,10 +411,15 @@ class TerminalWriter(object):
 
         :param options:
             Options for this operation, see :meth:`options`.
+
+        :param flush:
+            If ``True`` flushes the stream.
         """
         with self.options(**options):
             for line in lines:
-                self.writeline(line, escape=escape)
+                self.writeline(line, escape=escape, flush=False)
+            if flush:
+                self.stream.flush()
 
     def hr(self, character=u'-'):
         """

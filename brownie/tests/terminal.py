@@ -25,7 +25,7 @@ class FlushStream(object):
 
     def write(self, string):
         if self.contents and isinstance(self.contents[-1], basestring):
-            self.contents[-1] += self.string
+            self.contents[-1] += string
         else:
             self.contents.append(string)
 
@@ -254,6 +254,17 @@ class TestTerminalWriter(TestBase):
             '\\x1b[31mbar',
             '\\x1b[31mbaz\n'
         ])
+
+    @test
+    def writelines_flush(self):
+        self.stream = FlushStream()
+        self.writer = TerminalWriter(self.stream)
+        lines = 'foo\nbar\n'
+        self.writer.writelines(['foo', 'bar'])
+        self.writer.writelines(['foo', 'bar'], flush=True)
+        Assert(self.stream.contents) == [lines, True, lines, True]
+        self.writer.writelines(['foo', 'bar'], flush=False)
+        Assert(self.stream.contents) == [lines, True, lines, True, lines]
 
     @test
     def hr(self):
