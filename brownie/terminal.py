@@ -49,7 +49,7 @@ _colour_names = [
     'green',
     'yellow',
     'blue',
-    'fuchsia',
+    'purple',
     'teal',
     'white'
 ]
