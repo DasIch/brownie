@@ -58,7 +58,16 @@ for i, name in enumerate(_colour_names):
     BACKGROUND_COLOURS[name] = _ansi_sequence % (i + 40)
 
 
-Dimensions = namedtuple('Dimensions', ['height', 'width'])
+Dimensions = namedtuple('Dimensions', ['height', 'width'], doc="""
+    A namedtuple representing the dimensions of a terminal.
+
+    :param height:
+        The height of the terminal.
+
+    :param width:
+        The width of the terminal.
+""")
+
 
 
 class TerminalWriter(object):
@@ -171,7 +180,7 @@ class TerminalWriter(object):
 
     def get_dimensions(self):
         """
-        Returns a tuple containing height and width of the terminal.
+        Returns a :class:`Dimensions` object.
 
         May raise :exc:`NotImplementedError` depending on the stream or
         platform.

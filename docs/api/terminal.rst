@@ -10,3 +10,5 @@ These are helpers for application output on a terminal.
 
 .. autoclass:: TerminalWriter
    :members:
+
+.. autoclass:: Dimensions
