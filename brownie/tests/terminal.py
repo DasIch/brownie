@@ -34,9 +34,16 @@ class FlushStream(object):
 
 
 class TestTerminalWriter(TestBase):
+    def set_writer(self, writer=TerminalWriter, stream=None):
+        if stream is None:
+            self.stream = codecs.getwriter('utf-8')(StringIO())
+            self.writer = TerminalWriter(self.stream)
+        else:
+            self.stream = stream
+            self.writer = TerminalWriter.from_bytestream(stream)
+
     def __context__(self):
-        self.stream = codecs.getwriter('utf-8')(StringIO())
-        self.writer = TerminalWriter(self.stream)
+        self.set_writer()
         yield
         del self.stream, self.writer
 
@@ -96,8 +103,7 @@ class TestTerminalWriter(TestBase):
         writer = TerminalWriter.from_bytestream(stream, ignore_options=True)
         Assert(writer.ignore_options) == True
 
-        stream = StringIO()
-        writer = TerminalWriter.from_bytestream(stream)
+        self.set_writer()
         Assert(writer.ignore_options) == True
         writer = TerminalWriter.from_bytestream(stream, ignore_options=False)
         Assert(writer.ignore_options) == False
@@ -146,8 +152,7 @@ class TestTerminalWriter(TestBase):
         self.writer.writeline(u'baz')
         Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
 
-        self.stream = StringIO()
-        self.writer = TerminalWriter.from_bytestream(self.stream)
+        self.set_writer()
         try:
             with self.writer.indentation():
                 self.writer.writeline(u'foo')
@@ -163,8 +168,7 @@ class TestTerminalWriter(TestBase):
             Assert(self.stream.getvalue()) == 'foo'
         Assert(self.stream.getvalue()) == 'foo\n'
 
-        self.stream = StringIO()
-        self.writer = TerminalWriter.from_bytestream(self.stream)
+        self.set_writer()
         try:
             with self.writer.line():
                 self.writer.write(u'foo')
@@ -211,8 +215,7 @@ class TestTerminalWriter(TestBase):
 
     @test
     def write_flushed(self):
-        self.stream = FlushStream()
-        self.writer = TerminalWriter(self.stream)
+        self.set_writer(stream=FlushStream())
         self.writer.write('foo')
         self.writer.write('foo', flush=True)
         Assert(self.stream.contents) == ['foo', True, 'foo', True]
@@ -231,8 +234,7 @@ class TestTerminalWriter(TestBase):
 
     @test
     def writeline_flushed(self):
-        self.stream = FlushStream()
-        self.writer = TerminalWriter(self.stream)
+        self.set_writer(stream=FlushStream())
         self.writer.writeline('foo')
         self.writer.writeline('foo', flush=True)
         Assert(self.stream.contents) == ['foo\n', True, 'foo\n', True]
@@ -257,8 +259,7 @@ class TestTerminalWriter(TestBase):
 
     @test
     def writelines_flush(self):
-        self.stream = FlushStream()
-        self.writer = TerminalWriter(self.stream)
+        self.set_writer(stream=FlushStream())
         lines = 'foo\nbar\n'
         self.writer.writelines(['foo', 'bar'])
         self.writer.writelines(['foo', 'bar'], flush=True)
@@ -273,8 +274,7 @@ class TestTerminalWriter(TestBase):
         Assert(len(content)) == self.writer.get_width()
         Assert(content[0]) == '-'
         assert all(content[0] == c for c in content)
-        self.stream = StringIO()
-        self.writer = TerminalWriter.from_bytestream(self.stream)
+        self.set_writer()
         self.writer.hr(u'#')
         content = self.stream.getvalue().strip()
         Assert(content[0]) == '#'
@@ -306,8 +306,7 @@ class TestTerminalWriter(TestBase):
         with Assert.raises(ValueError):
             self.writer.table([['foo', 'bar']], ['spam'])
 
-        self.stream = FlushStream()
-        self.writer = TerminalWriter(self.stream)
+        self.set_writer(stream=FlushStream())
         self.writer.table(content)
         Assert(len(self.stream.contents)) == 2
         Assert.isinstance(self.stream.contents[0], basestring)
