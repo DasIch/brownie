@@ -588,7 +588,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
     with `_n` where `n` is an integer increasing with every rename starting by
     1.
 
-    :func`namedtuple` creates the code for the subclass and executes it
+    :func:`namedtuple` creates the code for the subclass and executes it
     internally you can view that code by passing ``verbose==True``, which will
     print the code.
 
