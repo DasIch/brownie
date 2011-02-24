@@ -145,16 +145,16 @@ class TestTerminalWriter(TestBase):
         Assert(self.stream.getvalue()) == u'foobar\n'
 
     @test
-    def indentation(self):
+    def options_indentation(self):
         self.writer.writeline(u'foo')
-        with self.writer.indentation():
+        with self.writer.options(indentation=True):
             self.writer.writeline(u'bar')
         self.writer.writeline(u'baz')
         Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
 
         self.set_writer()
         try:
-            with self.writer.indentation():
+            with self.writer.options(indentation=True):
                 self.writer.writeline(u'foo')
                 raise Exception() # arbitary exception
         except Exception:

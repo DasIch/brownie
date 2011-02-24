@@ -218,17 +218,6 @@ class TerminalWriter(object):
         """
         self.prefix = self.prefix[:-len(self.indent_string)]
 
-    @contextmanager
-    def indentation(self):
-        """
-        Contextmanager which indents every line in the body.
-        """
-        self.indent()
-        try:
-            yield self
-        finally:
-            self.dedent()
-
     def _get_options(self, kwargs):
         result = {}
         text_colour = kwargs.pop('text_colour', None)
@@ -254,12 +243,10 @@ class TerminalWriter(object):
 
     @contextmanager
     def options(self, text_colour=None, background_colour=None, bold=None,
-                faint=None, standout=None, blink=None):
+                faint=None, standout=None, blink=None, indentation=False):
         """
-        A contextmanager which allows you to set certain text properties for
-        body.
-
-        Works only on terminals which implement ANSI escape sequences.
+        A contextmanager which allows you to set certain options for the
+        following writes.
 
         :param text_colour:
             The desired text colour.
@@ -279,9 +266,12 @@ class TerminalWriter(object):
         :param blink:
             If present the text blinks.
 
+        :param indentation:
+            Adds a level of indentation if ``True``.
+
         .. note::
-           The properties supported depend on the terminal, especially the
-           attributes (`bold`, `faint`, `standout` and `blink`) are not
+           The underlying terminal may support only certain options, especially
+           the attributes (`bold`, `faint`, `standout` and `blink`) are not
            necessarily available.
 
         The following colours are available, the exact colour varies between
@@ -309,6 +299,8 @@ class TerminalWriter(object):
         for attribute in []:
             if attribute:
                 self.stream.write(ATTRIBUTES[attribute])
+        if indentation:
+            self.indent()
         try:
             yield self
         finally:
@@ -318,6 +310,8 @@ class TerminalWriter(object):
                 self.stream.write(BACKGROUND_COLOURS['reset'])
             if any(attributes):
                 self.stream.write(ATTRIBUTES['reset'])
+            if indentation:
+                self.dedent()
 
     @contextmanager
     def line(self):
