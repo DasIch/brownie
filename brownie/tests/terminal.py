@@ -190,6 +190,14 @@ class TestTerminalWriter(TestBase):
             self.writer.writeline(u'bar')
         Assert(self.stream.getvalue()) == 'foo\nbar\n'
 
+        self.set_writer()
+        self.writer.prefix = 'prefix'
+        self.writer.indent()
+        with self.writer.line():
+            self.writer.write('foo')
+        Assert(self.stream.getvalue()) == 'prefix\tfoo\n'
+
+
     @test
     def should_escape(self):
         Assert(self.writer.should_escape(None)) == True

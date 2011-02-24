@@ -310,16 +310,20 @@ class TerminalWriter(object):
     @contextmanager
     def line(self):
         """
-        A contextmanager which writes a newline to the :attr:`stream` after
-        the body is executed.
+        A contextmanager which can be used instead of :meth:`writeline`.
 
         This is useful if you want to write a line with multiple different
         options.
         """
+        self.write(
+            self.prefix + (self.indent_string * self.indentation_level),
+            escape=False,
+            flush=False
+        )
         try:
             yield
         finally:
-            self.writeline('')
+            self.write('\n', escape=False)
 
     def should_escape(self, escape):
         """
