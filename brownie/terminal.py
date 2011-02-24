@@ -86,6 +86,9 @@ class TerminalWriter(object):
     `stream` the stream is flushed, certain methods allow to override this
     behaviour.
     """
+    #: Specifies the default terminal width.
+    default_width = 80
+
     @classmethod
     def from_bytestream(cls, stream, encoding=None, errors='strict', **kwargs):
         """
@@ -186,7 +189,7 @@ class TerminalWriter(object):
             'not implemented for the given stream or platform'
         )
 
-    def get_width(self, default=80):
+    def get_width(self, default=None):
         """
         Returns the width of the terminal.
 
@@ -198,7 +201,7 @@ class TerminalWriter(object):
             _, width = self.get_dimensions()
         except NotImplementedError:
             try:
-                width = int(os.environ.get('COLUMNS', default))
+                width = int(os.environ.get('COLUMNS', self.default_width))
             except ValueError:
                 width = default
         return width
