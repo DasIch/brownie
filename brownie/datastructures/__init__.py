@@ -36,6 +36,13 @@ class StackedObject(object):
     def __init__(self, mappings):
         self.mappings = list(mappings)
 
+    @property
+    def top(self):
+        """
+        The top-most object.
+        """
+        return self.mappings[-1]
+
     def __getattr__(self, name):
         for mapping in reversed(self.mappings):
             try:
