@@ -306,6 +306,13 @@ class TestTerminalWriter(TestBase):
         with Assert.raises(ValueError):
             self.writer.table([['foo', 'bar']], ['spam'])
 
+        self.stream = FlushStream()
+        self.writer = TerminalWriter(self.stream)
+        self.writer.table(content)
+        Assert(len(self.stream.contents)) == 2
+        Assert.isinstance(self.stream.contents[0], basestring)
+        Assert(self.stream.contents[1]) == True
+
     @test
     def repr(self):
         Assert(repr(self.writer)) == ('TerminalWriter('

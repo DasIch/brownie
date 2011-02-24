@@ -480,13 +480,14 @@ class TerminalWriter(object):
         result = map(make_line, content)
         if head:
             line = make_line(head)
-            self.writeline(line)
+            self.writeline(line, False)
             self.writeline(
                 re.sub(r'[^\|]', '-', line)
-                .replace('|', '+')
-                .ljust(max(map(len, result)), '-')
+                    .replace('|', '+')
+                    .ljust(max(map(len, result)), '-'),
+                False
             )
-        self.writelines(result)
+        self.writelines(result, flush=False)
         self.writeline('')
 
     def __repr__(self):
