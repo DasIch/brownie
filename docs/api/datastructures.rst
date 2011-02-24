@@ -9,6 +9,9 @@ This module provides various datastructures.
 
 .. autofunction:: iter_multi_items
 
+.. autoclass:: StackedObject
+   :members:
+
 Mappings
 --------
 

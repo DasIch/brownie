@@ -11,6 +11,7 @@ features.
 - Added :class:`brownie.datastructures.PeekableIterator`.
 - Added :mod:`brownie.terminal`.
 - Added :func:`brownie.datastructures.sequences.LazyList.index`.
+- Added :class:`brownie.datastructures.StackedObject`.
 
 0.5.1
 -----
