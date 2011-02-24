@@ -427,18 +427,18 @@ class TerminalWriter(object):
             >>> from brownie.terminal import TerminalWriter
             >>> writer = TerminalWriter.from_bytestream(sys.stdout)
             >>> writer.table([
-            ... [u'foo', u'bar'],
-            ... [u'spam', u'eggs']
+            ...     [u'foo', u'bar'],
+            ...     [u'spam', u'eggs']
             ... ])
             foo  | bar
             spam | eggs
             <BLANKLINE>
             >>> writer.table(
-            ... [
-            ...     [u'foo', u'bar'],
-            ...     [u'spam', u'eggs']
-            ... ],
-            ... [u'hello', u'world']
+            ...     [
+            ...         [u'foo', u'bar'],
+            ...         [u'spam', u'eggs']
+            ...     ],
+            ...     [u'hello', u'world']
             ... )
             hello | world
             ------+------
