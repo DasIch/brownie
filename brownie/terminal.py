@@ -55,7 +55,7 @@ _colour_names = [
 ]
 for i, name in enumerate(_colour_names):
     TEXT_COLOURS[name] = _ansi_sequence % str(i + 30)
-    BACKGROUND_COLOURS[name] = _ansi_sequence % ('%i' % (i + 40))
+    BACKGROUND_COLOURS[name] = _ansi_sequence % (i + 40)
 
 
 Dimensions = namedtuple('Dimensions', ['height', 'width'])
