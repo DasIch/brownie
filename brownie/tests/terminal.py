@@ -230,6 +230,16 @@ class TestTerminalWriter(TestBase):
         Assert(self.stream.getvalue()) == '\\x1b[31mfoo\n'
 
     @test
+    def writeline_flushed(self):
+        self.stream = FlushStream()
+        self.writer = TerminalWriter(self.stream)
+        self.writer.writeline('foo')
+        self.writer.writeline('foo', flush=True)
+        Assert(self.stream.contents) == ['foo\n', True, 'foo\n', True]
+        self.writer.writeline('foo', flush=False)
+        Assert(self.stream.contents) == ['foo\n', True, 'foo\n', True, 'foo\n']
+
+    @test
     def writelines(self):
         self.writer.writelines(u'foo bar baz'.split())
         Assert(self.stream.getvalue()) == u'foo\nbar\nbaz\n'

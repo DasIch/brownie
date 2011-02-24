@@ -379,7 +379,7 @@ class TerminalWriter(object):
             if flush:
                 self.stream.flush()
 
-    def writeline(self, line, escape=None, **options):
+    def writeline(self, line, escape=None, flush=True, **options):
         """
         Writes the given `line` to the :attr:`stream` respecting indentation.
 
@@ -388,13 +388,17 @@ class TerminalWriter(object):
 
         :param options:
             Options for this operation, see :meth:`options`.
+
+        :param flush:
+            If ``True`` flushes the stream.
         """
         with self.options(**options):
             self.write(
                 self.prefix + (
                     self.escape(line) if self.should_escape(escape) else line
                 ) + u'\n',
-                escape=False
+                escape=False,
+                flush=flush
             )
 
     def writelines(self, lines, escape=None, **options):
