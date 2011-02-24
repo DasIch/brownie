@@ -280,8 +280,8 @@ class TerminalWriter(object):
         .. ansi-block::
            :string_escape:
 
-           Dark       Light
-           ====       =====
+           Dark
+           ====
            \x1b[30mblack\x1b[0m
            \x1b[31mdarkred\x1b[0m
            \x1b[32mdarkgreen\x1b[0m
