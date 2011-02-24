@@ -493,5 +493,6 @@ def main():
                 writer.write('background')
             writer.write('underline')
 
+
 if __name__ == '__main__':
     main()
