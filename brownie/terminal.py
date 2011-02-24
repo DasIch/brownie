@@ -27,7 +27,7 @@ except ImportError:
 from itertools import izip
 from contextlib import contextmanager
 
-from brownie.datastructures import namedtuple, StackedObject
+from brownie.datastructures import namedtuple
 
 
 _ansi_sequence = '\033[%sm'
@@ -140,8 +140,6 @@ class TerminalWriter(object):
         else:
             self.ignore_options = ignore_options
 
-        self.optionstack = StackedObject([])
-
         if is_a_tty and termios and hasattr(stream, 'fileno'):
             self.control_characters = [
                 c for c in termios.tcgetattr(stream.fileno())[-1]
@@ -217,29 +215,6 @@ class TerminalWriter(object):
         Dedent the following lines.
         """
         self.prefix = self.prefix[:-len(self.indent_string)]
-
-    def _get_options(self, kwargs):
-        result = {}
-        text_colour = kwargs.pop('text_colour', None)
-        background_colour = kwargs.pop('background_colour', None)
-        try:
-            if text_colour:
-                result['text_colour'] = TEXT_COLOURS[text_colour]
-            if background_colour:
-                result['background_colour'] = BACKGROUND_COLOURS[background_colour]
-        except KeyError, exc:
-            raise ValueError(*exc.args)
-        if kwargs:
-            used = []
-            attributes = []
-            for attr in kwargs:
-                if attr in ATTRIBUTES:
-                    attributes.append(ATTRIBUTES[attr])
-                    used.append(attr)
-            for attribute in used:
-                kwargs.pop(attribute)
-            result['attributes'] = attributes
-        return result
 
     @contextmanager
     def options(self, text_colour=None, background_colour=None, bold=None,
