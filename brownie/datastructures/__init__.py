@@ -41,7 +41,7 @@ class StackedObject(object):
         """
         The top-most object.
         """
-        return self.mappings[-1]
+        return self.mappings[-1] if self.mappings else {}
 
     def __getattr__(self, name):
         for mapping in reversed(self.mappings):

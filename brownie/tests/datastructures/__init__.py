@@ -30,6 +30,15 @@ class TestMissing(TestBase):
 
 class TestStackedObject(TestBase):
     @test
+    def top(self):
+        s = StackedObject([])
+        Assert(s.top) == {}
+        s.push({'foo': 'bar'})
+        Assert(s.top) == {'foo': 'bar'}
+        s.push({'foo': 'baz'})
+        Assert(s.top) == {'foo': 'baz'}
+
+    @test
     def stacking(self):
         s = StackedObject([])
         with Assert.raises(AttributeError):
