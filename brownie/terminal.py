@@ -81,6 +81,10 @@ class TerminalWriter(object):
     :param ignore_options:
         Defines if options should be ignored or not, per default options are
         ignored if the `stream` is not a tty.
+
+    After each call resulting in visible characters to be written to the
+    `stream` the stream is flushed, certain methods allow to override this
+    behaviour.
     """
     @classmethod
     def from_bytestream(cls, stream, encoding=None, errors='strict', **kwargs):
