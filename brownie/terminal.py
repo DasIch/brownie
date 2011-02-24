@@ -124,7 +124,7 @@ class TerminalWriter(object):
                  ignore_options=None):
         #: The stream to which the output is written.
         self.stream = stream
-        #: The current prefix, includes indentation.
+        #: The prefix used by :meth:`writeline`.
         self.prefix = prefix
         #: The string used for indentation.
         self.indent_string = indent
@@ -150,6 +150,7 @@ class TerminalWriter(object):
             self.control_characters = map(chr, range(32) + [127])
 
         self.ansi_re = re.compile('[%s]' % ''.join(self.control_characters))
+        self.indentation_level = 0
 
     def escape(self, string):
         """
@@ -208,13 +209,13 @@ class TerminalWriter(object):
         """
         Indent the following lines with the given :attr:`indent`.
         """
-        self.prefix += self.indent_string
+        self.indentation_level += 1
 
     def dedent(self):
         """
         Dedent the following lines.
         """
-        self.prefix = self.prefix[:-len(self.indent_string)]
+        self.indentation_level -= 1
 
     @contextmanager
     def options(self, text_colour=None, background_colour=None, bold=None,
@@ -361,7 +362,7 @@ class TerminalWriter(object):
         """
         with self.options(**options):
             self.write(
-                self.prefix + (
+                self.prefix + self.indent_string * self.indentation_level + (
                     self.escape(line) if self.should_escape(escape) else line
                 ) + u'\n',
                 escape=False,

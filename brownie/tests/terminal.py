@@ -131,14 +131,12 @@ class TestTerminalWriter(TestBase):
     @test
     def indent(self):
         self.writer.indent()
-        Assert(self.writer.prefix) == self.writer.indent_string
         self.writer.writeline(u'foobar')
         Assert(self.stream.getvalue()) == u'\tfoobar\n'
 
     @test
     def dedent(self):
         self.writer.indent()
-        Assert(self.writer.prefix) == self.writer.indent_string
         self.writer.dedent()
         Assert(self.writer.prefix) == u''
         self.writer.writeline(u'foobar')
