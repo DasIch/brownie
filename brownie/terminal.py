@@ -359,7 +359,7 @@ class TerminalWriter(object):
         """
         return self.autoescape if escape is None else escape
 
-    def write(self, string, escape=None, **options):
+    def write(self, string, escape=None, flush=True, **options):
         """
         Writes the `given` string to the :attr:`stream`.
 
@@ -368,11 +368,16 @@ class TerminalWriter(object):
 
         :param options:
             Options for this operation, see :meth:`options`.
+
+        :param flush:
+            If ``True`` flushes the stream.
         """
         with self.options(**options):
             self.stream.write(
                 self.escape(string) if self.should_escape(escape) else string
             )
+            if flush:
+                self.stream.flush()
 
     def writeline(self, line, escape=None, **options):
         """

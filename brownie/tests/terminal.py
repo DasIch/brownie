@@ -19,6 +19,20 @@ from brownie.terminal import TerminalWriter
 from attest import Tests, TestBase, test, Assert
 
 
+class FlushStream(object):
+    def __init__(self):
+        self.contents = []
+
+    def write(self, string):
+        if self.contents and isinstance(self.contents[-1], basestring):
+            self.contents[-1] += self.string
+        else:
+            self.contents.append(string)
+
+    def flush(self):
+        self.contents.append(True)
+
+
 class TestTerminalWriter(TestBase):
     def __context__(self):
         self.stream = codecs.getwriter('utf-8')(StringIO())
@@ -194,6 +208,16 @@ class TestTerminalWriter(TestBase):
     def write_escaped(self):
         self.writer.write(u'\x1b[31mfoo')
         Assert(self.stream.getvalue()) == '\\x1b[31mfoo'
+
+    @test
+    def write_flushed(self):
+        self.stream = FlushStream()
+        self.writer = TerminalWriter(self.stream)
+        self.writer.write('foo')
+        self.writer.write('foo', flush=True)
+        Assert(self.stream.contents) == ['foo', True, 'foo', True]
+        self.writer.write('foo', flush=False)
+        Assert(self.stream.contents) == ['foo', True, 'foo', True, 'foo']
 
     @test
     def writeline(self):
