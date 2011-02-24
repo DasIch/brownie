@@ -262,16 +262,16 @@ class TerminalWriter(object):
         .. ansi-block::
            :string_escape:
 
-           Dark
-           ====
+           Colors
+           ======
            \x1b[30mblack\x1b[0m
-           \x1b[31mdarkred\x1b[0m
-           \x1b[32mdarkgreen\x1b[0m
-           \x1b[33mdarkyellow\x1b[0m
-           \x1b[34mdarkblue\x1b[0m
+           \x1b[31mred\x1b[0m
+           \x1b[32mgreen\x1b[0m
+           \x1b[33myellow\x1b[0m
+           \x1b[34mblue\x1b[0m
            \x1b[35mpurple\x1b[0m
-           \x1b[36mturquoise\x1b[0m
-           \x1b[37mlightgray\x1b[0m
+           \x1b[36mteal\x1b[0m
+           \x1b[37mwhite\x1b[0m
         """
         attributes = [
             name for name, using in [
