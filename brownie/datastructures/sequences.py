@@ -204,6 +204,15 @@ class LazyList(object):
         """
         return self._collected_data.count(object)
 
+    def index(self, other):
+        """
+        Returns first index of the `other` in list
+        """
+        for i, obj in enumerate(self):
+            if obj == other:
+                return i
+        raise ValueError('%s not in LazyList' % other)
+
     def __getitem__(self, i):
         """
         Returns the object or objects at the given index.
@@ -241,10 +250,12 @@ class LazyList(object):
         return self.known_length
 
     def __contains__(self, other):
-        for obj in self:
-            if obj == other:
-                return True
-        return False
+        try:
+            self.index(other)
+        except ValueError:
+            return False
+
+        return True
 
     @exhausting
     def __eq__(self, other):

@@ -138,6 +138,13 @@ class TestLazyList(TestBase):
             Assert(l.count(test)) == result
 
     @test
+    def index(self):
+        l = LazyList(self._genrange(10))
+        Assert(l.index(5)) == 5
+        with Assert.raises(ValueError):
+            l.index('foo')
+
+    @test
     def getitem(self):
         data = range(10)
         l = LazyList(data)
