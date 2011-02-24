@@ -338,7 +338,7 @@ class TerminalWriter(object):
         try:
             yield
         finally:
-            self.stream.write(u'\n')
+            self.writeline('')
 
     @contextmanager
     def escaping(self, shall_escape):
