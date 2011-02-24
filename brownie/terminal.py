@@ -253,7 +253,8 @@ class TerminalWriter(object):
         return result
 
     @contextmanager
-    def options(self, **kwargs):
+    def options(self, text_colour=None, background_colour=None, bold=None,
+                faint=None, standout=None, blink=None):
         """
         A contextmanager which allows you to set certain text properties for
         body.
@@ -300,36 +301,23 @@ class TerminalWriter(object):
            \x1b[36mturquoise\x1b[0m
            \x1b[37mlightgray\x1b[0m
         """
-        options = self._get_options(kwargs)
-        if kwargs:
-            raise TypeError('got unexpected argument')
-        self.optionstack.push(options)
-        self.apply_options(**options)
+        attributes = bold, faint, standout, blink
+        if text_colour:
+            self.stream.write(TEXT_COLOURS[text_colour])
+        if background_colour:
+            self.stream.write(BACKGROUND_COLOURS[background_colour])
+        for attribute in []:
+            if attribute:
+                self.stream.write(ATTRIBUTES[attribute])
         try:
             yield self
         finally:
-            self.reset_options(**options)
-            self.optionstack.pop()
-
-    def apply_options(self, text_colour=None, background_colour=None,
-                      attributes=()):
-        if self.ignore_options:
-            return
-        if text_colour:
-            self.stream.write(text_colour)
-        if background_colour:
-            self.stream.write(background_colour)
-        for attribute in attributes:
-            self.stream.write(attribute)
-
-    def reset_options(self, text_colour=None, background_colour=None,
-                      attributes=None):
-        if text_colour:
-            self.stream.write(TEXT_COLOURS['reset'])
-        if background_colour:
-            self.stream.write(BACKGROUND_COLOURS['reset'])
-        if attributes:
-            self.stream.write(ATTRIBUTES['reset'])
+            if text_colour:
+                self.stream.write(TEXT_COLOURS['reset'])
+            if background_colour:
+                self.stream.write(BACKGROUND_COLOURS['reset'])
+            if any(attributes):
+                self.stream.write(ATTRIBUTES['reset'])
 
     @contextmanager
     def line(self):
