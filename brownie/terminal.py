@@ -310,8 +310,6 @@ class TerminalWriter(object):
         finally:
             self.reset_options(**options)
             self.optionstack.pop()
-            if self.optionstack:
-                self.apply_options(**self.optionstack.top)
 
     def apply_options(self, text_colour=None, background_colour=None,
                       attributes=()):
