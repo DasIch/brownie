@@ -250,12 +250,10 @@ class LazyList(object):
         return self.known_length
 
     def __contains__(self, other):
-        try:
-            self.index(other)
-        except ValueError:
-            return False
-
-        return True
+        for item in self:
+            if item == other:
+                return True
+        return False
 
     @exhausting
     def __eq__(self, other):

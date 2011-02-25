@@ -227,6 +227,13 @@ class TestLazyList(TestBase):
         Assert(5).in_(l)
         Assert('foo').not_in(l)
 
+        class Foo(object):
+            def __eq__(self, other):
+                raise ValueError()
+        l = LazyList([Foo()])
+        with Assert.raises(ValueError):
+            Assert(1).not_in(l)
+
     @test
     def equals(self):
         Assert(LazyList(range(10))) == range(10)
