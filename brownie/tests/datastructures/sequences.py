@@ -114,6 +114,9 @@ class TestLazyList(TestBase):
         Assert(l.exhausted) == False
         Assert(l) == data
 
+        with Assert.raises(ValueError):
+            l.remove('foo')
+
     @test
     def reverse(self):
         data = range(10)
