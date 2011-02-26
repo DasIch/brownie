@@ -285,7 +285,7 @@ class TerminalWriter(object):
             ]
             if using
         ]
-        if self.ignore_options:
+        if not self.ignore_options:
             if text_colour:
                 self.stream.write(TEXT_COLOURS[text_colour])
             if background_colour:
@@ -293,25 +293,25 @@ class TerminalWriter(object):
             for attribute in attributes:
                 if attribute:
                     self.stream.write(ATTRIBUTES[attribute])
-            if indentation:
-                self.indent()
-            if escape is not None:
-                previous_setting = self.autoescape
-                self.autoescape = escape
+        if indentation:
+            self.indent()
+        if escape is not None:
+            previous_setting = self.autoescape
+            self.autoescape = escape
         try:
             yield self
         finally:
-            if self.ignore_options:
+            if not self.ignore_options:
                 if text_colour:
                     self.stream.write(TEXT_COLOURS['reset'])
                 if background_colour:
                     self.stream.write(BACKGROUND_COLOURS['reset'])
                 if any(attributes):
                     self.stream.write(ATTRIBUTES['reset'])
-                if indentation:
-                    self.dedent()
-                if escape is not None:
-                    self.autoescape = previous_setting
+            if indentation:
+                self.dedent()
+            if escape is not None:
+                self.autoescape = previous_setting
 
     @contextmanager
     def line(self):
