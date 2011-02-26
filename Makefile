@@ -38,7 +38,7 @@ release: clean test upload-doc
 coverage:
 	@coverage run runtests.py
 	@coverage report
+	@coverage html
 
 view-coverage: coverage
-	@coverage html
 	@python -c "import webbrowser; webbrowser.open('.coverage_html/index.html')"
