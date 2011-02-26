@@ -231,12 +231,6 @@ class curried(object):
             elif arg is None:
                 break
             else:
-                if (remaining in collected_args and
-                    remaining in self.signature.positionals
-                        ):
-                    raise TypeError(
-                        "'%s' has been repeated: %r" % (remaining, arg)
-                    )
                 collected_args[remaining] = arg
                 self.changeable_args.discard(remaining)
         for key, value in kwargs.iteritems():
