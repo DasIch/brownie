@@ -52,6 +52,10 @@ class TestCurried(TestBase):
         Assert(func(c=3, b=2, a=1)) == (1, 2, 3)
         Assert(func(c=3)(a=1)(2)) == (1, 2, 3)
 
+        with Assert.raises(TypeError) as exc:
+            func(1, 2, 3, 4)
+        Assert(exc.args[0]) == 'unexpected positional argument: 4'
+
     @test
     def keyword_arguments(self):
         func = curried(lambda a=1, b=2, c=3: (a, b, c))
