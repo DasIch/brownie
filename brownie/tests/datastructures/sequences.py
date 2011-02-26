@@ -286,8 +286,8 @@ class TestLazyList(TestBase):
         Assert(a) < b
         Assert(b) > a
 
-        Assert(a.exhausted) == False
-        Assert(b.exhausted) == False
+        Assert(LazyList([1, 2])) < [1, 2, 3]
+        Assert(LazyList([1, 2, 3])) > [1, 2]
 
     @test
     def add(self):

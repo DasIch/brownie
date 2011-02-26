@@ -301,21 +301,10 @@ class LazyList(object):
 
         If this and the other list is empty this method will return ``False``.
         """
-        if not self and other:
-            return True
-        elif self and not other:
-            return False
-        elif not self and not other:
-            return False
-        missing = object()
-        for a, b in izip_longest(self, other, fillvalue=missing):
-            if a < b:
-                return True
-            elif a == b:
-                continue
-            elif a is missing and b is not missing:
-                return True
-            return False
+        if isinstance(other, (self.__class__, list)):
+            other = list(other)
+        return list(self) < other
+
 
     def __gt__(self, other):
         """
@@ -329,10 +318,9 @@ class LazyList(object):
 
         If this and the other list is empty this method will return ``False``.
         """
-
-        if not self and not other:
-            return False
-        return not self.__lt__(other)
+        if isinstance(other, (self.__class__, list)):
+            other = list(other)
+        return list(self) > other
 
     def __add__(self, other):
         if isinstance(other, (list, self.__class__)):
