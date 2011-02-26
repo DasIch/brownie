@@ -63,6 +63,9 @@ class TestCurried(TestBase):
         Assert(func(c=4)) == (1, 2, 4)
         Assert(func(4)) == (4, 2, 3)
 
+        with Assert.raises(TypeError) as exc:
+            func(d=4)
+
     @test
     def mixed_positional_keyword_arguments(self):
         func = curried(lambda a, b, c=3: (a, b, c))
