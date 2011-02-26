@@ -163,6 +163,9 @@ class TestLazyList(TestBase):
         Assert(data[3:6]) == l[3:6]
         Assert(l.exhausted) == False
 
+        l = LazyList(self._genrange(10))
+        Assert(data[:-1]) == l[:-1]
+
     @test
     def setitem(self):
         data = ['foo', 'bar', 'baz']
