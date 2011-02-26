@@ -27,6 +27,9 @@ def test_compose():
     mul_two = lambda x: x * 2
     Assert(compose(add_one, mul_two)(1)) == 3
 
+    func = lambda: None
+    Assert(compose(func)).is_(func)
+
 
 @tests.test
 def test_flip():
