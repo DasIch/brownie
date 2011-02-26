@@ -21,7 +21,7 @@ try:
     # all available on unix platforms
     import fcntl
     import termios
-except ImportError:
+except ImportError: # pragma: no cover
     fcntl = None
     termios = None
 from itertools import izip
@@ -476,7 +476,7 @@ class TerminalWriter(object):
         )
 
 
-def main():
+def main(): # pragma: no cover
     writer = TerminalWriter.from_bytestream(sys.stdout)
     for name in _colour_names:
         with writer.line():

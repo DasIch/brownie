@@ -2,3 +2,4 @@ sphinx>=1.0
 sphinxcontrib-ansi
 tox
 -e git+git://github.com/dag/attest.git#egg=attest
+coverage

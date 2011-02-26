@@ -5,3 +5,5 @@ env/
 Brownie.egg-info/
 build/
 dist/
+.coverage
+.coverage_html

@@ -7,6 +7,8 @@ help:
 	@echo "    dev-env <DIR=> - creates a development environment"
 	@echo "    clean          - deletes every generated file"
 	@echo "    release        - performs the release"
+	@echo "    coverage       - create coverage report"
+	@echo "    view-coverage  - show HTML coverage report in your web browser"
 
 test:
 	@tox
@@ -32,3 +34,11 @@ clean:
 
 release: clean test upload-doc
 	python setup.py release sdist upload
+
+coverage:
+	@coverage run runtests.py
+	@coverage report
+
+view-coverage: coverage
+	@coverage html
+	@python -c "import webbrowser; webbrowser.open('.coverage_html/index.html')"
