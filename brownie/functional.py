@@ -13,7 +13,6 @@ from inspect import getargspec
 from functools import wraps
 
 from brownie.itools import izip_longest, unique
-from brownie.pycompat import reduce
 from brownie.datastructures import namedtuple, FixedDict
 
 
