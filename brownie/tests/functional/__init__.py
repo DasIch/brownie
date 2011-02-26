@@ -65,6 +65,7 @@ class TestCurried(TestBase):
 
         with Assert.raises(TypeError) as exc:
             func(d=4)
+        Assert(exc.args[0]) == 'd is an unexpected keyword argument: 4'
 
     @test
     def mixed_positional_keyword_arguments(self):

@@ -241,7 +241,11 @@ class curried(object):
                 collected_args[key] = value
             else:
                 if self.signature.varkwargs is None:
-                    raise TypeError('unexpected keyword argument')
+                    raise TypeError(
+                        '%s is an unexpected keyword argument: %r' % (
+                            key, value
+                        )
+                    )
                 else:
                     collected_args.setdefault(
                         self.signature.varkwargs,
