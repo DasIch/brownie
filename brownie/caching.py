@@ -8,7 +8,7 @@
     :copyright: 2010-2011 by Daniel Neuhäuser
     :license: BSD, see LICENSE.rst for details
 """
-from functools import wraps, partial
+from functools import wraps
 
 from brownie.datastructures import OrderedDict, Counter, missing
 
