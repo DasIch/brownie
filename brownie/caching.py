@@ -27,7 +27,7 @@ class cached_property(object):
         self.__doc__ = doc or getter.__doc__
 
     def __get__(self, obj, type=None):
-        if type is None:
+        if obj is None:
             return self
         value = obj.__dict__[self.__name__] = self.getter(obj)
         return value

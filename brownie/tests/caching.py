@@ -28,6 +28,9 @@ def test_cached_property():
         def spam(self):
             self.counter += 1
             return self.counter
+
+    Assert(Foo.spam).is_(Foo.spam)
+
     foo = Foo()
     Assert(foo.spam) == 1
     Assert(foo.spam) == 1
