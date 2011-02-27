@@ -681,9 +681,11 @@ def namedtuple(typename, field_names, verbose=False, rename=False, doc=None):
         print code
 
     namespace = {'itemgetter': itemgetter}
+    # there should never occur an exception here but if one does I'd rather
+    # have the source to see what is going on
     try:
         exec code in namespace
-    except SyntaxError, e:
+    except SyntaxError, e: # pragma: no cover
         raise SyntaxError(e.args[0] + ':\n' + code)
     result = namespace[typename]
 
