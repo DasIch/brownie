@@ -321,12 +321,12 @@ class TestLazyList(TestBase):
     def repr(self):
         Assert(repr(LazyList([]))) == '[]'
         data = range(10)
-        l = Assert(LazyList(data))
-        repr(l) == '[...]'
+        l = LazyList(self._genrange(10))
+        Assert(repr(l)) == '[...]'
         l[1]
-        repr(l) == '[0, 1, ...]'
+        Assert(repr(l)) == '[0, 1, ...]'
         l[-1]
-        repr(l) == repr(data)
+        Assert(repr(l)) == repr(data)
 
     @test
     def picklability(self):
