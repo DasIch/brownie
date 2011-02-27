@@ -11,7 +11,7 @@ from keyword import iskeyword
 from functools import wraps
 from itertools import count
 
-from brownie.itools import chain, izip_longest
+from brownie.itools import chain
 
 
 class LazyList(object):
