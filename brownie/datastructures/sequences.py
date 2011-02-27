@@ -8,7 +8,6 @@
 """
 import textwrap
 from keyword import iskeyword
-from operator import itemgetter
 from functools import wraps
 from itertools import count
 
@@ -632,6 +631,8 @@ def namedtuple(typename, field_names, verbose=False, rename=False, doc=None):
         seen_names.add(name)
 
     code = textwrap.dedent("""
+        from operator import itemgetter
+
         class %(typename)s(tuple):
             '''%(docstring)s'''
 
@@ -680,7 +681,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False, doc=None):
     if verbose:
         print code
 
-    namespace = {'itemgetter': itemgetter}
+    namespace = {}
     # there should never occur an exception here but if one does I'd rather
     # have the source to see what is going on
     try:

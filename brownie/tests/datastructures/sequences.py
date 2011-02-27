@@ -9,14 +9,27 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
+import sys
 import pickle
 import random
+from StringIO import StringIO
 from itertools import repeat
+from contextlib import contextmanager
 
 from attest import Tests, TestBase, test, Assert
 
 from brownie.datastructures import (LazyList, CombinedSequence, CombinedList,
                                     namedtuple)
+
+
+@contextmanager
+def capture_output():
+    stdout, stderr = sys.stdout, sys.stderr
+    sys.stdout, sys.stdout = StringIO(), StringIO()
+    try:
+        yield sys.stdout, sys.stderr
+    finally:
+        sys.stdout, sys.stderr = stdout, stderr
 
 
 class TestLazyList(TestBase):
@@ -609,6 +622,17 @@ class TestNamedTuple(TestBase):
         Assert(t._replace(eggs=4)) == (1, 4)
         with Assert.raises(ValueError):
             t._replace(foo=1)
+
+    @test
+    def verbose(self):
+        with capture_output() as (stdout, stderr):
+            namedtuple('foo', 'spam eggs', verbose=True)
+        assert not stderr.getvalue()
+        namespace = {}
+        exec stdout.getvalue() in namespace
+        Assert('foo').in_(namespace)
+        Assert(namespace['foo'].__name__) == 'foo'
+        Assert(namespace['foo']._fields) == ('spam', 'eggs')
 
 
 tests = Tests([TestLazyList, TestCombinedSequence, TestCombinedList, TestNamedTuple])
