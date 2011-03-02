@@ -335,7 +335,7 @@ class TerminalWriter(object):
         """
         Writes a newline to the :attr:`stream`.
         """
-        self.write('\n', escape=False)
+        self.write('\n', escape=False, flush=False)
 
     def should_escape(self, escape):
         """
