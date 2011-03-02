@@ -197,6 +197,10 @@ class TestTerminalWriter(TestBase):
             self.writer.write('foo')
         Assert(self.stream.getvalue()) == 'prefix\tfoo\n'
 
+    @test
+    def newline(self):
+        self.writer.newline()
+        Assert(self.stream.getvalue()) == '\n'
 
     @test
     def should_escape(self):
