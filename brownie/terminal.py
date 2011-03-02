@@ -329,7 +329,7 @@ class TerminalWriter(object):
         try:
             yield
         finally:
-            self.write('\n', escape=False)
+            self.newline()
 
     def newline(self):
         """
@@ -465,12 +465,12 @@ class TerminalWriter(object):
         result = map(make_line, content)
         if head:
             line = make_line(head)
-            self.writeline(line, False)
+            self.writeline(line, escape=False)
             self.writeline(
                 re.sub(r'[^\|]', '-', line)
                     .replace('|', '+')
                     .ljust(max(map(len, result)), '-'),
-                False
+                escape=False
             )
         self.writelines(result, flush=False)
         self.write('\n', escape=False)
