@@ -295,7 +295,7 @@ class TestTerminalWriter(TestBase):
         content = [['foo', 'bar'], ['spam', 'eggs']]
         self.writer.table(content)
         self.writer.table(content, padding=2)
-        self.writer.table(content, ['hello', 'world'])
+        self.writer.table(content, ['hello', 'wo\nrld'])
         Assert(self.stream.getvalue()) == textwrap.dedent("""\
             foo  | bar
             spam | eggs
@@ -303,8 +303,8 @@ class TestTerminalWriter(TestBase):
             foo   |  bar
             spam  |  eggs
 
-            hello | world
-            ------+------
+            hello | wo\\nrld
+            ------+--------
             foo   | bar
             spam  | eggs
 

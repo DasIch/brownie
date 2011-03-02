@@ -24,7 +24,7 @@ try:
 except ImportError: # pragma: no cover
     fcntl = None
     termios = None
-from itertools import izip
+from itertools import izip, imap
 from contextlib import contextmanager
 
 from brownie.datastructures import namedtuple
@@ -460,7 +460,7 @@ class TerminalWriter(object):
         def make_line(row):
             return u'|'.join(
                 u' ' * padding + cell.ljust(cell_lengths[i]) + u' ' * padding
-                for i, cell in enumerate(row)
+                for i, cell in enumerate(imap(self.escape, row))
             ).strip()
         result = map(make_line, content)
         if head:
