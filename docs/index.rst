@@ -15,6 +15,7 @@ Documentation
    api/parallel
    api/proxies
    api/terminal
+   api/context
 
 Developer Documentation
 -----------------------

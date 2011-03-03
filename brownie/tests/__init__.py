@@ -13,6 +13,7 @@ all = Tests('brownie.tests.%s.tests' % module for module in [
     'itools',
     'caching',
     'proxies',
+    'context',
     'abstract',
     'parallel',
     'terminal',
