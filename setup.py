@@ -13,7 +13,10 @@ setup(
     description='Common utilities and datastructures for Python applications.',
     # don't ever depend on refcounting to close files anywhere else
     long_description=open('README.rst', encoding='utf-8').read(),
-    packages=['brownie', 'brownie.datastructures', 'brownie.tests'],
+    packages=[
+        'brownie', 'brownie.datastructures', 'brownie.terminal',
+        'brownie.tests'
+    ],
     zip_safe=False,
     platforms='any',
     classifiers=[
