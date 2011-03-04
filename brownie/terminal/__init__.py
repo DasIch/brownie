@@ -480,30 +480,3 @@ class TerminalWriter(object):
             self.__class__.__name__, self.stream, self.prefix,
             self.indent_string, self.autoescape
         )
-
-
-def main(): # pragma: no cover
-    writer = TerminalWriter.from_bytestream(sys.stdout)
-    for name in _colour_names:
-        with writer.line():
-            writer.write(name, text_colour=name)
-
-        with writer.line():
-            writer.write(name, background_colour=name)
-
-    for name in ATTRIBUTES:
-        if name == 'reset':
-            continue
-        writer.writeline(name, **{name: True})
-    with writer.line():
-        with writer.options(underline=True):
-            writer.write('underline')
-            with writer.options(background_colour='red'):
-                writer.write('background')
-                writer.write('text', text_colour='green')
-                writer.write('background')
-            writer.write('underline')
-
-
-if __name__ == '__main__':
-    main()
