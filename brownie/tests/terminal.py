@@ -93,7 +93,7 @@ class TestTerminalWriter(TestBase):
     def init(self):
         Assert(self.writer.stream) == self.stream
         Assert(self.writer.prefix) == u''
-        Assert(self.writer.indent_string) == u'\t'
+        Assert(self.writer.indent_string) == u'    '
         Assert(self.writer.autoescape) == True
         Assert(self.writer.ignore_options) == True
 
@@ -141,7 +141,7 @@ class TestTerminalWriter(TestBase):
     def indent(self):
         self.writer.indent()
         self.writer.writeline(u'foobar')
-        Assert(self.stream.getvalue()) == u'\tfoobar\n'
+        Assert(self.stream.getvalue()) == u'    foobar\n'
 
     @test
     def dedent(self):
@@ -157,7 +157,7 @@ class TestTerminalWriter(TestBase):
         with self.writer.options(indentation=True):
             self.writer.writeline(u'bar')
         self.writer.writeline(u'baz')
-        Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
+        Assert(self.stream.getvalue()) == u'foo\n    bar\nbaz\n'
 
         self.set_writer()
         try:
@@ -166,7 +166,7 @@ class TestTerminalWriter(TestBase):
                 raise Exception() # arbitary exception
         except Exception:
             self.writer.writeline(u'bar')
-        Assert(self.stream.getvalue()) == '\tfoo\nbar\n'
+        Assert(self.stream.getvalue()) == '    foo\nbar\n'
 
     @test
     def options_escaping(self):
@@ -204,7 +204,7 @@ class TestTerminalWriter(TestBase):
         self.writer.indent()
         with self.writer.line():
             self.writer.write('foo')
-        Assert(self.stream.getvalue()) == 'prefix\tfoo\n'
+        Assert(self.stream.getvalue()) == 'prefix    foo\n'
 
     @test
     def newline(self):

@@ -129,7 +129,7 @@ class TerminalWriter(object):
             **kwargs
         )
 
-    def __init__(self, stream, prefix=u'', indent='\t', autoescape=True,
+    def __init__(self, stream, prefix=u'', indent=' ' * 4, autoescape=True,
                  ignore_options=None):
         #: The stream to which the output is written.
         self.stream = stream
