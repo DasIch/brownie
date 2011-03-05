@@ -191,6 +191,21 @@ class TestTerminalWriter(TestBase):
         ])
 
     @test
+    def begin_line(self):
+        self.writer.begin_line()
+        Assert(self.stream.getvalue()) == ''
+
+        self.set_writer()
+        self.writer.prefix = 'foo'
+        self.writer.begin_line()
+        Assert(self.stream.getvalue()) == 'foo'
+
+        self.set_writer()
+        self.writer.indent()
+        self.writer.begin_line()
+        Assert(self.stream.getvalue()) == '    '
+
+    @test
     def line(self):
         with self.writer.line():
             self.writer.write(u'foo')

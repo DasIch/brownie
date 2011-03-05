@@ -330,6 +330,16 @@ class TerminalWriter(object):
             if escape is not None:
                 self.autoescape = previous_setting
 
+    def begin_line(self):
+        """
+        Writes the prefix and indentation to the stream.
+        """
+        self.write(
+            self.prefix + (self.indent_string * self.indentation_level),
+            escape=False,
+            flush=False
+        )
+
     @contextmanager
     def line(self):
         """
@@ -338,11 +348,7 @@ class TerminalWriter(object):
         This is useful if you want to write a line with multiple different
         options.
         """
-        self.write(
-            self.prefix + (self.indent_string * self.indentation_level),
-            escape=False,
-            flush=False
-        )
+        self.begin_line()
         try:
             yield
         finally:
@@ -394,13 +400,11 @@ class TerminalWriter(object):
             If ``True`` flushes the stream.
         """
         with self.options(**options):
-            self.write(
-                self.prefix + self.indent_string * self.indentation_level + (
-                    self.escape(line) if self.should_escape(escape) else line
-                ) + u'\n',
-                escape=False,
-                flush=flush
-            )
+            self.begin_line()
+            self.write(line, escape=self.should_escape(escape), flush=False)
+            self.newline()
+            if flush:
+                self.stream.flush()
 
     def writelines(self, lines, escape=None, flush=True, **options):
         """
