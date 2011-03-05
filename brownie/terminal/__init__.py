@@ -129,7 +129,7 @@ class TerminalWriter(object):
             **kwargs
         )
 
-    def __init__(self, stream, prefix=u'', indent='\t', autoescape=True,
+    def __init__(self, stream, prefix=u'', indent=' ' * 4, autoescape=True,
                  ignore_options=None):
         #: The stream to which the output is written.
         self.stream = stream
@@ -202,17 +202,34 @@ class TerminalWriter(object):
         Returns the width of the terminal.
 
         This falls back to the `COLUMNS` environment variable and if that fails
-        to `default`. Therefore the returned value might not not be at all
-        correct.
+        to :attr:`default_width` unless `default` is not None, in which case
+        `default` would be used.
+        
+        Therefore the returned value might not not be at all correct.
         """
+        default = self.default_width if default is None else default
         try:
             _, width = self.get_dimensions()
         except NotImplementedError:
-            try:
-                width = int(os.environ.get('COLUMNS', self.default_width))
-            except ValueError:
-                width = default
+            width = int(os.environ.get('COLUMNS', default))
         return width
+
+    def get_usable_width(self, default_width=None):
+        """
+        Returns the width of the terminal remaining once the prefix and
+        indentation has been written.
+
+        :param default_width:
+            The width which is assumed per default for the terminal, see
+            :meth:`get_width` for more information.
+
+        .. warning::
+           Tabs are considered to have a length of 1. This problem may be
+           solved in the future until then it is recommended to avoid tabs.
+        """
+        return self.get_width(default_width) - (
+            len(self.prefix) + len(self.indent_string * self.indentation_level)
+        )
 
     def indent(self):
         """
