@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
+import os
 import sys
 import codecs
 import textwrap
@@ -127,6 +128,14 @@ class TestTerminalWriter(TestBase):
             self.writer.get_width()
         writer = TerminalWriter.from_bytestream(sys.__stdout__)
         Assert(writer.get_width()) == writer.get_dimensions()[1]
+
+        writer = TerminalWriter.from_bytestream(StringIO())
+        os.environ['COLUMNS'] = '50'
+        Assert(writer.get_width()) == 50
+        del os.environ['COLUMNS']
+        Assert(writer.get_width()) == TerminalWriter.default_width
+        default_width = TerminalWriter.default_width
+        Assert(writer.get_width(default_width + 1)) == default_width + 1
 
     @test
     def indent(self):

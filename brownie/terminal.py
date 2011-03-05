@@ -202,16 +202,16 @@ class TerminalWriter(object):
         Returns the width of the terminal.
 
         This falls back to the `COLUMNS` environment variable and if that fails
-        to `default`. Therefore the returned value might not not be at all
-        correct.
+        to :attr:`default_width` unless `default` is not None, in which case
+        `default` would be used.
+        
+        Therefore the returned value might not not be at all correct.
         """
+        default = self.default_width if default is None else default
         try:
             _, width = self.get_dimensions()
         except NotImplementedError:
-            try:
-                width = int(os.environ.get('COLUMNS', self.default_width))
-            except ValueError:
-                width = default
+            width = int(os.environ.get('COLUMNS', default))
         return width
 
     def indent(self):
