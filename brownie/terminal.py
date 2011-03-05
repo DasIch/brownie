@@ -214,6 +214,23 @@ class TerminalWriter(object):
             width = int(os.environ.get('COLUMNS', default))
         return width
 
+    def get_usable_width(self, default_width=None):
+        """
+        Returns the width of the terminal remaining once the prefix and
+        indentation has been written.
+
+        :param default_width:
+            The width which is assumed per default for the terminal, see
+            :meth:`get_width` for more information.
+
+        .. warning::
+           Tabs are considered to have a length of 1. This problem may be
+           solved in the future until then it is recommended to avoid tabs.
+        """
+        return self.get_width(default_width) - (
+            len(self.prefix) + len(self.indent_string * self.indentation_level)
+        )
+
     def indent(self):
         """
         Indent the following lines with the given :attr:`indent`.

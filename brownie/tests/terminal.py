@@ -138,6 +138,13 @@ class TestTerminalWriter(TestBase):
         Assert(writer.get_width(default_width + 1)) == default_width + 1
 
     @test
+    def get_usable_width(self):
+        writer = TerminalWriter.from_bytestream(StringIO(), prefix='spam')
+        Assert(writer.get_usable_width()) == writer.get_width() - len('spam')
+        writer.indent()
+        Assert(writer.get_usable_width()) == writer.get_width() - 8
+
+    @test
     def indent(self):
         self.writer.indent()
         self.writer.writeline(u'foobar')
