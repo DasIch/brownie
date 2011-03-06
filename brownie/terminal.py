@@ -494,7 +494,8 @@ class TerminalWriter(object):
                 escape=False
             )
         self.writelines(result, flush=False)
-        self.write('\n', escape=False)
+        self.newline()
+        self.stream.flush()
 
     def __repr__(self):
         return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
