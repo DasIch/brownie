@@ -251,6 +251,14 @@ class TestProgressBar(TestBase):
         Assert(stream.getvalue()) == 'hello world 0%\rhello me 100%\n'
 
     @test
+    def init(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        sized_widgets = PercentageWidget, PercentageBarWidget
+        for sized in sized_widgets:
+            with Assert.raises(ValueError):
+                ProgressBar([sized()], writer)
+
+    @test
     def step(self):
         writer = TerminalWriter.from_bytestream(StringIO())
         progressbar = ProgressBar([], writer)

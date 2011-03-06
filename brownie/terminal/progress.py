@@ -91,6 +91,10 @@ class Widget(object):
     #: Should be ``True`` if :meth:`size_hint` returns not ``None``.
     provides_size_hint = False
 
+    #: Should be ``True`` if this widget depends on
+    #: :attr:`ProgressBar.maxsteps` being set to something other than ``None``.
+    requires_fixed_size = False
+
     def size_hint(self, progressbar):
         """
         Should return the required size or ``None`` if it cannot be given.
@@ -181,6 +185,7 @@ class PercentageWidget(Widget):
     Represents a string showing the progress as percentage.
     """
     provides_size_hint = True
+    requires_fixed_size = True
 
     def calculate_percentage(self, progressbar):
         return 100 / progressbar.maxsteps * progressbar.step
@@ -250,6 +255,7 @@ class PercentageBarWidget(Widget):
     This widget has a priority of 1.
     """
     priority = 1
+    requires_fixed_size = True
 
     def init(self, progressbar, remaining_width, **kwargs):
         return '[%s]' % ('.' * (remaining_width - 2))
@@ -315,7 +321,15 @@ class ProgressBar(object):
         return cls(rv, writer, maxsteps=maxsteps)
 
     def __init__(self, widgets, writer, maxsteps=None):
-        self.widgets = list(widgets)
+        widgets = list(widgets)
+        if maxsteps is None:
+            for widget in widgets:
+                if widget.requires_fixed_size:
+                    raise ValueError(
+                        '%r requires maxsteps to be given' % widget
+                    )
+
+        self.widgets = widgets
         self.writer = writer
         self.maxsteps = maxsteps
         self.step = 0
