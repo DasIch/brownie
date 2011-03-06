@@ -259,6 +259,10 @@ class ProgressBar(object):
         )
 
     def get_usable_width(self):
+        """
+        Returns the width usable by all widgets which don't provide a size
+        hint.
+        """
         return self.writer.get_usable_width() - sum(
             widget.size_hint(self) for widget in self.widgets
             if widget.provides_size_hint
