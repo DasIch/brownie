@@ -14,7 +14,7 @@ from StringIO import StringIO
 from brownie.terminal import TerminalWriter
 from brownie.terminal.progress import (
     ProgressBar, Widget, TextWidget, HintWidget, PercentageWidget, BarWidget,
-    PercentageBarWidget, parse_progressbar
+    PercentageBarWidget, parse_progressbar, StepWidget
 )
 
 from attest import Tests, TestBase, test, Assert
@@ -232,6 +232,38 @@ class TestPercentageBarWidget(TestBase):
         Assert(widget.finish(progressbar, 12)) == '[##########]'
 
 tests.register(TestPercentageBarWidget)
+
+
+class TestStepWidget(TestBase):
+    @test
+    def init(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer, maxsteps=20)
+        widget = StepWidget()
+        Assert(widget.init(progressbar, writer.get_width())) == '0 of 20'
+        Assert(widget.size_hint(progressbar)) == 7
+
+    @test
+    def update(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer, maxsteps=20)
+        widget = StepWidget()
+        widget.init(progressbar, writer.get_width())
+        for i in xrange(1, 21):
+            progressbar.step += 1
+            result = widget.update(progressbar, writer.get_width())
+            Assert(len(result)) == widget.size_hint(progressbar)
+            Assert(result) == '%i of 20' % i
+
+    @test
+    def finish(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer, maxsteps=20)
+        widget = StepWidget()
+        progressbar.step = progressbar.maxsteps
+        Assert(widget.finish(progressbar, writer.get_width())) == '20 of 20'
+
+tests.register(TestStepWidget)
 
 
 class TestProgressBar(TestBase):

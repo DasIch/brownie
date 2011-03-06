@@ -268,6 +268,29 @@ class PercentageBarWidget(Widget):
         return '[%s]' % ('#' * (remaining_width - 2))
 
 
+class StepWidget(Widget):
+    """
+    Shows at which step we are currently at and how many are remaining as
+    `step of steps`.
+
+    This widget has a priority of 2.
+    """
+    provides_size_hint = True
+    requires_fixed_size = True
+
+    def size_hint(self, progressbar):
+        return sum([
+            count_digits(progressbar.step),
+            count_digits(progressbar.maxsteps),
+            4 # ' of '
+        ])
+
+    def init(self, progressbar, remaining_width, **kwargs):
+        return '%i of %i' % (progressbar.step, progressbar.maxsteps)
+
+    update = init
+
+
 class ProgressBar(object):
     """
     A progress bar which acts as a container for various widgets which may be
@@ -320,13 +343,16 @@ class ProgressBar(object):
         +------------+------------------------------+-------------------+
         | sizedbar   | :class:`PercentageBarWidget` | Yes               |
         +------------+------------------------------+-------------------+
+        | step       | :class:`StepWidget`          | Yes               |
+        +------------+------------------------------+-------------------+
         """
         default_widgets = {
             'text': TextWidget,
             'hint': HintWidget,
             'percentage': PercentageWidget,
             'bar': BarWidget,
-            'sizedbar': PercentageBarWidget
+            'sizedbar': PercentageBarWidget,
+            'step': StepWidget
         }
         widgets = dict(default_widgets.copy(), **(widgets or {}))
         rv = []
