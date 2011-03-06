@@ -180,8 +180,7 @@ class BarWidget(Widget):
             self.position -= 1
             if self.position == 0:
                 self.going_forward = True
-        rv = self.make_bar(remaining_width)
-        return rv
+        return self.make_bar(remaining_width)
 
 
 class PercentageBarWidget(Widget):
