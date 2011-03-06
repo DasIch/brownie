@@ -88,6 +88,7 @@ class Widget(object):
     #: line available.
     priority = 0
 
+    #: Should be ``True`` if :meth:`size_hint` returns not ``None``.
     provides_size_hint = False
 
     def size_hint(self, progressbar):
