@@ -28,6 +28,7 @@ from itertools import izip, imap
 from contextlib import contextmanager
 
 from brownie.datastructures import namedtuple
+from brownie.terminal.progress import ProgressBar
 
 
 _ansi_sequence = '\033[%sm'
@@ -495,6 +496,65 @@ class TerminalWriter(object):
             )
         self.writelines(result, flush=False)
         self.write('\n', escape=False)
+
+    def progress(self, description, maxsteps=None, widgets=None):
+        """
+        Returns a :class:`~brownie.terminal.progress.ProgressBar` object
+        which can be used to write the current progress to the stream.
+
+        The progress bar is created from the `description` which is a string
+        with the following syntax:
+
+        Widgets -- the parts of the progress bar which are changed with each
+        update -- are represented in the form ``$[a-zA-Z]+``.
+
+        Some widgets required that you provide an initial value, this can be
+        done by adding ``:string`` where string is either ``[a-zA-Z]+`` or a
+        double-quoted string.
+
+        If you want to escape a ``$`` you simply precede it with another ``$``,
+        so ``$$foo` will not be treated as a widget and in the progress bar
+        ``$foo`` will be shown.
+
+        Quotes (``"``) in strings can be escaped with a backslash (``\``).
+
+        The following widgets are available:
+
+        +--------------+------------------------+--------------+--------------+
+        | Name         | Requires Initial Value | ... Argument | ... maxsteps |
+        +==============+========================+==============+==============+
+        | `hint`       | Yes                    | Yes (`hint`) | No           |
+        +--------------+------------------------+--------------+--------------+
+        | `percentage` | No                     | No           | Yes          |
+        +--------------+------------------------+--------------+--------------+
+        | `bar`        | No                     | No           | No           |
+        +--------------+------------------------+--------------+--------------+
+        | `sizedbar`   | No                     | No           | Yes          |
+        +--------------+------------------------+--------------+--------------+
+
+        As you can see there are other things you have to think about as well;
+        certain widgets require that
+        :meth:`~brownie.terminal.progress.ProgressBar.next` is called with a
+        keyword argument to show additional information.
+
+        Furthermore some widgets require that the number of steps is known in
+        order to calculate the percentage, ETA or similar things.
+
+        If you want to implement your own widget(s) take a look at
+        :class:`brownie.terminal.progress.Widget`, you can use them by passing
+        them in a dictionary (mapping the name to the widget class) via the
+        `widgets` argument. You might also want to take a look at the source
+        code of the built-in widgets.
+
+        There are two things you have to look out for:
+        :class:`~brownie.terminal.progress.ProgressBar` objects are not
+        reusable if you need another object, call this method again. If you
+        attempt to write to the :attr:`stream` while using a progress bar the
+        behaviour is undefined.
+        """
+        return ProgressBar.from_string(
+            description, self, maxsteps=maxsteps, widgets=None
+        )
 
     def __repr__(self):
         return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
