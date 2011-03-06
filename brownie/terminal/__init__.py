@@ -495,7 +495,8 @@ class TerminalWriter(object):
                 escape=False
             )
         self.writelines(result, flush=False)
-        self.write('\n', escape=False)
+        self.newline()
+        self.stream.flush()
 
     def progress(self, description, maxsteps=None, widgets=None):
         """
