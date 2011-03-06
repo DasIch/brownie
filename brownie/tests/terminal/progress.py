@@ -236,6 +236,21 @@ tests.register(TestPercentageBarWidget)
 
 class TestProgressBar(TestBase):
     @test
+    def from_string(self):
+        stream = StringIO()
+        writer = TerminalWriter.from_bytestream(stream)
+        with Assert.raises(ValueError) as exc:
+            ProgressBar.from_string('$foo', writer)
+        Assert(exc.args[0]) == 'widget not found: foo'
+
+        progressbar = ProgressBar.from_string(
+            'hello $hint:world $percentage', writer, maxsteps=10
+        )
+        progressbar.init()
+        progressbar.finish(hint='me')
+        Assert(stream.getvalue()) == 'hello world 0%\rhello me 100%\n'
+
+    @test
     def step(self):
         writer = TerminalWriter.from_bytestream(StringIO())
         progressbar = ProgressBar([], writer)

@@ -16,6 +16,8 @@ import re
 import math
 from functools import wraps
 
+from brownie.datastructures import ImmutableDict
+
 
 _progressbar_re = re.compile(ur"""
     (?<!\$)\$([a-zA-Z]+) # identifier
@@ -276,6 +278,39 @@ class ProgressBar(object):
     :param maxsteps:
         The number of steps, not necessarily updates, which are to be made.
     """
+    @classmethod
+    def from_string(cls, string, writer, maxsteps=None, widgets=ImmutableDict({
+                'text': TextWidget,
+                'hint': HintWidget,
+                'percentage': PercentageWidget,
+                'bar': BarWidget,
+                'sizedbar': PercentageBarWidget
+            })):
+        """
+        Returns a :class:`ProgressBar` from a string.
+
+        The string is used as a progressbar, `$[a-zA-Z]+` is substituted with
+        a widget as defined by `widgets`.
+
+        `$` can be escaped with another `$` e.g. `$$foo` will not be
+        substituted.
+
+        Initial values as required for the :class:`HintWidget` are given like
+        this `$hint:initial`, if the initial value is supposed to contain a
+        space you have to use a quoted string `$hint:"foo bar"`; quoted can be
+        escaped using a backslash.
+        """
+        rv = []
+        for name, initial in parse_progressbar(string):
+            if name not in widgets:
+                raise ValueError('widget not found: %s' % name)
+            if initial:
+                widget = widgets[name](initial)
+            else:
+                widget = widgets[name]()
+            rv.append(widget)
+        return cls(rv, writer, maxsteps=maxsteps)
+
     def __init__(self, widgets, writer, maxsteps=None):
         self.widgets = list(widgets)
         self.writer = writer
