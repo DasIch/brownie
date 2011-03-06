@@ -288,27 +288,48 @@ class ProgressBar(object):
         The number of steps, not necessarily updates, which are to be made.
     """
     @classmethod
-    def from_string(cls, string, writer, maxsteps=None, widgets=ImmutableDict({
-                'text': TextWidget,
-                'hint': HintWidget,
-                'percentage': PercentageWidget,
-                'bar': BarWidget,
-                'sizedbar': PercentageBarWidget
-            })):
+    def from_string(cls, string, writer, maxsteps=None, widgets=None):
         """
         Returns a :class:`ProgressBar` from a string.
 
-        The string is used as a progressbar, `$[a-zA-Z]+` is substituted with
+        The string is used as a progressbar, ``$[a-zA-Z]+`` is substituted with
         a widget as defined by `widgets`.
 
-        `$` can be escaped with another `$` e.g. `$$foo` will not be
+        ``$`` can be escaped with another ``$`` e.g. ``$$foo`` will not be
         substituted.
 
         Initial values as required for the :class:`HintWidget` are given like
-        this `$hint:initial`, if the initial value is supposed to contain a
-        space you have to use a quoted string `$hint:"foo bar"`; quoted can be
-        escaped using a backslash.
+        this ``$hint:initial``, if the initial value is supposed to contain a
+        space you have to use a quoted string ``$hint:"foo bar"``; quoted can
+        be escaped using a backslash.
+
+        If you want to provide your own widgets or overwrite existing ones
+        pass a dictionary mapping the desired names to the widget classes to
+        this method using the `widgets` keyword argument. The default widgets
+        are:
+
+        +------------+------------------------------+-------------------+
+        | Name       | Class                        | Requires maxsteps |
+        +============+==============================+===================+
+        | text       | :class:`TextWidget`          | No                |
+        +------------+------------------------------+-------------------+
+        | hint       | :class:`HintWidget`          | No                |
+        +------------+------------------------------+-------------------+
+        | percentage | :class:`Percentage`          | Yes               |
+        +------------+------------------------------+-------------------+
+        | bar        | :class:`BarWidget`           | No                |
+        +------------+------------------------------+-------------------+
+        | sizedbar   | :class:`PercentageBarWidget` | Yes               |
+        +------------+------------------------------+-------------------+
         """
+        default_widgets = {
+            'text': TextWidget,
+            'hint': HintWidget,
+            'percentage': PercentageWidget,
+            'bar': BarWidget,
+            'sizedbar': PercentageBarWidget
+        }
+        widgets = dict(default_widgets.copy(), **(widgets or {}))
         rv = []
         for name, initial in parse_progressbar(string):
             if name not in widgets:
