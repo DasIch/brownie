@@ -17,7 +17,6 @@ import math
 from functools import wraps
 
 from brownie.caching import LFUCache
-from brownie.datastructures import ImmutableDict
 
 
 _progressbar_re = re.compile(ur"""
