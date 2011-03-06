@@ -13,6 +13,7 @@
 """
 from __future__ import division
 import math
+from functools import wraps
 
 
 def count_digits(n):
@@ -269,23 +270,37 @@ class ProgressBar(object):
         self.writer.begin_line()
         self.writer.write(string)
 
-    # TODO: lots of repetition here asking for an elegant dry alternative
+    def make_writer(updating=True, finishing=False):
+        def decorate(func):
+            @wraps(func)
+            def wrapper(self, **kwargs):
+                if finishing and self.step == self.maxsteps:
+                    return
+                if updating and not finishing:
+                    self.step += kwargs.get('step', 1)
+                parts = []
+                remaining_width = self.get_usable_width()
+                for i, widget in self.get_widgets_by_priority():
+                    part = func(self, widget, remaining_width, **kwargs)
+                    if not widget.provides_size_hint:
+                        remaining_width -= len(part)
+                    parts.append((i, part))
+                parts.sort()
+                self.write(''.join(part for _, part in parts), update=updating)
+                if finishing:
+                    self.writer.newline()
+            return wrapper
+        return decorate
 
-    def init(self, **kwargs):
+    @make_writer(updating=False)
+    def init(self, widget, remaining_width, **kwargs):
         """
         Writes the initial progress bar to the terminal.
         """
-        parts = []
-        remaining_width = self.get_usable_width()
-        for i, widget in self.get_widgets_by_priority():
-            part = widget.init(self, remaining_width, **kwargs)
-            if not widget.provides_size_hint:
-                remaining_width -= len(part)
-            parts.append((i, part))
-        parts.sort()
-        self.write(''.join(part for _, part in parts), update=False)
+        return widget.init(self, remaining_width, **kwargs)
 
-    def next(self, step=1, **kwargs):
+    @make_writer()
+    def next(self, widget, remaining_width, step=1, **kwargs):
         """
         Writes an updated version of the progress bar to the terminal.
 
@@ -293,37 +308,19 @@ class ProgressBar(object):
         which have been made as an argument. If `step` is larger than
         `maxsteps` a :exc:`ValueError` is raised.
         """
-        self.step += step
-        parts = []
-        remaining_width = self.get_usable_width()
-        for i, widget in self.get_widgets_by_priority():
-            part = widget.update(self, remaining_width, **kwargs)
-            if not widget.provides_size_hint:
-                remaining_width -= len(part)
-            parts.append((i, part))
-        parts.sort()
-        self.write(''.join(part for _, part in parts))
+        return widget.update(self, remaining_width, **kwargs)
 
-    def finish(self, **kwargs):
+    @make_writer(finishing=True)
+    def finish(self, widget, remaining_width, **kwargs):
         """
         Writes the finished version of the progress bar to the terminal.
 
         This method may be called even if `maxsteps` has not been reached or
         has not been defined.
         """
-        if self.step == self.maxsteps:
-            return
-        self.step = self.maxsteps
-        parts = []
-        remaining_width = self.get_usable_width()
-        for i, widget in self.get_widgets_by_priority():
-            part = widget.finish(self, remaining_width, **kwargs)
-            if not widget.provides_size_hint:
-                remaining_width -= len(part)
-            parts.append((i, part))
-        parts.sort()
-        self.write(''.join(part for _, part in parts))
-        self.writer.newline()
+        return widget.finish(self, remaining_width, **kwargs)
+
+    del make_writer
 
     def __enter__(self):
         self.init()
