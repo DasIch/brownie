@@ -338,8 +338,9 @@ class TestProgressBar(TestBase):
 
         writer = TerminalWriter.from_bytestream(StringIO())
         progressbar = MyProgressBar([], writer)
-        with progressbar:
+        with progressbar as foo:
             pass
+        Assert(foo).is_(progressbar)
         assert progressbar.init_called
         assert progressbar.finish_called
 

@@ -450,6 +450,7 @@ class ProgressBar(object):
 
     def __enter__(self):
         self.init()
+        return self
 
     def __exit__(self, etype, evalue, traceback):
         if etype is None:
