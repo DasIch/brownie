@@ -204,7 +204,7 @@ class TerminalWriter(object):
         This falls back to the `COLUMNS` environment variable and if that fails
         to :attr:`default_width` unless `default` is not None, in which case
         `default` would be used.
-        
+
         Therefore the returned value might not not be at all correct.
         """
         default = self.default_width if default is None else default
