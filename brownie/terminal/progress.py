@@ -12,14 +12,65 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import division
+import re
 import math
 from functools import wraps
+
+
+_progressbar_re = re.compile(ur"""
+    (?<!\$)\$([a-zA-Z]+) # identifier
+    (:                   # initial widget value
+
+        (?: # grouping to avoid : to be treated as part of
+            # the left or operand
+
+            "( # quoted string
+                (?:
+                    [^"]|    # any character except " or ...
+                    (?<=\\)" # ... " preceded by a backslash
+                )*
+            )"|
+
+            ([a-zA-Z]+) # identifiers can be used instead of strings
+        )
+    )?|
+    (\$\$) # escaped $
+""", re.VERBOSE)
 
 
 def count_digits(n):
     if n == 0:
         return 1
     return int(math.log10(abs(n)) + (2 if n < 0 else 1))
+
+
+def parse_progressbar(string):
+    """
+    Parses a string representing a progress bar.
+    """
+    def add_text(text):
+        if not rv or rv[-1][0] != 'text':
+            rv.append(['text', text])
+        else:
+            rv[-1][1] += text
+    rv = []
+    remaining = string
+    while remaining:
+        match = _progressbar_re.match(remaining)
+        if match is None:
+            add_text(remaining[0])
+            remaining = remaining[1:]
+        elif match.group(5):
+            add_text(u'$')
+            remaining = remaining[match.end():]
+        else:
+            if match.group(3) is None:
+                value = match.group(4)
+            else:
+                value = match.group(3).decode('string-escape')
+            rv.append([match.group(1), value])
+            remaining = remaining[match.end():]
+    return rv
 
 
 class Widget(object):

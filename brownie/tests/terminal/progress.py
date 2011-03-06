@@ -14,13 +14,28 @@ from StringIO import StringIO
 from brownie.terminal import TerminalWriter
 from brownie.terminal.progress import (
     ProgressBar, Widget, TextWidget, HintWidget, PercentageWidget, BarWidget,
-    PercentageBarWidget
+    PercentageBarWidget, parse_progressbar
 )
 
 from attest import Tests, TestBase, test, Assert
 
 
 tests = Tests([])
+
+
+@tests.test
+def test_parse_progressbar():
+    tests = [
+        ('foobar', [['text', 'foobar']]),
+        ('$foo bar', [['foo', None], ['text', ' bar']]),
+        ('$foo $$bar', [['foo', None], ['text', ' $bar']]),
+        ('$foo:spam bar', [['foo', 'spam'], ['text', ' bar']]),
+        ('$foo:""', [['foo', '']]),
+        ('$foo:"spam eggs" bar', [['foo', 'spam eggs'], ['text', ' bar']]),
+        ('$foo:"spam\\" eggs" bar', [['foo', 'spam\" eggs'], ['text', ' bar']])
+    ]
+    for test, result in tests:
+        Assert(parse_progressbar(test)) == result
 
 
 class TestWidget(TestBase):
