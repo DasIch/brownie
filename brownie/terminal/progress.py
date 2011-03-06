@@ -16,6 +16,7 @@ import re
 import math
 from functools import wraps
 
+from brownie.caching import LFUCache
 from brownie.datastructures import ImmutableDict
 
 
@@ -46,6 +47,7 @@ def count_digits(n):
     return int(math.log10(abs(n)) + (2 if n < 0 else 1))
 
 
+@LFUCache.decorate(maxsize=64)
 def parse_progressbar(string):
     """
     Parses a string representing a progress bar.
