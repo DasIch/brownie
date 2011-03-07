@@ -15,6 +15,7 @@ from __future__ import division
 import re
 import math
 from functools import wraps
+from datetime import datetime
 
 from brownie.caching import LFUCache
 from brownie.datastructures import ImmutableDict
@@ -350,6 +351,35 @@ class StepWidget(Widget):
     update = init
 
 
+class TimeWidget(Widget):
+    """
+    Shows the elapsed time in hours, minutes and seconds as
+    ``$hours:$minutes:$seconds``.
+
+    This widget has a priority of 3.
+    """
+    priority = 3
+
+    def init(self, progressbar, remaining_width, **kwargs):
+        self.start_time = datetime.now()
+        return '00:00:00'
+
+    def update(self, progressbar, remaining_width, **kwargs):
+        seconds = (datetime.now() - self.start_time).seconds
+        minutes = 0
+        hours = 0
+
+        minute = 60
+        hour = minute * 60
+
+        if seconds > hour:
+            hours, seconds = divmod(seconds, hour)
+        if seconds > minute:
+            minutes, seconds = divmod(seconds, minute)
+
+        return '%02i:%02i:%02i' % (hours, minutes, seconds)
+
+
 class ProgressBar(object):
     """
     A progress bar which acts as a container for various widgets which may be
@@ -404,6 +434,8 @@ class ProgressBar(object):
         +------------+------------------------------+-------------------+
         | step       | :class:`StepWidget`          | Yes               |
         +------------+------------------------------+-------------------+
+        | time       | :class:`TimeWidget`          | No                |
+        +------------+------------------------------+-------------------+
         """
         default_widgets = {
             'text': TextWidget,
@@ -411,7 +443,8 @@ class ProgressBar(object):
             'percentage': PercentageWidget,
             'bar': BarWidget,
             'sizedbar': PercentageBarWidget,
-            'step': StepWidget
+            'step': StepWidget,
+            'time': TimeWidget
         }
         widgets = dict(default_widgets.copy(), **(widgets or {}))
         rv = []
@@ -549,5 +582,5 @@ class ProgressBar(object):
 
 __all__ = [
     'ProgressBar', 'TextWidget', 'HintWidget', 'PercentageWidget', 'BarWidget',
-    'PercentageBarWidget'
+    'PercentageBarWidget', 'StepWidget', 'TimeWidget'
 ]

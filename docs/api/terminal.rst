@@ -42,3 +42,9 @@ This is the 'low-level' progress bar implementation used by the
 
 .. autoclass:: PercentageBarWidget
    :members:
+
+.. autoclass:: StepWidget
+   :members:
+
+.. autoclass:: TimeWidget
+   :members:

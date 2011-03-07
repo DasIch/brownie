@@ -534,6 +534,8 @@ class TerminalWriter(object):
         +--------------+------------------------+--------------+--------------+
         | `step`       | Optional               | No           | Yes          |
         +--------------+------------------------+--------------+--------------+
+        | `time`       | No                     | No           | No           |
+        +--------------+------------------------+--------------+--------------+
 
         As you can see there are other things you have to think about as well;
         certain widgets require that

@@ -15,7 +15,7 @@ from brownie.terminal import TerminalWriter
 from brownie.terminal.progress import (
     ProgressBar, Widget, TextWidget, HintWidget, PercentageWidget, BarWidget,
     PercentageBarWidget, parse_progressbar, StepWidget, bytes_to_string,
-    count_digits
+    count_digits, TimeWidget
 )
 
 from attest import Tests, TestBase, test, Assert
@@ -300,6 +300,17 @@ class TestStepWidget(TestBase):
         Assert(widget.finish(progressbar, 100)) == '20spam of 20spam'
 
 tests.register(TestStepWidget)
+
+
+class TestTimeWidget(TestBase):
+    @test
+    def init(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer)
+        widget = TimeWidget()
+        Assert(widget.init(progressbar, 100)) == '00:00:00'
+
+tests.register(TestTimeWidget)
 
 
 class TestProgressBar(TestBase):
