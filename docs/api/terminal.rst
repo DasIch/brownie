@@ -48,3 +48,6 @@ This is the 'low-level' progress bar implementation used by the
 
 .. autoclass:: TimeWidget
    :members:
+
+.. autoclass:: DataTransferSpeedWidget
+   :members:

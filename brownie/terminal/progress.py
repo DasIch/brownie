@@ -73,6 +73,15 @@ def count_digits(n):
     return int(math.log10(abs(n)) + (2 if n < 0 else 1))
 
 
+def bytes_to_readable_format(bytes, binary=True):
+    prefixes = BINARY_PREFIXES if binary else SI_PREFIXES
+    for prefix, size in prefixes:
+        if bytes >= size:
+            result = bytes / size
+            return result, prefix + 'B'
+    return bytes, 'B'
+
+
 def bytes_to_string(bytes, binary=True):
     """
     Provides a nice readable string representation for `bytes`.
@@ -80,14 +89,10 @@ def bytes_to_string(bytes, binary=True):
     :param binary:
         If ``True`` uses binary prefixes otherwise SI prefixes are used.
     """
-    prefixes = BINARY_PREFIXES if binary else SI_PREFIXES
-    for prefix, size in prefixes:
-        if bytes >= size:
-            result = bytes / size
-            if getattr(result, 'is_integer', lambda: False)():
-                return u'%i%sB' % (result, prefix)
-            return u'%.2f%sB' % (result, prefix)
-    return u'%iB' % bytes
+    result, prefix = bytes_to_readable_format(bytes, binary=binary)
+    if isinstance(result, int) or getattr(result, 'is_integer', lambda: False)():
+        return '%i%s' % (result, prefix)
+    return '%.02f%s' % (result, prefix)
 
 
 @LFUCache.decorate(maxsize=64)
@@ -380,6 +385,38 @@ class TimeWidget(Widget):
         return '%02i:%02i:%02i' % (hours, minutes, seconds)
 
 
+class DataTransferSpeedWidget(Widget):
+    """
+    Shows the data transfer speed in bytes per second using SI prefixes.
+
+    This widget has a priority of 3.
+    """
+    priority = 3
+
+    def init(self, progressbar, remaining_width, **kwargs):
+        self.begin_timing = datetime.now()
+        self.last_step = 0
+        return '0kb/s'
+
+    def update(self, progressbar, remaining_width, **kwargs):
+        end_timing = datetime.now()
+        # .seconds is an integer so our calculations result in 0 if each update
+        # takes less than a second, therefore we have to calculate the exact
+        # time in seconds
+        elapsed = (end_timing - self.begin_timing).microseconds * 10 ** -6
+        step = progressbar.step - self.last_step
+        if elapsed == 0:
+            result = '%.02f%s/s' % bytes_to_readable_format(0, binary=False)
+        else:
+            result = '%.02f%s/s' % bytes_to_readable_format(
+                step / elapsed,
+                binary=False
+            )
+        self.begin_timing = end_timing
+        self.last_step = progressbar.step
+        return result
+
+
 class ProgressBar(object):
     """
     A progress bar which acts as a container for various widgets which may be
@@ -419,23 +456,25 @@ class ProgressBar(object):
         this method using the `widgets` keyword argument. The default widgets
         are:
 
-        +------------+------------------------------+-------------------+
-        | Name       | Class                        | Requires maxsteps |
-        +============+==============================+===================+
-        | text       | :class:`TextWidget`          | No                |
-        +------------+------------------------------+-------------------+
-        | hint       | :class:`HintWidget`          | No                |
-        +------------+------------------------------+-------------------+
-        | percentage | :class:`Percentage`          | Yes               |
-        +------------+------------------------------+-------------------+
-        | bar        | :class:`BarWidget`           | No                |
-        +------------+------------------------------+-------------------+
-        | sizedbar   | :class:`PercentageBarWidget` | Yes               |
-        +------------+------------------------------+-------------------+
-        | step       | :class:`StepWidget`          | Yes               |
-        +------------+------------------------------+-------------------+
-        | time       | :class:`TimeWidget`          | No                |
-        +------------+------------------------------+-------------------+
+        +------------+----------------------------------+-------------------+
+        | Name       | Class                            | Requires maxsteps |
+        +============+==================================+===================+
+        | text       | :class:`TextWidget`              | No                |
+        +------------+----------------------------------+-------------------+
+        | hint       | :class:`HintWidget`              | No                |
+        +------------+----------------------------------+-------------------+
+        | percentage | :class:`Percentage`              | Yes               |
+        +------------+----------------------------------+-------------------+
+        | bar        | :class:`BarWidget`               | No                |
+        +------------+----------------------------------+-------------------+
+        | sizedbar   | :class:`PercentageBarWidget`     | Yes               |
+        +------------+----------------------------------+-------------------+
+        | step       | :class:`StepWidget`              | Yes               |
+        +------------+----------------------------------+-------------------+
+        | time       | :class:`TimeWidget`              | No                |
+        +------------+----------------------------------+-------------------+
+        | speed      | :class:`DataTransferSpeedWidget` | No                |
+        +------------+----------------------------------+-------------------+
         """
         default_widgets = {
             'text': TextWidget,
@@ -444,7 +483,8 @@ class ProgressBar(object):
             'bar': BarWidget,
             'sizedbar': PercentageBarWidget,
             'step': StepWidget,
-            'time': TimeWidget
+            'time': TimeWidget,
+            'speed': DataTransferSpeedWidget
         }
         widgets = dict(default_widgets.copy(), **(widgets or {}))
         rv = []
@@ -582,5 +622,5 @@ class ProgressBar(object):
 
 __all__ = [
     'ProgressBar', 'TextWidget', 'HintWidget', 'PercentageWidget', 'BarWidget',
-    'PercentageBarWidget', 'StepWidget', 'TimeWidget'
+    'PercentageBarWidget', 'StepWidget', 'TimeWidget', 'DataTransferSpeedWidget'
 ]

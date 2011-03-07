@@ -536,6 +536,8 @@ class TerminalWriter(object):
         +--------------+------------------------+--------------+--------------+
         | `time`       | No                     | No           | No           |
         +--------------+------------------------+--------------+--------------+
+        | `speed`      | No                     | No           |              |
+        +--------------+------------------------+--------------+--------------+
 
         As you can see there are other things you have to think about as well;
         certain widgets require that

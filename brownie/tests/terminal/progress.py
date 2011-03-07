@@ -16,7 +16,7 @@ from brownie.terminal import TerminalWriter
 from brownie.terminal.progress import (
     ProgressBar, Widget, TextWidget, HintWidget, PercentageWidget, BarWidget,
     PercentageBarWidget, parse_progressbar, StepWidget, bytes_to_string,
-    count_digits, TimeWidget
+    count_digits, TimeWidget, DataTransferSpeedWidget
 )
 
 from attest import Tests, TestBase, test, Assert
@@ -320,6 +320,30 @@ class TestTimeWidget(TestBase):
         Assert(widget.update(progressbar, 100)) == '00:00:01'
 
 tests.register(TestTimeWidget)
+
+
+class TestDataTransferSpeedWidget(TestBase):
+    @test
+    def init(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer)
+        widget = DataTransferSpeedWidget()
+        Assert(widget.init(progressbar, 100)) == '0kb/s'
+
+    @test
+    def update(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer)
+        widget = DataTransferSpeedWidget()
+        widget.init(progressbar, 100)
+        time.sleep(1)
+        progressbar.step += 50
+        assert 45.0 < float(widget.update(progressbar, 100)[:-4]) < 55.0
+        time.sleep(2)
+        progressbar.step += 50
+        assert 20.0 < float(widget.update(progressbar, 100)[:-4]) < 30.0
+
+tests.register(TestDataTransferSpeedWidget)
 
 
 class TestProgressBar(TestBase):
