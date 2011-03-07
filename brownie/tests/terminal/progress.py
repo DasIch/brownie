@@ -14,13 +14,21 @@ from StringIO import StringIO
 from brownie.terminal import TerminalWriter
 from brownie.terminal.progress import (
     ProgressBar, Widget, TextWidget, HintWidget, PercentageWidget, BarWidget,
-    PercentageBarWidget, parse_progressbar, StepWidget, bytes_to_string
+    PercentageBarWidget, parse_progressbar, StepWidget, bytes_to_string,
+    count_digits
 )
 
 from attest import Tests, TestBase, test, Assert
 
 
 tests = Tests([])
+
+
+@tests.test
+def test_count_digits():
+    Assert(count_digits(10)) == 2
+    Assert(count_digits(0)) == 1
+    Assert(count_digits(-10)) == 3
 
 
 @tests.test
