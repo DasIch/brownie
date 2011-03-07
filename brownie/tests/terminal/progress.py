@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
+import time
 from StringIO import StringIO
 
 from brownie.terminal import TerminalWriter
@@ -309,6 +310,15 @@ class TestTimeWidget(TestBase):
         progressbar = ProgressBar([], writer)
         widget = TimeWidget()
         Assert(widget.init(progressbar, 100)) == '00:00:00'
+
+    @test
+    def update(self):
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer)
+        widget = TimeWidget()
+        widget.init(progressbar, 100)
+        time.sleep(1)
+        Assert(widget.update(progressbar, 100)) == '00:00:01'
 
 tests.register(TestTimeWidget)
 
