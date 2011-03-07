@@ -131,8 +131,7 @@ def test_hint_widget():
 
     Assert(repr(widget)) == "HintWidget('foo')"
 
-    with Assert.raises(TypeError):
-        widget.finish(progressbar, writer.get_width())
+    widget.finish(progressbar, writer.get_width()) == u''
 
 
 class TestPercentageWidget(TestBase):

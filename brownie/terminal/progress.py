@@ -207,7 +207,7 @@ class HintWidget(Widget):
     """
     priority = 2
 
-    def __init__(self, initial_hint):
+    def __init__(self, initial_hint=u''):
         self.initial_hint = initial_hint
 
     def init(self, progressbar, remaining_width, **kwargs):
@@ -215,7 +215,7 @@ class HintWidget(Widget):
 
     def update(self, progressbar, remaining_width, **kwargs):
         try:
-            return kwargs['hint']
+            return kwargs.get('hint', u'')
         except KeyError:
             raise TypeError("expected 'hint' as a keyword argument")
 
