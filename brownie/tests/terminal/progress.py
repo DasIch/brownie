@@ -285,6 +285,20 @@ class TestStepWidget(TestBase):
         progressbar.step = progressbar.maxsteps
         Assert(widget.finish(progressbar, writer.get_width())) == '20 of 20'
 
+    @test
+    def units(self):
+        class FooStepWidget(StepWidget):
+            units = {'foo': lambda x: str(x) + 'spam'}
+
+        writer = TerminalWriter.from_bytestream(StringIO())
+        progressbar = ProgressBar([], writer, maxsteps=20)
+        widget = FooStepWidget('foo')
+        Assert(widget.init(progressbar, 100)) == '0spam of 20spam'
+        progressbar.step +=1
+        Assert(widget.init(progressbar, 100)) == '1spam of 20spam'
+        progressbar.step = progressbar.maxsteps
+        Assert(widget.finish(progressbar, 100)) == '20spam of 20spam'
+
 tests.register(TestStepWidget)
 
 
