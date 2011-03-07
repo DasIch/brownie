@@ -532,7 +532,7 @@ class TerminalWriter(object):
         +--------------+------------------------+--------------+--------------+
         | `sizedbar`   | No                     | No           | Yes          |
         +--------------+------------------------+--------------+--------------+
-        | `step`       | No                     | No           | Yes          |
+        | `step`       | Optional               | No           | Yes          |
         +--------------+------------------------+--------------+--------------+
 
         As you can see there are other things you have to think about as well;

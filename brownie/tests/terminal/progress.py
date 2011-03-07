@@ -14,13 +14,21 @@ from StringIO import StringIO
 from brownie.terminal import TerminalWriter
 from brownie.terminal.progress import (
     ProgressBar, Widget, TextWidget, HintWidget, PercentageWidget, BarWidget,
-    PercentageBarWidget, parse_progressbar, StepWidget
+    PercentageBarWidget, parse_progressbar, StepWidget, bytes_to_string
 )
 
 from attest import Tests, TestBase, test, Assert
 
 
 tests = Tests([])
+
+
+@tests.test
+def test_bytes_to_string():
+    Assert(bytes_to_string(1000)) == '1000B'
+    si = bytes_to_string(1000, binary=False)
+    Assert('kB').in_(si)
+    Assert('1').in_(si)
 
 
 @tests.test
@@ -242,6 +250,12 @@ class TestStepWidget(TestBase):
         widget = StepWidget()
         Assert(widget.init(progressbar, writer.get_width())) == '0 of 20'
         Assert(widget.size_hint(progressbar)) == 7
+
+        with Assert.raises(ValueError):
+            StepWidget('foo')
+
+        with Assert.not_raising(ValueError):
+            StepWidget('bytes')
 
     @test
     def update(self):

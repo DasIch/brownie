@@ -17,6 +17,32 @@ import math
 from functools import wraps
 
 from brownie.caching import LFUCache
+from brownie.datastructures import ImmutableDict
+
+
+#: Binary prefixes, largest first.
+BINARY_PREFIXES = [
+    (u'Yi', 2 ** 80), # yobi
+    (u'Zi', 2 ** 70), # zebi
+    (u'Ei', 2 ** 60), # exbi
+    (u'Pi', 2 ** 50), # pebi
+    (u'Ti', 2 ** 40), # tebi
+    (u'Gi', 2 ** 30), # gibi
+    (u'Mi', 2 ** 20), # mebi
+    (u'Ki', 2 ** 10)  # kibi
+]
+
+#: Positive SI prefixes, largest first.
+SI_PREFIXES = [
+    (u'Y', 10 ** 24), # yotta
+    (u'Z', 10 ** 21), # zetta
+    (u'E', 10 ** 18), # exa
+    (u'P', 10 ** 15), # peta
+    (u'T', 10 ** 12), # tera
+    (u'G', 10 ** 9),  # giga
+    (u'M', 10 ** 6),  # mega
+    (u'k', 10 ** 3)   # kilo
+]
 
 
 _progressbar_re = re.compile(ur"""
@@ -44,6 +70,23 @@ def count_digits(n):
     if n == 0:
         return 1
     return int(math.log10(abs(n)) + (2 if n < 0 else 1))
+
+
+def bytes_to_string(bytes, binary=True):
+    """
+    Provides a nice readable string representation for `bytes`.
+
+    :param binary:
+        If ``True`` uses binary prefixes otherwise SI prefixes are used.
+    """
+    prefixes = BINARY_PREFIXES if binary else SI_PREFIXES
+    for prefix, size in prefixes:
+        if bytes >= size:
+            result = bytes / size
+            if getattr(result, 'is_integer', lambda: False)():
+                return u'%i%sB' % (result, prefix)
+            return u'%.2f%sB' % (result, prefix)
+    return u'%iB' % bytes
 
 
 @LFUCache.decorate(maxsize=64)
@@ -273,20 +316,36 @@ class StepWidget(Widget):
     Shows at which step we are currently at and how many are remaining as
     `step of steps`.
 
-    This widget has a priority of 2.
+    :param unit:
+        If each step represents something other than a simple task e.g. a byte
+        when doing file transactions, you can specify a unit which is used.
+
+    Supported units:
+
+    - `'bytes'` - binary prefix only, SI might be added in the future
     """
     provides_size_hint = True
     requires_fixed_size = True
+    units = ImmutableDict({
+        'bytes': bytes_to_string,
+        None: unicode
+    })
+
+    def __init__(self, unit=None):
+        if unit not in self.units:
+            raise ValueError('unknown unit: %s' % unit)
+        self.unit = unit
+
+    def get_values(self, progressbar):
+        convert = self.units[self.unit]
+        return convert(progressbar.step), convert(progressbar.maxsteps)
 
     def size_hint(self, progressbar):
-        return sum([
-            count_digits(progressbar.step),
-            count_digits(progressbar.maxsteps),
-            4 # ' of '
-        ])
+        step, maxsteps = self.get_values(progressbar)
+        return len(step) + len(maxsteps) + 4 # ' of '
 
     def init(self, progressbar, remaining_width, **kwargs):
-        return '%i of %i' % (progressbar.step, progressbar.maxsteps)
+        return u'%s of %s' % self.get_values(progressbar)
 
     update = init
 
