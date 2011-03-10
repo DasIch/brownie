@@ -7,7 +7,7 @@ Developing Brownie is really easy, this is going to show you how to do it.
 However if you are not already familiar with virtualenv_, you might want
 to familiarize yourself with it first.
 
-.. _virtualenv: http://virtualenv.openplans.org/
+.. _virtualenv: http://www.virtualenv.org
 
 So the first thing we do is cloning the repository::
 
