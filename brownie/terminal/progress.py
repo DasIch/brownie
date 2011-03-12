@@ -259,11 +259,7 @@ class BarWidget(Widget):
     The bar is enclosed in brackets, progress is visualized by tree hashes
     `###` moving forwards or backwards with each update; the rest of the bar is
     filled with dots `.`.
-
-    This widget has a priority of 1.
     """
-    priority = 1
-
     def __init__(self):
         self.position = 0
         self.going_forward = True
@@ -299,10 +295,7 @@ class PercentageBarWidget(Widget):
 
     The bar is enclosed in brackets, progress is visualized with hashes `#`
     the remaining part uses dots `.`.
-
-    This widget has a priority of 1.
     """
-    priority = 1
     requires_fixed_size = True
 
     def init(self, progressbar, remaining_width, **kwargs):
