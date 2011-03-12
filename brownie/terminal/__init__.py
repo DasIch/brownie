@@ -521,31 +521,43 @@ class TerminalWriter(object):
 
         The following widgets are available:
 
-        +--------------+------------------------+--------------+--------------+
-        | Name         | Requires Initial Value | ... Argument | ... maxsteps |
-        +==============+========================+==============+==============+
-        | `hint`       | Optional               | Op. (`hint`) | No           |
-        +--------------+------------------------+--------------+--------------+
-        | `percentage` | No                     | No           | Yes          |
-        +--------------+------------------------+--------------+--------------+
-        | `bar`        | No                     | No           | No           |
-        +--------------+------------------------+--------------+--------------+
-        | `sizedbar`   | No                     | No           | Yes          |
-        +--------------+------------------------+--------------+--------------+
-        | `step`       | Optional               | No           | Yes          |
-        +--------------+------------------------+--------------+--------------+
-        | `time`       | No                     | No           | No           |
-        +--------------+------------------------+--------------+--------------+
-        | `speed`      | No                     | No           | No           |
-        +--------------+------------------------+--------------+--------------+
+        `hint`
+            Shows a string of text that can be given using the `hint` argument
+            at any update performed with :meth:`.ProgressBar.init`,
+            :meth:`.ProgressBar.next` or :meth:`.ProgressBar.finish`. If the
+            argument is not given an empty string is used instead.
 
-        As you can see there are other things you have to think about as well;
-        certain widgets require that
-        :meth:`~brownie.terminal.progress.ProgressBar.next` is called with a
-        keyword argument to show additional information.
+        `percentage`
+            Shows the progress in percent; this requires `maxsteps` to be set.
 
-        Furthermore some widgets require that the number of steps is known in
-        order to calculate the percentage, ETA or similar things.
+        `bar`
+            Shows a simple bar which moves which each update not corresponding
+            with the progress being made. This is useful if you just want to
+            show that something is happening.
+
+        `sizedbar`
+            Shows a simple progress bar which is being filled corresponding
+            to the percentage of progress. This requires `maxsteps` to be
+            set.
+
+        `step`
+            Shows the current at maximum number of steps as ``step of steps``,
+            this method takes an initial value determining the unit of each
+            step e.g. if each step represents a byte and you choose `bytes`
+            as a unit a reasonable prefix will be chosen.
+
+            Supported units:
+
+            - `bytes` - Uses a binary prefix.
+
+            This requires `maxsteps` to be set.
+
+        `time`
+            Shows the elapsed time in hours, minutes and seconds.
+
+        `speed`
+            Shows the speed in bytes (or with a reasonable prefix) per seconds,
+            this assumes that each `step` represents a byte.
 
         If you want to implement your own widget(s) take a look at
         :class:`brownie.terminal.progress.Widget`, you can use them by passing
