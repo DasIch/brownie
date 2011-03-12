@@ -16,6 +16,7 @@ import textwrap
 from StringIO import StringIO
 
 from brownie.terminal import TerminalWriter
+from brownie.tests.terminal import progress
 
 from attest import Tests, TestBase, test, Assert
 
@@ -367,4 +368,4 @@ class TestTerminalWriter(TestBase):
         )
 
 
-tests = Tests([TestTerminalWriter])
+tests = Tests([progress.tests, TestTerminalWriter])
