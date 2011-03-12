@@ -33,7 +33,7 @@ def _make_stack_methods(name, lockname, stackname):
         Pops and returns an object from the %s stack.
         """
         with getattr(self, lockname):
-            stack = self._get_stack(getattr(self, stackname))
+            stack = self._get_objects(getattr(self, stackname))
             if stack is None:
                 raise RuntimeError('no objects on stack')
             self._cache.clear()

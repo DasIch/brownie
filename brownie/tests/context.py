@@ -129,6 +129,16 @@ class TestContextStackManagerThreadMixin(TestBase):
         Assert(bar_queue.get()) == ['bar']
         Assert(list(csm.iter_current_stack())) == []
 
+    @test
+    def basics(self):
+        csm = ThreadContextStackManager()
+        csm.push_thread('foo')
+        Assert(list(csm.iter_current_stack())) == ['foo']
+        csm.push_thread('bar')
+        Assert(list(csm.iter_current_stack())) == ['bar', 'foo']
+        Assert(csm.pop_thread()) == 'bar'
+        Assert(list(csm.iter_current_stack())) == ['foo']
+
 
 class EventletContextStackManager(
         ContextStackManagerEventletMixin,
