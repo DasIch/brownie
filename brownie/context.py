@@ -97,14 +97,14 @@ class ContextStackManagerBase(object):
     def _make_item(self, obj):
         return self._stackop(), obj
 
-    def _get_objects(self, index):
-        return getattr(self._contexts[index], 'objects', None)
+    def _get_objects(self, context):
+        return getattr(context, 'objects', None)
 
-    def _add_object(self, index, obj):
+    def _add_object(self, context, obj):
         item = self._make_item(obj)
-        objects = self._get_objects(index)
+        objects = self._get_objects(context)
         if objects is None:
-            self._contexts[index].objects = [item]
+            context.objects = [item]
         else:
             objects.append(item)
 
@@ -146,8 +146,8 @@ class ContextStackManagerThreadMixin(object):
     """
     def __init__(self, *args, **kwargs):
         super(ContextStackManagerThreadMixin, self).__init__(*args, **kwargs)
-        self._contexts.append(threading.local())
-        self._thread_stack = len(self._contexts) - 1
+        self._thread_context = threading.local()
+        self._contexts.append(self._thread_context)
         self._thread_lock = threading.Lock()
 
     def _get_ident(self):
@@ -157,7 +157,7 @@ class ContextStackManagerThreadMixin(object):
         )._get_ident() + (thread.get_ident(), )
 
     push_thread, pop_thread = _make_stack_methods(
-        'thread', '_thread_lock', '_thread_stack'
+        'thread', '_thread_lock', '_thread_context'
     )
 
 
@@ -172,8 +172,8 @@ class ContextStackManagerEventletMixin(object):
         super(ContextStackManagerEventletMixin, self).__init__(*args, **kwargs)
         from eventlet.corolocal import local
         from eventlet.semaphore import BoundedSemaphore
-        self._contexts.append(local())
-        self._coroutine_stack = len(self._contexts) - 1
+        self._coroutine_context = local()
+        self._contexts.append(self._coroutine_context)
         self._coroutine_lock = BoundedSemaphore()
 
     def _get_ident(self):
@@ -184,7 +184,7 @@ class ContextStackManagerEventletMixin(object):
         )._get_ident() + (get_ident(), )
 
     push_coroutine, pop_coroutine = _make_stack_methods(
-        'coroutine', '_coroutine_lock', '_coroutine_stack'
+        'coroutine', '_coroutine_lock', '_coroutine_context'
     )
 
 
