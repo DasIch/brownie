@@ -439,10 +439,18 @@ class CombinedMultiDict(CombinedDictMixin, ImmutableMultiDictMixin, dict):
 
 
 class _Link(object):
+    __slots__ = 'key', 'prev', 'next'
+
     def __init__(self, key=None, prev=None, next=None):
         self.key = key
         self.prev = prev
         self.next = next
+
+    def __getstate__(self):
+        return self.key, self.prev, self.next
+
+    def __setstate__(self, state):
+        self.key, self.prev, self.next = state
 
 
 class OrderedDict(dict):

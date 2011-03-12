@@ -11,6 +11,8 @@
 
 
 class missing(object):
+    __slots__ = ()
+
     def __nonzero__(self):
         return False
 

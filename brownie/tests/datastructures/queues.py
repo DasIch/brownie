@@ -1,7 +1,7 @@
 # coding: utf-8
 """
-    brownie.tests.datastructures
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    brownie.tests.datastructures.queues
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for :mod:`brownie.datastructures.queues`.
 

@@ -28,6 +28,7 @@ from itertools import izip, imap
 from contextlib import contextmanager
 
 from brownie.datastructures import namedtuple
+from brownie.terminal.progress import ProgressBar
 
 
 _ansi_sequence = '\033[%sm'
@@ -129,7 +130,7 @@ class TerminalWriter(object):
             **kwargs
         )
 
-    def __init__(self, stream, prefix=u'', indent='\t', autoescape=True,
+    def __init__(self, stream, prefix=u'', indent=' ' * 4, autoescape=True,
                  ignore_options=None):
         #: The stream to which the output is written.
         self.stream = stream
@@ -202,17 +203,34 @@ class TerminalWriter(object):
         Returns the width of the terminal.
 
         This falls back to the `COLUMNS` environment variable and if that fails
-        to `default`. Therefore the returned value might not not be at all
-        correct.
+        to :attr:`default_width` unless `default` is not None, in which case
+        `default` would be used.
+
+        Therefore the returned value might not not be at all correct.
         """
+        default = self.default_width if default is None else default
         try:
             _, width = self.get_dimensions()
         except NotImplementedError:
-            try:
-                width = int(os.environ.get('COLUMNS', self.default_width))
-            except ValueError:
-                width = default
+            width = int(os.environ.get('COLUMNS', default))
         return width
+
+    def get_usable_width(self, default_width=None):
+        """
+        Returns the width of the terminal remaining once the prefix and
+        indentation has been written.
+
+        :param default_width:
+            The width which is assumed per default for the terminal, see
+            :meth:`get_width` for more information.
+
+        .. warning::
+           Tabs are considered to have a length of 1. This problem may be
+           solved in the future until then it is recommended to avoid tabs.
+        """
+        return self.get_width(default_width) - (
+            len(self.prefix) + len(self.indent_string * self.indentation_level)
+        )
 
     def indent(self):
         """
@@ -313,6 +331,16 @@ class TerminalWriter(object):
             if escape is not None:
                 self.autoescape = previous_setting
 
+    def begin_line(self):
+        """
+        Writes the prefix and indentation to the stream.
+        """
+        self.write(
+            self.prefix + (self.indent_string * self.indentation_level),
+            escape=False,
+            flush=False
+        )
+
     @contextmanager
     def line(self):
         """
@@ -321,11 +349,7 @@ class TerminalWriter(object):
         This is useful if you want to write a line with multiple different
         options.
         """
-        self.write(
-            self.prefix + (self.indent_string * self.indentation_level),
-            escape=False,
-            flush=False
-        )
+        self.begin_line()
         try:
             yield
         finally:
@@ -377,13 +401,11 @@ class TerminalWriter(object):
             If ``True`` flushes the stream.
         """
         with self.options(**options):
-            self.write(
-                self.prefix + self.indent_string * self.indentation_level + (
-                    self.escape(line) if self.should_escape(escape) else line
-                ) + u'\n',
-                escape=False,
-                flush=flush
-            )
+            self.begin_line()
+            self.write(line, escape=self.should_escape(escape), flush=False)
+            self.newline()
+            if flush:
+                self.stream.flush()
 
     def writelines(self, lines, escape=None, flush=True, **options):
         """
@@ -473,37 +495,88 @@ class TerminalWriter(object):
                 escape=False
             )
         self.writelines(result, flush=False)
-        self.write('\n', escape=False)
+        self.newline()
+        self.stream.flush()
+
+    def progress(self, description, maxsteps=None, widgets=None):
+        """
+        Returns a :class:`~brownie.terminal.progress.ProgressBar` object
+        which can be used to write the current progress to the stream.
+
+        The progress bar is created from the `description` which is a string
+        with the following syntax:
+
+        Widgets -- the parts of the progress bar which are changed with each
+        update -- are represented in the form ``$[a-zA-Z]+``.
+
+        Some widgets required that you provide an initial value, this can be
+        done by adding ``:string`` where string is either ``[a-zA-Z]+`` or a
+        double-quoted string.
+
+        If you want to escape a ``$`` you simply precede it with another ``$``,
+        so ``$$foo` will not be treated as a widget and in the progress bar
+        ``$foo`` will be shown.
+
+        Quotes (``"``) in strings can be escaped with a backslash (``\``).
+
+        The following widgets are available:
+
+        `hint`
+            Shows a string of text that can be given using the `hint` argument
+            at any update performed with :meth:`.ProgressBar.init`,
+            :meth:`.ProgressBar.next` or :meth:`.ProgressBar.finish`. If the
+            argument is not given an empty string is used instead.
+
+        `percentage`
+            Shows the progress in percent; this requires `maxsteps` to be set.
+
+        `bar`
+            Shows a simple bar which moves which each update not corresponding
+            with the progress being made. This is useful if you just want to
+            show that something is happening.
+
+        `sizedbar`
+            Shows a simple progress bar which is being filled corresponding
+            to the percentage of progress. This requires `maxsteps` to be
+            set.
+
+        `step`
+            Shows the current at maximum number of steps as ``step of steps``,
+            this method takes an initial value determining the unit of each
+            step e.g. if each step represents a byte and you choose `bytes`
+            as a unit a reasonable prefix will be chosen.
+
+            Supported units:
+
+            - `bytes` - Uses a binary prefix.
+
+            This requires `maxsteps` to be set.
+
+        `time`
+            Shows the elapsed time in hours, minutes and seconds.
+
+        `speed`
+            Shows the speed in bytes (or with a reasonable prefix) per seconds,
+            this assumes that each `step` represents a byte.
+
+        If you want to implement your own widget(s) take a look at
+        :class:`brownie.terminal.progress.Widget`, you can use them by passing
+        them in a dictionary (mapping the name to the widget class) via the
+        `widgets` argument. You might also want to take a look at the source
+        code of the built-in widgets.
+
+        There are two things you have to look out for:
+        :class:`~brownie.terminal.progress.ProgressBar` objects are not
+        reusable if you need another object, call this method again. If you
+        attempt to write to the :attr:`stream` while using a progress bar the
+        behaviour is undefined.
+        """
+        return ProgressBar.from_string(
+            description, self, maxsteps=maxsteps, widgets=None
+        )
 
     def __repr__(self):
         return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
             self.__class__.__name__, self.stream, self.prefix,
             self.indent_string, self.autoescape
         )
-
-
-def main(): # pragma: no cover
-    writer = TerminalWriter.from_bytestream(sys.stdout)
-    for name in _colour_names:
-        with writer.line():
-            writer.write(name, text_colour=name)
-
-        with writer.line():
-            writer.write(name, background_colour=name)
-
-    for name in ATTRIBUTES:
-        if name == 'reset':
-            continue
-        writer.writeline(name, **{name: True})
-    with writer.line():
-        with writer.options(underline=True):
-            writer.write('underline')
-            with writer.options(background_colour='red'):
-                writer.write('background')
-                writer.write('text', text_colour='green')
-                writer.write('background')
-            writer.write('underline')
-
-
-if __name__ == '__main__':
-    main()

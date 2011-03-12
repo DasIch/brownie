@@ -9,12 +9,14 @@
     :license: BSD, see LICENSE.rst for details
 """
 from __future__ import with_statement
+import os
 import sys
 import codecs
 import textwrap
 from StringIO import StringIO
 
 from brownie.terminal import TerminalWriter
+from brownie.tests.terminal import progress
 
 from attest import Tests, TestBase, test, Assert
 
@@ -92,7 +94,7 @@ class TestTerminalWriter(TestBase):
     def init(self):
         Assert(self.writer.stream) == self.stream
         Assert(self.writer.prefix) == u''
-        Assert(self.writer.indent_string) == u'\t'
+        Assert(self.writer.indent_string) == u'    '
         Assert(self.writer.autoescape) == True
         Assert(self.writer.ignore_options) == True
 
@@ -128,11 +130,26 @@ class TestTerminalWriter(TestBase):
         writer = TerminalWriter.from_bytestream(sys.__stdout__)
         Assert(writer.get_width()) == writer.get_dimensions()[1]
 
+        writer = TerminalWriter.from_bytestream(StringIO())
+        os.environ['COLUMNS'] = '50'
+        Assert(writer.get_width()) == 50
+        del os.environ['COLUMNS']
+        Assert(writer.get_width()) == TerminalWriter.default_width
+        default_width = TerminalWriter.default_width
+        Assert(writer.get_width(default_width + 1)) == default_width + 1
+
+    @test
+    def get_usable_width(self):
+        writer = TerminalWriter.from_bytestream(StringIO(), prefix='spam')
+        Assert(writer.get_usable_width()) == writer.get_width() - len('spam')
+        writer.indent()
+        Assert(writer.get_usable_width()) == writer.get_width() - 8
+
     @test
     def indent(self):
         self.writer.indent()
         self.writer.writeline(u'foobar')
-        Assert(self.stream.getvalue()) == u'\tfoobar\n'
+        Assert(self.stream.getvalue()) == u'    foobar\n'
 
     @test
     def dedent(self):
@@ -148,7 +165,7 @@ class TestTerminalWriter(TestBase):
         with self.writer.options(indentation=True):
             self.writer.writeline(u'bar')
         self.writer.writeline(u'baz')
-        Assert(self.stream.getvalue()) == u'foo\n\tbar\nbaz\n'
+        Assert(self.stream.getvalue()) == u'foo\n    bar\nbaz\n'
 
         self.set_writer()
         try:
@@ -157,7 +174,7 @@ class TestTerminalWriter(TestBase):
                 raise Exception() # arbitary exception
         except Exception:
             self.writer.writeline(u'bar')
-        Assert(self.stream.getvalue()) == '\tfoo\nbar\n'
+        Assert(self.stream.getvalue()) == '    foo\nbar\n'
 
     @test
     def options_escaping(self):
@@ -173,6 +190,21 @@ class TestTerminalWriter(TestBase):
             '\x1b[31mbaz',
             '\\x1b[31mspam\n'
         ])
+
+    @test
+    def begin_line(self):
+        self.writer.begin_line()
+        Assert(self.stream.getvalue()) == ''
+
+        self.set_writer()
+        self.writer.prefix = 'foo'
+        self.writer.begin_line()
+        Assert(self.stream.getvalue()) == 'foo'
+
+        self.set_writer()
+        self.writer.indent()
+        self.writer.begin_line()
+        Assert(self.stream.getvalue()) == '    '
 
     @test
     def line(self):
@@ -195,7 +227,7 @@ class TestTerminalWriter(TestBase):
         self.writer.indent()
         with self.writer.line():
             self.writer.write('foo')
-        Assert(self.stream.getvalue()) == 'prefix\tfoo\n'
+        Assert(self.stream.getvalue()) == 'prefix    foo\n'
 
     @test
     def newline(self):
@@ -336,4 +368,4 @@ class TestTerminalWriter(TestBase):
         )
 
 
-tests = Tests([TestTerminalWriter])
+tests = Tests([progress.tests, TestTerminalWriter])

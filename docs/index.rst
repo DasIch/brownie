@@ -1,7 +1,15 @@
 .. include:: ../README.rst
 
-Documentation
--------------
+Guides
+------
+
+.. toctree::
+   :maxdepth: 2
+
+   guides/widgets.rst
+
+API Documentation
+-----------------
 
 .. toctree::
    :maxdepth: 2
