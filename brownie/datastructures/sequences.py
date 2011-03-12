@@ -203,14 +203,16 @@ class LazyList(object):
         """
         return self._collected_data.count(object)
 
-    def index(self, other):
+    def index(self, object):
         """
-        Returns first index of the `other` in list
+        Returns first index of the `object` in list
+
+        This method exhausts the internal iterator up until the given `object`.
         """
         for i, obj in enumerate(self):
-            if obj == other:
+            if obj == object:
                 return i
-        raise ValueError('%s not in LazyList' % other)
+        raise ValueError('%s not in LazyList' % object)
 
     def __getitem__(self, i):
         """
