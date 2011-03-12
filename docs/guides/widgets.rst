@@ -2,8 +2,8 @@ Creating Progress Bar Widgets
 =============================
 
 If you want to add a dynamic element to a progress bar you have to
-implement it as a so-called widget. This guide will give you additional
-information on the topic.
+implement it as a so-called widget. This guide will help you implement
+one.
 
 The :class:`~brownie.terminal.progress.Widget` Class
 ----------------------------------------------------
@@ -16,8 +16,12 @@ implement its interface so either way you might want to take a look at the
 API documentation now in either case you will need it later.
 
 
+Background Information
+----------------------
+
+
 The Basics
-----------
+``````````
 
 A progress bar is instantiated with a list of widgets, each widget
 provides an interface which provides information on the widget itself, its
@@ -46,7 +50,7 @@ widget.
 
 
 The Size
---------
+````````
 
 A progress bar may take up only a single line of space which we want to
 use wisely. Therefore each widget is called with the remaining width and
@@ -73,7 +77,7 @@ can use most of the space.
 
 
 Expectations
-------------
+````````````
 
 Your widget might have certain expectations for the progress bar, at the
 moment like requiring the maximum number of steps to be known (which would
@@ -82,3 +86,77 @@ otherwise be ``None``). If your widget does set the
 ``True``, this will result in a nice error message, for users of your
 widgets, if an attempt is made to use it with a progress bar without
 providing a maximum number of steps.
+
+
+Tutorial
+--------
+
+After reading so much about how everything works lets make a simple
+widget starting with someone really simple.
+
+In order to represent static text a `TextWidget` is used internally, we
+are going to create one just like it.
+
+First the basics, we text is given on initialization of the widget so we
+simply inherit from :class:`~brownie.terminal.progress.Widget` and
+implement a :meth:`__init__` method::
+
+    from brownie.terminal.progress import Widget
+
+    class TextWidget(Widget):
+        def __init__(self, text):
+            self.text = text
+
+In order to get the text displayed at the first stage we need to implement
+:meth:`init`. The method is called with the progress bar, the remaining
+width and any keyword arguments passed to the :meth:`next` method of the
+progress bar::
+
+    def init(self, progressbar, remaining_width, **kwargs):
+        return self.text
+
+The method is supposed to return a string, text is a string so we can
+simply return it.
+
+Now comes the next stage: updating. :meth:`update` is called with the same
+arguments as :meth:`init` and again we simply want to display the text so
+we return it::
+
+    def update(self, progressbar, remaining_width, **kwargs):
+        return self.text
+
+As both methods have the same signature and do the same we can reduce
+:meth:`update` to a simple assignment::
+
+    update = init
+
+We can ignore :meth:`finish` as it would do the same as :meth:`update` and
+the default implementation of :meth:`finish` calls :meth:`update` and
+returns the result of that call.
+
+We want to make sure that the text is displayed and has priority over
+something like a bar showing the percentage by being filled and as we know
+the size of our output we can implement :meth:`size_hint` for that::
+
+    provides_size_hint = True
+
+    def size_hint(self, progressbar):
+        return len(self.text)
+
+So all in all our result looks like this::
+
+    from brownie.terminal.progress import Widget
+
+    class TextWidget(Widget):
+        provides_size_hint = True
+
+        def __init__(self, text):
+            self.text = text
+
+        def size_hint(self, progressbar):
+            return len(self.text)
+
+        def init(self, progressbar, remaining_width, **kwargs):
+            return self.text
+
+        update = init
