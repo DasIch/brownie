@@ -17,8 +17,8 @@ These are helpers for application output on a terminal.
 Progress Bar
 ------------
 
-This is the 'low-level' progress bar implementation used by the
-:class:`~TerminalWriter`.
+This is the 'low-level' progress bar implementation used by
+:meth:`TerminalWriter.progress`.
 
 .. module:: brownie.terminal.progress
 
