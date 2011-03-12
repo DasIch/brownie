@@ -1,3 +1,5 @@
+.. _creating-widgets:
+
 Creating Progress Bar Widgets
 =============================
 

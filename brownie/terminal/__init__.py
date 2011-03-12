@@ -570,6 +570,8 @@ class TerminalWriter(object):
         reusable if you need another object, call this method again. If you
         attempt to write to the :attr:`stream` while using a progress bar the
         behaviour is undefined.
+
+        .. seealso:: :ref:`creating-widgets`
         """
         return ProgressBar.from_string(
             description, self, maxsteps=maxsteps, widgets=None
