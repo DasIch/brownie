@@ -208,9 +208,9 @@ class HintWidget(Widget):
     Requires that :meth:`ProgressBar.next` is called with a `hint` keyword
     argument.
 
-    This widget has a priority of 2.
+    This widget has a priority of 1.
     """
-    priority = 2
+    priority = 1
 
     def __init__(self, initial_hint=u''):
         self.initial_hint = initial_hint
