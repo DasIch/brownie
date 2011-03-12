@@ -354,9 +354,9 @@ class TimeWidget(Widget):
     Shows the elapsed time in hours, minutes and seconds as
     ``$hours:$minutes:$seconds``.
 
-    This widget has a priority of 3.
+    This widget has a priority of 2.
     """
-    priority = 3
+    priority = 2
 
     def init(self, progressbar, remaining_width, **kwargs):
         self.start_time = datetime.now()
@@ -382,9 +382,9 @@ class DataTransferSpeedWidget(Widget):
     """
     Shows the data transfer speed in bytes per second using SI prefixes.
 
-    This widget has a priority of 3.
+    This widget has a priority of 2.
     """
-    priority = 3
+    priority = 2
 
     def init(self, progressbar, remaining_width, **kwargs):
         self.begin_timing = datetime.now()
