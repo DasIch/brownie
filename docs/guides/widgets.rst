@@ -160,3 +160,12 @@ So all in all our result looks like this::
             return self.text
 
         update = init
+
+In order to use the widget you have to pass it to
+:meth:`brownie.terminal.TerminalWriter.progress`::
+
+    yourwidgets = {'yourwidget': TextWidget}
+
+    with writer.progress('$yourwidget', widgets=yourwidgets) as bar:
+        # do something with progressbar ('bar')
+        pass
