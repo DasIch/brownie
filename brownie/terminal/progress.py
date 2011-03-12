@@ -136,12 +136,13 @@ class Widget(object):
     #: line available.
     priority = 0
 
-    #: Should be ``True`` if :meth:`size_hint` returns not ``None``.
-    provides_size_hint = False
-
     #: Should be ``True`` if this widget depends on
     #: :attr:`ProgressBar.maxsteps` being set to something other than ``None``.
     requires_fixed_size = False
+
+    @property
+    def provides_size_hint(self):
+        return self.size_hint.im_func is not Widget.size_hint.im_func
 
     def size_hint(self, progressbar):
         """
@@ -183,8 +184,6 @@ class TextWidget(Widget):
     """
     Represents static text in a progress bar.
     """
-    provides_size_hint = True
-
     def __init__(self, text):
         self.text = text
 
@@ -232,7 +231,6 @@ class PercentageWidget(Widget):
     """
     Represents a string showing the progress as percentage.
     """
-    provides_size_hint = True
     requires_fixed_size = True
 
     def calculate_percentage(self, progressbar):
@@ -323,7 +321,6 @@ class StepWidget(Widget):
 
     - `'bytes'` - binary prefix only, SI might be added in the future
     """
-    provides_size_hint = True
     requires_fixed_size = True
     units = ImmutableDict({
         'bytes': bytes_to_string,

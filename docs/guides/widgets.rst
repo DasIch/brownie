@@ -64,10 +64,8 @@ able to handle the widgets intelligently.
 A lot of widgets know before update is called (given the number of steps)
 how much space they require, if this is the case for your widget you can
 implement :meth:`~brownie.terminal.progress.Widget.size_hint` so that it
-returns the required size, if you do so set
-:attr:`~brownie.terminal.progress.Widget.provides_size_hint` to ``True``.
-This allows the progress bar to allocate the size for your widget before
-any the other widgets are rendered.
+returns the required size. This allows the progress bar to allocate the size
+for your widget before any the other widgets are rendered.
 
 If it is not possible for your widget to determine the required space, for
 example because it relies on time, it can set the
@@ -138,8 +136,6 @@ We want to make sure that the text is displayed and has priority over
 something like a bar showing the percentage by being filled and as we know
 the size of our output we can implement :meth:`size_hint` for that::
 
-    provides_size_hint = True
-
     def size_hint(self, progressbar):
         return len(self.text)
 
@@ -148,8 +144,6 @@ So all in all our result looks like this::
     from brownie.terminal.progress import Widget
 
     class TextWidget(Widget):
-        provides_size_hint = True
-
         def __init__(self, text):
             self.text = text
 
