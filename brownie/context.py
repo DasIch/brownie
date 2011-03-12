@@ -61,6 +61,29 @@ class ContextStackManagerBase(object):
     This helper allows you to make stack operations local to the current
     execution context, ensuring that the stack remains the same in other
     contexts unless you want it to change there.
+
+    As applications tend to have very different requirements and use different
+    contexts each is implemented in a separate mixin, this way it easily
+    possible to create a `ContextStackManager` for your needs.
+
+    Assuming your application uses threads and eventlet for greenthreads you
+    would create a `ContextStackManager` like this::
+
+        class ContextStackManager(
+                ContextStackManagerEventletMixin,
+                ContextStackManagerThreadMixin,
+                ContextStackManagerBase
+            ):
+            pass
+
+    Greenthreads are executed in a thread, whereas threads are executed in
+    the application thread (handled by the base class) this is why
+    `ContextStackManager` inherits from these classes exactly in this order.
+
+    Currently available mixins are:
+
+    - :class:`ContextStackManagerThreadMixin`
+    - :class:`ContextStackManagerEventletMixin`
     """
     def __init__(self, _object_cache_maxsize=256):
         self._application_stack = []
