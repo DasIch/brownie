@@ -191,6 +191,18 @@ class TestContextStackManagerEventletMixin(TestBase):
         Assert(foo_queue.get()) == ['foo']
         Assert(bar_queue.get()) == ['bar']
 
+    @test
+    def basics(self):
+        csm = EventletContextStackManager()
+        with Assert.raises(RuntimeError):
+            csm.pop_coroutine()
+        csm.push_coroutine('foo')
+        Assert(list(csm.iter_current_stack())) == ['foo']
+        csm.push_coroutine('bar')
+        Assert(list(csm.iter_current_stack())) == ['bar', 'foo']
+        Assert(csm.pop_coroutine()) == 'bar'
+        Assert(list(csm.iter_current_stack())) == ['foo']
+
 
 tests = Tests([TestContextStackManagerBase, TestContextStackManagerThreadMixin])
 if eventlet is not None:
