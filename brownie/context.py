@@ -170,8 +170,14 @@ class ContextStackManagerEventletMixin(object):
     """
     def __init__(self, *args, **kwargs):
         super(ContextStackManagerEventletMixin, self).__init__(*args, **kwargs)
-        from eventlet.corolocal import local
-        from eventlet.semaphore import BoundedSemaphore
+        try:
+            from eventlet.corolocal import local
+            from eventlet.semaphore import BoundedSemaphore
+        except ImportError:
+            raise RuntimeError(
+                'the eventlet library is required for %s' %
+                self.__class__.__name__
+            )
         self._coroutine_context = local()
         self._contexts.append(self._coroutine_context)
         self._coroutine_lock = BoundedSemaphore()
