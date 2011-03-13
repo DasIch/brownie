@@ -10,10 +10,15 @@ This allows us to easily create unit tests, to test our documentation and
 to run all tests using various configurations defined through their
 :ref:`test environments <test-environments>`.
 
-Usually you just want to run all tests, in order to do that simply
-execute::
+Usually you just want to run all tests with the default python version, in
+order to do that simply execute::
 
     $ make test
+
+Before you commit you should run those tests again all supported python
+versions, so you have to execute::
+
+    $ make test-all
 
 Sometimes you may want to run tests only in a specific test environment,
 in order to do that you need to use tox_ directly::

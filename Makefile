@@ -1,6 +1,7 @@
 help:
 	@echo "Possible targets:"
 	@echo "    test           - runs the testsuite"
+	@echo "    test-all       - runs the testsuite against all python versions"
 	@echo "    doc            - builds the html documentation"
 	@echo "    view-doc       - opens the documentation in your web browser"
 	@echo "    upload-doc     - uploads the documentation to PyPI"
@@ -11,6 +12,10 @@ help:
 	@echo "    view-coverage  - show HTML coverage report in your web browser"
 
 test:
+	@python runtests.py
+	@PYTHONPATH=. python brownie/terminal
+
+test-all:
 	@tox
 
 doc:
