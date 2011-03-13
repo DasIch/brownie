@@ -338,10 +338,14 @@ class TestDataTransferSpeedWidget(TestBase):
         widget.init(progressbar, 100)
         time.sleep(1)
         progressbar.step += 50
-        assert 45.0 < float(widget.update(progressbar, 100)[:-4]) < 55.0
+        speed = float(widget.update(progressbar, 100)[:-4])
+        Assert(speed) > 45.0
+        Assert(speed) < 55.0
         time.sleep(2)
         progressbar.step += 50
-        assert 20.0 < float(widget.update(progressbar, 100)[:-4]) < 30.0
+        speed = float(widget.update(progressbar, 100)[:-4])
+        Assert(speed) > 20.0
+        Assert(speed) < 30.0
 
 tests.register(TestDataTransferSpeedWidget)
 
