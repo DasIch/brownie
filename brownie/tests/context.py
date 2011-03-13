@@ -150,60 +150,62 @@ class EventletContextStackManager(
 
 
 class TestContextStackManagerEventletMixin(TestBase):
-    @test_if(not eventlet)
-    def init(self):
-        with Assert.raises(RuntimeError):
-            EventletContextStackManager()
+    if eventlet:
+        @test
+        def inherits_application_stack(self):
+            csm = EventletContextStackManager()
+            csm.push_application('foo')
 
-    @test
-    def inherits_application_stack(self):
-        csm = EventletContextStackManager()
-        csm.push_application('foo')
-
-        def foo(csm, queue):
-            queue.put(list(csm.iter_current_stack()))
-            csm.push_coroutine('bar')
-            queue.put(list(csm.iter_current_stack()))
-
-        queue = eventlet.Queue()
-        greenthread = eventlet.spawn(foo, csm, queue)
-        greenthread.wait()
-        Assert(queue.get()) == ['foo']
-        Assert(queue.get()) == ['bar', 'foo']
-
-    @test
-    def multiple_greenthread_contexts(self):
-        csm = EventletContextStackManager()
-
-        def make_func(name):
-            def func(csm, queue):
-                csm.push_coroutine(name)
+            def foo(csm, queue):
                 queue.put(list(csm.iter_current_stack()))
-            func.__name__ = name
-            return func
+                csm.push_coroutine('bar')
+                queue.put(list(csm.iter_current_stack()))
 
-        foo_queue = eventlet.Queue()
-        bar_queue = eventlet.Queue()
-        foo = eventlet.spawn(make_func('foo'), csm, foo_queue)
-        bar = eventlet.spawn(make_func('bar'), csm, bar_queue)
-        foo.wait()
-        bar.wait()
-        Assert(foo_queue.get()) == ['foo']
-        Assert(bar_queue.get()) == ['bar']
+            queue = eventlet.Queue()
+            greenthread = eventlet.spawn(foo, csm, queue)
+            greenthread.wait()
+            Assert(queue.get()) == ['foo']
+            Assert(queue.get()) == ['bar', 'foo']
 
-    @test
-    def basics(self):
-        csm = EventletContextStackManager()
-        with Assert.raises(RuntimeError):
-            csm.pop_coroutine()
-        csm.push_coroutine('foo')
-        Assert(list(csm.iter_current_stack())) == ['foo']
-        csm.push_coroutine('bar')
-        Assert(list(csm.iter_current_stack())) == ['bar', 'foo']
-        Assert(csm.pop_coroutine()) == 'bar'
-        Assert(list(csm.iter_current_stack())) == ['foo']
+        @test
+        def multiple_greenthread_contexts(self):
+            csm = EventletContextStackManager()
+
+            def make_func(name):
+                def func(csm, queue):
+                    csm.push_coroutine(name)
+                    queue.put(list(csm.iter_current_stack()))
+                func.__name__ = name
+                return func
+
+            foo_queue = eventlet.Queue()
+            bar_queue = eventlet.Queue()
+            foo = eventlet.spawn(make_func('foo'), csm, foo_queue)
+            bar = eventlet.spawn(make_func('bar'), csm, bar_queue)
+            foo.wait()
+            bar.wait()
+            Assert(foo_queue.get()) == ['foo']
+            Assert(bar_queue.get()) == ['bar']
+
+        @test
+        def basics(self):
+            csm = EventletContextStackManager()
+            with Assert.raises(RuntimeError):
+                csm.pop_coroutine()
+            csm.push_coroutine('foo')
+            Assert(list(csm.iter_current_stack())) == ['foo']
+            csm.push_coroutine('bar')
+            Assert(list(csm.iter_current_stack())) == ['bar', 'foo']
+            Assert(csm.pop_coroutine()) == 'bar'
+            Assert(list(csm.iter_current_stack())) == ['foo']
+    else:
+        @test
+        def init(self):
+            with Assert.raises(RuntimeError):
+                EventletContextStackManager()
 
 
-tests = Tests([TestContextStackManagerBase, TestContextStackManagerThreadMixin])
-if eventlet is not None:
-    tests.register(TestContextStackManagerEventletMixin)
+tests = Tests([
+    TestContextStackManagerBase, TestContextStackManagerThreadMixin,
+    TestContextStackManagerEventletMixin
+])
