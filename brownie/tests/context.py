@@ -132,6 +132,8 @@ class TestContextStackManagerThreadMixin(TestBase):
     @test
     def basics(self):
         csm = ThreadContextStackManager()
+        with Assert.raises(RuntimeError):
+            csm.pop_thread()
         csm.push_thread('foo')
         Assert(list(csm.iter_current_stack())) == ['foo']
         csm.push_thread('bar')
