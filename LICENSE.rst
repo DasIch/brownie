@@ -9,7 +9,7 @@ work with the names of the authors without written consent.
 Brownie License Text
 --------------------
 
-Copyright (c) 2010 by Daniel Neuhäuser and :ref:`others <authors>`.
+Copyright (c) 2010-2011 by Daniel Neuhäuser and :ref:`others <authors>`.
 
 Redistribution and use in source and binary forms of the software as well
 as documentation, with or without modification, are permitted provided that
