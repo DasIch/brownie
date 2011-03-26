@@ -14,3 +14,5 @@ languages.
    :members:
 
 .. autoclass:: curried
+
+.. autofunction:: fmap

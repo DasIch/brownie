@@ -14,6 +14,7 @@ features.
 - Added :class:`brownie.datastructures.StackedObject`.
 - Added `doc` parameter to :func:`brownie.datastructures.sequences.namedtuple`.
 - Added :mod:`brownie.context`.
+- Added :func:`brownie.functional.fmap`.
 
 0.5.1
 -----

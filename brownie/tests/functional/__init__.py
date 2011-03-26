@@ -12,7 +12,7 @@ from __future__ import with_statement
 
 from attest import Tests, Assert, TestBase, test
 
-from brownie.functional import compose, flip, curried
+from brownie.functional import compose, flip, curried, fmap
 from brownie.tests.functional import signature
 
 
@@ -106,3 +106,8 @@ class TestCurried(TestBase):
 
 
 tests.register(TestCurried)
+
+@tests.test
+def test_fmap():
+    Assert(list(fmap(2, [lambda x: 2 * x, lambda x: 3 * x]))) == [4, 6]
+    Assert(list(fmap(1, [(lambda x: x * 2, lambda x: x + 1)]))) == [4]

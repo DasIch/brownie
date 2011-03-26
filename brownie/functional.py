@@ -261,4 +261,23 @@ class curried(object):
         return self._updated(collected_args)
 
 
-__all__ = ['compose', 'flip', 'Signature', 'curried']
+def fmap(obj, functions):
+    """
+    Returns a generator yielding `function(obj)` for each function in
+    `functions`.
+
+    `functions` may contain iterables of functions instead of functions which
+    will be composed and called with `obj`.
+
+    .. versionadded:: 0.6
+    """
+    for function in functions:
+        try:
+            iter(function)
+        except TypeError:
+            yield function(obj)
+        else:
+            yield compose(*function)(obj)
+
+
+__all__ = ['compose', 'flip', 'Signature', 'curried', 'fmap']
