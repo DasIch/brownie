@@ -10,6 +10,7 @@ from attest import Tests
 
 
 all = Tests('brownie.tests.%s.tests' % module for module in [
+    'text',
     'itools',
     'caching',
     'proxies',

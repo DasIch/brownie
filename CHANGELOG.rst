@@ -15,6 +15,7 @@ features.
 - Added `doc` parameter to :func:`brownie.datastructures.sequences.namedtuple`.
 - Added :mod:`brownie.context`.
 - Added :func:`brownie.functional.fmap`.
+- Added :mod:`brownie.text`.
 
 0.5.1
 -----

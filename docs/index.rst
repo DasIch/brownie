@@ -24,6 +24,7 @@ API Documentation
    api/proxies
    api/terminal
    api/context
+   api/text
 
 Developer Documentation
 -----------------------
