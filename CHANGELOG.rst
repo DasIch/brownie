@@ -25,7 +25,7 @@ Added Functions
   - :func:`brownie.functional.fmap`.
 
 Changed Functions
-  - Added `doc` parameter to :func:`brownie.datastructures.sequences.namedtuple`.
+  - Added `doc` parameter to :func:`brownie.datastructures.namedtuple`.
 
 
 0.5.1
