@@ -8,14 +8,25 @@ features.
 
 *Currently in development*
 
-- Added :class:`brownie.datastructures.PeekableIterator`.
-- Added :mod:`brownie.terminal`.
-- Added :meth:`brownie.datastructures.LazyList.index`.
-- Added :class:`brownie.datastructures.StackedObject`.
-- Added `doc` parameter to :func:`brownie.datastructures.sequences.namedtuple`.
-- Added :mod:`brownie.context`.
-- Added :func:`brownie.functional.fmap`.
-- Added :mod:`brownie.text`.
+Added Modules
+  - :mod:`brownie.terminal`.
+  - :mod:`brownie.context`.
+  - :mod:`brownie.text`.
+
+Added Classes
+  - :class:`brownie.datastructures.PeekableIterator`.
+  - :class:`brownie.datastructures.StackedObject`.
+
+Changed Classes
+  - Added :meth:`~brownie.datastructures.LazyList.index` to
+    :class:`brownie.datastructures.LazyList`.
+
+Added Functions
+  - :func:`brownie.functional.fmap`.
+
+Changed Functions
+  - Added `doc` parameter to :func:`brownie.datastructures.sequences.namedtuple`.
+
 
 0.5.1
 -----
@@ -25,21 +36,28 @@ features.
 0.5 - Heinzelmännchen
 ---------------------
 
-- Allow using :func:`brownie.itools.unique` with non-hashable items.
-- Added :mod:`pickle` support to :class:`brownie.datastructures.LazyList`.
-- Made :class:`brownie.datastructures.ImmutableDict` hashable.
-- Made :class:`brownie.datastructures.CombinedDict` hashable.
-- Made :class:`brownie.datastructures.ImmutableMultiDict` hashable.
-- Made :class:`brownie.datastructures.ImmutableOrderedDict` hashable.
-- Added :func:`brownie.datastructures.namedtuple`.
-- Added :class:`brownie.functional.Signature`.
-- Added :class:`brownie.datastructures.FixedDict`.
-- Added `seen` parameter to :func:`brownie.itools.unique`.
-- Added :class:`brownie.functional.curried`.
-- Added :class:`brownie.datastructures.CombinedSequence`.
-- Added :class:`brownie.datastructures.CombinedList`.
-- Added :func:`brownie.itools.flatten`.
-- Added :func:`brownie.caching.memoize`.
+Added Classes
+  - :class:`brownie.functional.Signature`.
+  - :class:`brownie.datastructures.FixedDict`.
+  - :class:`brownie.functional.curried`.
+  - :class:`brownie.datastructures.CombinedSequence`.
+  - :class:`brownie.datastructures.CombinedList`.
+
+Changed Classes
+  - Added :mod:`pickle` support to :class:`brownie.datastructures.LazyList`.
+  - Made :class:`brownie.datastructures.ImmutableDict` hashable.
+  - Made :class:`brownie.datastructures.CombinedDict` hashable.
+  - Made :class:`brownie.datastructures.ImmutableMultiDict` hashable.
+  - Made :class:`brownie.datastructures.ImmutableOrderedDict` hashable.
+
+Added Functions
+  - :func:`brownie.datastructures.namedtuple`.
+  - :func:`brownie.itools.flatten`.
+  - :func:`brownie.caching.memoize`.
+
+Changed Functions
+  - Allow using :func:`brownie.itools.unique` with non-hashable items.
+  - Added `seen` parameter to :func:`brownie.itools.unique`.
 
 0.4.1
 -----
@@ -93,13 +111,17 @@ features.
 0.2 - Boggart
 -------------
 
-- Added :class:`brownie.itools.chain`.
-- Added :class:`brownie.datastructures.OrderedSet`.
-- Added :mod:`brownie.importing`.
-- Added :class:`brownie.datastructures.CombinedDict`.
-- Added :class:`brownie.datastructures.CombinedMultiDict`.
-- Added :class:`brownie.datastructures.ImmutableOrderedDict`.
-- Added :mod:`brownie.abstract`.
+Added Modules
+  - :mod:`brownie.importing`
+  - :mod:`brownie.abstract`
+
+Added Classes
+  - :class:`brownie.itools.chain`
+  - :class:`brownie.datastructures.OrderedSet`
+  - :class:`brownie.datastructures.CombinedDict`.
+  - :class:`brownie.datastructures.CombinedMultiDict`.
+  - :class:`brownie.datastructures.ImmutableOrderedDict`.
+
 - Make type checks work for dictionaries based on interfaces and
   behaviour.
 
