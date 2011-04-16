@@ -37,12 +37,8 @@ class FlushStream(object):
 
 class TestTerminalWriter(TestBase):
     def set_writer(self, writer=TerminalWriter, stream=None):
-        if stream is None:
-            self.stream = codecs.getwriter('utf-8')(StringIO())
-            self.writer = TerminalWriter(self.stream)
-        else:
-            self.stream = stream
-            self.writer = TerminalWriter.from_bytestream(stream)
+        self.stream = StringIO() if stream is None else stream
+        self.writer = writer(self.stream)
 
     def __context__(self):
         self.set_writer()
@@ -50,71 +46,19 @@ class TestTerminalWriter(TestBase):
         del self.stream, self.writer
 
     @test
-    def from_bytestream(self):
-        # detect encoding from stream
-        stream = StringIO()
-        stream.encoding = 'utf-8'
-        writer = TerminalWriter.from_bytestream(stream)
-        with Assert.not_raising(UnicodeEncodeError):
-            writer.writeline(u'äöü')
-        Assert(stream.getvalue()) == u'äöü\n'.encode(stream.encoding)
-
-        # use given encoding
-        stream = StringIO()
-        writer = TerminalWriter.from_bytestream(stream, encoding='ascii')
-        writer.writeline(u'foo')
-        with Assert.raises(UnicodeEncodeError):
-            writer.writeline(u'äöü')
-        Assert(stream.getvalue()) == 'foo\n'
-
-        # use given encoding with ignore error policy
-        stream = StringIO()
-        writer = TerminalWriter.from_bytestream(
-            stream, encoding='ascii', errors='ignore'
-        )
-        writer.writeline(u'fooäöübar')
-        Assert(stream.getvalue()) == 'foobar\n'
-
-        # use given encoding with replace error policy
-        stream = StringIO()
-        writer = TerminalWriter.from_bytestream(
-            stream, encoding='ascii', errors='replace'
-        )
-        writer.writeline(u'fooäöübar')
-        Assert(stream.getvalue()) == 'foo???bar\n'
-
-        # fallback to sys.getdefaultencoding
-        stream = StringIO()
-        writer = TerminalWriter.from_bytestream(stream)
-        Assert(sys.getdefaultencoding()) == 'ascii'
-        with Assert.raises(UnicodeEncodeError):
-            writer.writeline(u'äöü')
-
-    @test
     def init(self):
         Assert(self.writer.stream) == self.stream
+        Assert(self.writer.fallback_encoding) == 'ascii'
         Assert(self.writer.prefix) == u''
         Assert(self.writer.indent_string) == u'    '
         Assert(self.writer.autoescape) == True
         Assert(self.writer.ignore_options) == True
 
-        stream = StringIO()
-        stream.isatty = lambda: True
-        writer = TerminalWriter.from_bytestream(stream)
-        Assert(writer.ignore_options) == False
-        writer = TerminalWriter.from_bytestream(stream, ignore_options=True)
-        Assert(writer.ignore_options) == True
-
-        self.set_writer()
-        Assert(writer.ignore_options) == True
-        writer = TerminalWriter.from_bytestream(stream, ignore_options=False)
-        Assert(writer.ignore_options) == False
-
     @test
     def get_dimensions(self):
         with Assert.raises(NotImplementedError):
             self.writer.get_dimensions()
-        writer = TerminalWriter.from_bytestream(sys.__stdout__)
+        writer = TerminalWriter(sys.__stdout__)
         with Assert.not_raising(NotImplementedError):
             dimensions = writer.get_dimensions()
         height, width = dimensions
@@ -127,10 +71,10 @@ class TestTerminalWriter(TestBase):
     def get_width(self):
         with Assert.not_raising(Exception):
             self.writer.get_width()
-        writer = TerminalWriter.from_bytestream(sys.__stdout__)
+        writer = TerminalWriter(sys.__stdout__)
         Assert(writer.get_width()) == writer.get_dimensions()[1]
 
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         os.environ['COLUMNS'] = '50'
         Assert(writer.get_width()) == 50
         del os.environ['COLUMNS']
@@ -140,7 +84,7 @@ class TestTerminalWriter(TestBase):
 
     @test
     def get_usable_width(self):
-        writer = TerminalWriter.from_bytestream(StringIO(), prefix='spam')
+        writer = TerminalWriter(StringIO(), prefix='spam')
         Assert(writer.get_usable_width()) == writer.get_width() - len('spam')
         writer.indent()
         Assert(writer.get_usable_width()) == writer.get_width() - 8
@@ -357,14 +301,11 @@ class TestTerminalWriter(TestBase):
     @test
     def repr(self):
         Assert(repr(self.writer)) == ('TerminalWriter('
-            '%r, '
-            'prefix=%r, '
-            'indent=%r, '
-            'autoescape=%r'
-            ')'
+            '%r, %r, %r, %r, %r, %r)'
         ) % (
-            self.stream, self.writer.prefix, self.writer.indent_string,
-            self.writer.autoescape
+            self.stream, self.writer.fallback_encoding, self.writer.prefix,
+            self.writer.indent_string, self.writer.autoescape,
+            self.writer.ignore_options
         )
 
 

@@ -27,6 +27,7 @@ except ImportError: # pragma: no cover
 from itertools import izip, imap
 from contextlib import contextmanager
 
+from brownie.text import transliterate
 from brownie.datastructures import namedtuple
 from brownie.terminal.progress import ProgressBar
 
@@ -76,7 +77,10 @@ class TerminalWriter(object):
     This is a helper for dealing with output to a terminal.
 
     :param stream:
-        A stream which takes unicode for writing.
+        The stream to which the output is written, per default `sys.stdout`.
+
+    :param fallback_encoding:
+        The encoding used if `stream` doesn't provide one.
 
     :param prefix:
         A prefix used when an entire line is written.
@@ -99,41 +103,12 @@ class TerminalWriter(object):
     #: Specifies the default terminal width.
     default_width = 80
 
-    @classmethod
-    def from_bytestream(cls, stream, encoding=None, errors='strict', **kwargs):
-        """
-        Returns a :class:`TerminalWriter` for the given byte `stream`.
-
-        If an encoding cannot be determined from the stream it will fallback
-        to the given `encoding`, if it is `None` :meth:`sys.getdefaultencoding`
-        will be used.
-
-        Should an error occur during encoding you can specify what should
-        happen with the `errors` parameter:
-
-        ``'strict'``
-            Raise an exception if an error occurs.
-
-        ``'ignore'``
-            Ignore the characters for which the error occurs, these will be
-            removed from the string.
-
-        ``'replace'``
-            Replaces the characters for which the error occurs with 'safe'
-            characters, usually '?'.
-        """
-        encoding = getattr(stream, 'encoding', encoding)
-        if encoding is None:
-            encoding = sys.getdefaultencoding()
-        return cls(
-            codecs.lookup(encoding).streamwriter(stream, errors),
-            **kwargs
-        )
-
-    def __init__(self, stream, prefix=u'', indent=' ' * 4, autoescape=True,
-                 ignore_options=None):
+    def __init__(self, stream=sys.stdout, fallback_encoding='ascii', prefix=u'',
+                 indent=' ' * 4, autoescape=True, ignore_options=None):
         #: The stream to which the output is written.
         self.stream = stream
+        #: Encoding used if :attr:`stream` doesn't provide one.
+        self.fallback_encoding = fallback_encoding
         #: The prefix used by :meth:`writeline`.
         self.prefix = prefix
         #: The string used for indentation.
@@ -161,6 +136,19 @@ class TerminalWriter(object):
 
         self.ansi_re = re.compile('[%s]' % ''.join(self.control_characters))
         self.indentation_level = 0
+
+    @property
+    def encoding(self):
+        """
+        The encoding provided by the stream or :attr:`fallback_encoding`.
+        """
+        return getattr(self.stream, 'encoding', self.fallback_encoding)
+
+    def encode(self, string):
+        try:
+            return string.encode(self.encoding)
+        except UnicodeError:
+            return transliterate(string, length='one').encode('ascii')
 
     def escape(self, string):
         """
@@ -381,9 +369,9 @@ class TerminalWriter(object):
             If ``True`` flushes the stream.
         """
         with self.options(**options):
-            self.stream.write(
-                self.escape(string) if self.should_escape(escape) else string
-            )
+            escaped = self.escape(string) if self.should_escape(escape) else string
+            encoded = self.encode(escaped)
+            self.stream.write(encoded)
             if flush:
                 self.stream.flush()
 
@@ -578,7 +566,8 @@ class TerminalWriter(object):
         )
 
     def __repr__(self):
-        return '%s(%r, prefix=%r, indent=%r, autoescape=%r)' % (
-            self.__class__.__name__, self.stream, self.prefix,
-            self.indent_string, self.autoescape
+        return '%s(%r, %r, %r, %r, %r, %r)' % (
+            self.__class__.__name__, self.stream, self.fallback_encoding,
+            self.prefix, self.indent_string, self.autoescape,
+            self.ignore_options
         )

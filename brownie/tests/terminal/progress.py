@@ -58,7 +58,7 @@ def test_parse_progressbar():
 class TestWidget(TestBase):
     @test
     def size_hint(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = Widget()
         assert not widget.provides_size_hint
@@ -66,7 +66,7 @@ class TestWidget(TestBase):
 
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = Widget()
         with Assert.raises(NotImplementedError) as exc:
@@ -75,7 +75,7 @@ class TestWidget(TestBase):
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = Widget()
         with Assert.raises(NotImplementedError) as exc:
@@ -90,7 +90,7 @@ class TestWidget(TestBase):
             def update(self, writer, remaining_width, **kwargs):
                 self.update_called = True
 
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = MyWidget()
         widget.finish(progressbar, writer.get_width())
@@ -106,7 +106,7 @@ tests.register(TestWidget)
 
 @tests.test
 def test_text_widget():
-    writer = TerminalWriter.from_bytestream(StringIO())
+    writer = TerminalWriter(StringIO())
     progressbar = ProgressBar([], writer)
     widget = TextWidget('foobar')
     assert widget.provides_size_hint
@@ -120,7 +120,7 @@ def test_text_widget():
 
 @tests.test
 def test_hint_widget():
-    writer = TerminalWriter.from_bytestream(StringIO())
+    writer = TerminalWriter(StringIO())
     progressbar = ProgressBar([], writer)
     widget = HintWidget('foo')
     assert not widget.provides_size_hint
@@ -137,7 +137,7 @@ def test_hint_widget():
 class TestPercentageWidget(TestBase):
     @test
     def size_hint(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=20)
         widget = PercentageWidget()
         assert widget.provides_size_hint
@@ -151,14 +151,14 @@ class TestPercentageWidget(TestBase):
 
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=100)
         widget = PercentageWidget()
         Assert(widget.init(progressbar, writer.get_width())) == '0%'
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=20)
         widget = PercentageWidget()
         widget.init(progressbar, writer.get_width())
@@ -169,7 +169,7 @@ class TestPercentageWidget(TestBase):
 
     @test
     def finish(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=100)
         widget = PercentageWidget()
         widget.init(progressbar, writer.get_width())
@@ -186,7 +186,7 @@ tests.register(TestPercentageWidget)
 class TestBarWidget(TestBase):
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
 
         widget = BarWidget()
@@ -194,7 +194,7 @@ class TestBarWidget(TestBase):
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         states = [
             '[.###..]',
@@ -221,14 +221,14 @@ tests.register(TestBarWidget)
 class TestPercentageBarWidget(TestBase):
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=10)
         widget = PercentageBarWidget()
         Assert(widget.init(progressbar, 12)) == '[..........]'
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=10)
         widget = PercentageBarWidget()
         states = [
@@ -242,7 +242,7 @@ class TestPercentageBarWidget(TestBase):
 
     @test
     def finish(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=10)
         widget = PercentageBarWidget()
         Assert(widget.finish(progressbar, 12)) == '[##########]'
@@ -253,7 +253,7 @@ tests.register(TestPercentageBarWidget)
 class TestStepWidget(TestBase):
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=20)
         widget = StepWidget()
         Assert(widget.init(progressbar, writer.get_width())) == '0 of 20'
@@ -267,7 +267,7 @@ class TestStepWidget(TestBase):
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=20)
         widget = StepWidget()
         widget.init(progressbar, writer.get_width())
@@ -279,7 +279,7 @@ class TestStepWidget(TestBase):
 
     @test
     def finish(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=20)
         widget = StepWidget()
         progressbar.step = progressbar.maxsteps
@@ -290,7 +290,7 @@ class TestStepWidget(TestBase):
         class FooStepWidget(StepWidget):
             units = {'foo': lambda x: str(x) + 'spam'}
 
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer, maxsteps=20)
         widget = FooStepWidget('foo')
         Assert(widget.init(progressbar, 100)) == '0spam of 20spam'
@@ -305,14 +305,14 @@ tests.register(TestStepWidget)
 class TestTimeWidget(TestBase):
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = TimeWidget()
         Assert(widget.init(progressbar, 100)) == '00:00:00'
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = TimeWidget()
         widget.init(progressbar, 100)
@@ -325,14 +325,14 @@ tests.register(TestTimeWidget)
 class TestDataTransferSpeedWidget(TestBase):
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = DataTransferSpeedWidget()
         Assert(widget.init(progressbar, 100)) == '0kb/s'
 
     @test
     def update(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         widget = DataTransferSpeedWidget()
         widget.init(progressbar, 100)
@@ -354,7 +354,7 @@ class TestProgressBar(TestBase):
     @test
     def from_string(self):
         stream = StringIO()
-        writer = TerminalWriter.from_bytestream(stream)
+        writer = TerminalWriter(stream)
         with Assert.raises(ValueError) as exc:
             ProgressBar.from_string('$foo', writer)
         Assert(exc.args[0]) == 'widget not found: foo'
@@ -368,7 +368,7 @@ class TestProgressBar(TestBase):
 
     @test
     def init(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         sized_widgets = PercentageWidget, PercentageBarWidget
         for sized in sized_widgets:
             with Assert.raises(ValueError):
@@ -376,7 +376,7 @@ class TestProgressBar(TestBase):
 
     @test
     def step(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         Assert(progressbar.step) == 0
         progressbar.step = 100
@@ -391,7 +391,7 @@ class TestProgressBar(TestBase):
 
     @test
     def iter(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         Assert(iter(progressbar)).is_(progressbar)
 
@@ -417,7 +417,7 @@ class TestProgressBar(TestBase):
 
         widgets = [BarWidget(), FooWidget(), BazWidget()]
 
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar(widgets, writer)
         Assert(progressbar.get_widgets_by_priority()) == [
             (2, BazWidget()), (0, BarWidget()), (1, FooWidget())
@@ -425,14 +425,14 @@ class TestProgressBar(TestBase):
 
     @test
     def get_usable_width(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([TextWidget('foobar')], writer)
         Assert(progressbar.get_usable_width()) == writer.get_usable_width() - 6
 
     @test
     def write(self):
         stream = StringIO()
-        writer = TerminalWriter.from_bytestream(stream, prefix='spam')
+        writer = TerminalWriter(stream, prefix='spam')
         writer.indent()
         progressbar = ProgressBar([], writer)
         progressbar.write('foo', update=False)
@@ -452,7 +452,7 @@ class TestProgressBar(TestBase):
             def finish(self):
                 self.finish_called = True
 
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = MyProgressBar([], writer)
         with progressbar as foo:
             pass
@@ -462,7 +462,7 @@ class TestProgressBar(TestBase):
 
     @test
     def repr(self):
-        writer = TerminalWriter.from_bytestream(StringIO())
+        writer = TerminalWriter(StringIO())
         progressbar = ProgressBar([], writer)
         Assert(repr(progressbar)) == 'ProgressBar([], %r, maxsteps=None)' % writer
 

@@ -10,7 +10,7 @@ import sys
 
 from brownie.terminal import TerminalWriter, _colour_names, ATTRIBUTES
 
-writer = TerminalWriter.from_bytestream(sys.stdout)
+writer = TerminalWriter(sys.stdout)
 for name in _colour_names:
     with writer.line():
         writer.write(name, text_colour=name)
