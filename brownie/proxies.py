@@ -238,7 +238,8 @@ class ProxyBase(object):
     def __contains__(self, other):
         def get_result(proxied, other):
             return other in proxied
-        result = self.__method_handler(self.__proxied, '__contains__', other)
+        result = self.__method_handler(self.__proxied, '__contains__',
+                                       get_result, other)
         if result is missing:
             return get_result(self.__proxied, other)
         return result
@@ -247,7 +248,8 @@ class ProxyBase(object):
     def __getslice__(self, i, j):
         def get_result(proxied, i, j):
             return proxied[i:j]
-        result = self.__method_handler(self.__proxied, '__getslice__', i, j)
+        result = self.__method_handler(self.__proxied, '__getslice__',
+                                       get_result, i, j)
         if result is missing:
             return get_result(self.__proxied, i, j)
         return result

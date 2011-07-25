@@ -416,5 +416,15 @@ class TestLazyProxy(TestBase):
         p = LazyProxy(int)
         Assert(repr(p)) == 'LazyProxy(%r)' % int
 
+    @test
+    def contains(self):
+        p = LazyProxy(lambda: "abc")
+        assert "b" in p
+
+    @test
+    def getslice(self):
+        p = LazyProxy(lambda: "abc")
+        assert p[1:2] == "b"
+
 
 tests.register(TestLazyProxy)
